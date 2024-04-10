@@ -1,10 +1,11 @@
 #include <iostream>
+#include <string.h>
 #include "cmd/init.h"
 
 
-int main()  {
-    std::cout << "git...." << std::endl;
+int main(int argc,char *argv[])  {
+    std::cout << argc << std::endl;
 
-    init();
+    if(strcmp(argv[1],"init")==0) init();
 }
     
