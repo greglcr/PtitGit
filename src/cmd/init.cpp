@@ -5,29 +5,35 @@
 
 /* In order to handle file manipulation, we use the filesystem library introduced in C++17*/
 
+namespace fs = std::filesystem;
+
 PtiteGitInit::PtiteGitInit () {
-    if (std::filesystem::exists(".ptitgit")) {
+    if (fs::exists(".ptitgit")) {
         std::cerr << "The current directory is already a git repos" << std::endl;
     }
     else {
         try {
-            std::filesystem::create_directory(".ptitgit");
+            for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
+                fs::create_directory(FOLDERS_TO_CREATE[i]);
+            }
         }
-        catch (const std::filesystem::filesystem_error& e) {
+        catch (const fs::filesystem_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
 }
 
-PtiteGitInit::PtiteGitInit (std::filesystem::path folderToInit) {
-    if(std::filesystem::exists(folderToInit / ".ptitgit")) {
+PtiteGitInit::PtiteGitInit (fs::path folderToInit) {
+    if(fs::exists(folderToInit / ".ptitgit")) {
         std::cerr << "The given directory is already a git repos" << std::endl;
     }
     else {
         try {
-            std::filesystem::create_directory(folderToInit / ".ptitgit");
+            for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
+                fs::create_directories(folderToInit / FOLDERS_TO_CREATE[i]);
+            }
         }
-        catch (const std::filesystem::filesystem_error& e) {
+        catch (const fs::filesystem_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
@@ -37,6 +43,6 @@ void init() {
     PtiteGitInit myGitInit;
 }
 
-void init(std::filesystem::path folderToInit) {
+void init(fs::path folderToInit) {
     PtiteGitInit myGitInit(folderToInit);
 }
