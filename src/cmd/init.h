@@ -20,6 +20,7 @@ const std::vector<std::string> FOLDERS_TO_CREATE = {
 void init();
 void init(std::filesystem::path folderToInit);
 
+/*
 class PtiteGitInit {
 
     public:
@@ -30,5 +31,7 @@ class PtiteGitInit {
         std::filesystem::path myGitFolder;
 
 };
+
+*/
 
 #endif

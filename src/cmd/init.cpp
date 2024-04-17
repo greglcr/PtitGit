@@ -1,13 +1,14 @@
+#include "init.h"
+
 #include <iostream>
 #include <filesystem>
 #include <vector>
-#include "init.h"
 
 /* In order to handle file manipulation, we use the filesystem library introduced in C++17*/
 
 namespace fs = std::filesystem;
 
-PtiteGitInit::PtiteGitInit () {
+void init() {
     if (fs::exists(".ptitgit")) {
         std::cerr << "The current directory is already a git repos" << std::endl;
     }
@@ -23,7 +24,7 @@ PtiteGitInit::PtiteGitInit () {
     }
 }
 
-PtiteGitInit::PtiteGitInit (fs::path folderToInit) {
+void init(fs::path folderToInit) {
     if(fs::exists(folderToInit / ".ptitgit")) {
         std::cerr << "The given directory is already a git repos" << std::endl;
     }
@@ -37,12 +38,4 @@ PtiteGitInit::PtiteGitInit (fs::path folderToInit) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-}
-
-void init() {
-    PtiteGitInit myGitInit;
-}
-
-void init(fs::path folderToInit) {
-    PtiteGitInit myGitInit(folderToInit);
 }
