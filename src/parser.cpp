@@ -1,12 +1,16 @@
-#include <iostream>
-#include <string.h>
 #include "cmd/init.h"
 #include "cmd/hash_object.h"
+#include "lib/hashing.h"
+#include "lib/object.h"
+#include "lib/object_file.h"
+#include "lib/object_tree.h"
 
+#include <iostream>
+#include <string.h>
 
 int main(int argc,char *argv[])  {
 
-    if(strcmp(argv[1],"init")==0) {
+    if(argc > 1 && strcmp(argv[1],"init")==0) {
         if (argc > 2) {
             init(argv[2]);
         }
@@ -14,6 +18,14 @@ int main(int argc,char *argv[])  {
             init();
         }
     }
-    if(strcmp(argv[1],"hash-object")==0) hash_object(File ());
+    /*else if(argc > 2 && strcmp(argv[1],"hash-object")==0) {
+        if (argc < 3) {
+            std::cerr << "Error : Object to hash missing" << std::endl;
+        }
+        else {
+            hash_object(File(argv[2])); 
+        }
+    }*/
+
 }
     

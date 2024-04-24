@@ -1,20 +1,27 @@
 #ifndef OBJECT_H
 #define OBJECT_H
-#include "object.h"
-#include <string>
 
+#include "object.h"
+
+#include <string>
+#include <filesystem>
+#include <vector>
+
+namespace fs = std::filesystem;
 
 class Object  {
+
     std::string hash();
 
 };
 
-class File : public Object  {
-    std::string path;
-    std::string content;
-    
+class Commit : public Object {
+
     public:
-    std::string hash();
+
+    private:
+
+
 };
 
 #endif
