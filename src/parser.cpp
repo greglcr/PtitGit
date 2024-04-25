@@ -10,7 +10,7 @@
 
 int main(int argc,char *argv[])  {
 
-    if(argc > 1 && strcmp(argv[1],"init")==0) {
+    if (argc > 1 && strcmp(argv[1],"init") == 0) {
         if (argc > 2) {
             init(argv[2]);
         }
@@ -18,14 +18,14 @@ int main(int argc,char *argv[])  {
             init();
         }
     }
-    /*else if(argc > 2 && strcmp(argv[1],"hash-object")==0) {
+    else if(argc > 2 && strcmp(argv[1], "hash-object") == 0) {
         if (argc < 3) {
             std::cerr << "Error : Object to hash missing" << std::endl;
         }
         else {
-            hash_object(File(argv[2])); 
+            std::cout << hash_object(File(argv[2])) << std::endl; 
         }
-    }*/
+    }
 
 }
     

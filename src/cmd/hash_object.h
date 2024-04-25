@@ -4,6 +4,6 @@
 #include "../lib/object.h"
 #include "../lib/object_file.h"
 
-void hash_object(File f);
+std::string hash_object(File f);
 
 #endif
