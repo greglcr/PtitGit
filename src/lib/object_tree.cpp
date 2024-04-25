@@ -1,3 +1,4 @@
+#include "hashing.h"
 #include "object.h"
 #include "object_file.h"
 #include "object_tree.h"
@@ -8,13 +9,40 @@
 
 namespace fs = std::filesystem;
 
-Tree::Tree(fs::path pathFolder) {
+Tree::Tree(fs::path folderPath) {
 
-    if (!fs::exists(pathFolder)) {
-        std::cerr << "Error in Tree construction : The given path doesn't exists (" << pathFolder << ")" << std::endl;
+    if (!fs::exists(folderPath)) {
+        std::cerr << "Error in Tree construction : The given path doesn't exists (" << folderPath << ")" << std::endl;
     }
-    if (!fs::is_directory(pathFolder)) {
-        std::cerr << "Error in Tree construction : The given path is not a directory (" << pathFolder << ")" << std::endl;
+    if (!fs::is_directory(folderPath)) {
+        std::cerr << "Error in Tree construction : The given path is not a directory (" << folderPath << ")" << std::endl;
     }
     
+    for (const auto& entry : fs::directory_iterator(folderPath)) {
+        if (entry.is_regular_file()) {
+            File curFile = File(folderPath / entry.path().filename());
+            this->filesInside.push_back(curFile);
+            this->readableContent += "file " + curFile.getHash() + " " + entry.path().filename().string() + "\n";
+        }
+        else if (entry.is_directory()) {
+            Tree curFolder = Tree(folderPath / entry.path().filename().string());
+            this->treesInside.push_back(curFolder);
+            this->readableContent += "tree " + curFolder.getHash() + " " + entry.path().filename().string() + "\n";
+        }
+    }
+
+    this->hashedContent = hashString(this->readableContent);
+
+}
+
+std::string Tree::getHash() {
+
+    return this->hashedContent;
+
+}
+
+void Tree::printContent() {
+
+    std::cout << this->readableContent;
+
 }

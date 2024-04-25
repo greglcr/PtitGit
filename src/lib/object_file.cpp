@@ -47,3 +47,9 @@ void File::printContent() {
     std::cout << "########## Fin du fichier ##########\n";
 
 }
+
+std::string File::getHash() {
+
+    return this->hashedContent;
+
+}

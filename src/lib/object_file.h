@@ -16,6 +16,7 @@ class File : public Object  {
         
         void updateContent();
         void printContent();
+        std::string getHash();
 
     private:
 
