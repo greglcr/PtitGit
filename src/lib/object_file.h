@@ -13,16 +13,11 @@ class File : public Object  {
     public:
 
         File(fs::path filePath);
-        
         void updateContent();
-        void printContent();
-        std::string getHash();
 
     private:
 
         fs::path filePath;
-        std::string content;
-        std::string hashedContent;
 
 };
 

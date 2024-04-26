@@ -22,27 +22,15 @@ Tree::Tree(fs::path folderPath) {
         if (entry.is_regular_file()) {
             File curFile = File(folderPath / entry.path().filename());
             this->filesInside.push_back(curFile);
-            this->readableContent += "file " + curFile.getHash() + " " + entry.path().filename().string() + "\n";
+            this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
         else if (entry.is_directory()) {
             Tree curFolder = Tree(folderPath / entry.path().filename().string());
             this->treesInside.push_back(curFolder);
-            this->readableContent += "tree " + curFolder.getHash() + " " + entry.path().filename().string() + "\n";
+            this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
     }
 
-    this->hashedContent = hashString(this->readableContent);
-
-}
-
-std::string Tree::getHash() {
-
-    return this->hashedContent;
-
-}
-
-void Tree::printContent() {
-
-    std::cout << this->readableContent;
+    this->hashedContent = hashString(this->content);
 
 }

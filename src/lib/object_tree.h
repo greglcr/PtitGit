@@ -9,15 +9,10 @@ class Tree : public Object {
 
         Tree(fs::path folderPath);
 
-        void printContent();
-        std::string getHash();
-
     private:
 
         fs::path folderPath;
         std::vector<File> filesInside;
         std::vector<Tree> treesInside;
-        std::string readableContent;
-        std::string hashedContent;
 
 };

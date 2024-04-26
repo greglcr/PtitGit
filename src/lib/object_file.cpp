@@ -39,17 +39,3 @@ void File::updateContent() {
     this->content = oss.str();
     this->hashedContent = hashString(this->hashedContent);
 }
-
-void File::printContent() {
-
-    std::cout << "########## Début du fichier " << this->filePath << "##########\n\n";
-    std::cout << this->content;
-    std::cout << "########## Fin du fichier ##########\n";
-
-}
-
-std::string File::getHash() {
-
-    return this->hashedContent;
-
-}

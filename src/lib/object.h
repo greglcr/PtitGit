@@ -3,24 +3,23 @@
 
 #include "object.h"
 
-#include <string>
 #include <filesystem>
+#include <string>
 #include <vector>
 
 namespace fs = std::filesystem;
 
 class Object  {
 
-    std::string hash();
-
-};
-
-class Commit : public Object {
-
     public:
 
-    private:
+        std::string getContent();
+        std::string getHashedContent();
 
+    protected:
+
+        std::string content;
+        std::string hashedContent;
 
 };
 
