@@ -4,6 +4,7 @@
 #include "lib/object.h"
 #include "lib/object_file.h"
 #include "lib/object_tree.h"
+#include "lib/repos.h"
 
 #include <iostream>
 #include <string.h>
@@ -26,6 +27,14 @@ int main(int argc,char *argv[])  {
             std::cout << hash_object(File(argv[2])) << std::endl; 
         }
     }
+
+    init();
+    std::cout << 5 << std::endl;
+    PtitGitRepos myRepos = PtitGitRepos();
+    std::cout << 4 << std::endl;
+    File myFile = File("test.txt");
+    std::cout << 3 << std::endl;
+    myRepos.writeObject(myFile);
 
 }
     

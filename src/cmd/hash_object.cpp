@@ -7,7 +7,7 @@
 
 std::string hash_object(File f) {
 
-    return f.getHash();
+    return f.getHashedContent();
 
 }
 

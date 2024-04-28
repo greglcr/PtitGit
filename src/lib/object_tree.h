@@ -1,3 +1,6 @@
+#ifndef OBJECT_TREE_H
+#define OBJECT_TREE_H
+
 #include "object.h"
 #include "object_file.h"
 
@@ -16,3 +19,5 @@ class Tree : public Object {
         std::vector<Tree> treesInside;
 
 };
+
+#endif

@@ -15,6 +15,7 @@ class Object  {
 
         std::string getContent();
         std::string getHashedContent();
+        fs::path getPathToWrite();
 
     protected:
 
