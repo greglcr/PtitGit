@@ -9,6 +9,8 @@
 
 namespace fs = std::filesystem;
 
+std::string get_path_to_object(std::string hashedContent);
+
 class Object  {
 
     public:

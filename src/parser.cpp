@@ -1,3 +1,4 @@
+#include "cmd/cat-object.h"
 #include "cmd/init.h"
 #include "cmd/hash_object.h"
 #include "lib/hashing.h"
@@ -25,6 +26,14 @@ int main(int argc,char *argv[])  {
         }
         else {
             std::cout << hash_object(File(argv[2])) << std::endl; 
+        }
+    }
+    else if (argc > 2 && strcmp(argv[1], "cat-file") == 0) {
+        if(argc < 3) {
+            std::cerr << "Error : Object to display missing" << std::endl;
+        }
+        else {
+            std::cout << cat_object(argv[2]) << std::endl;
         }
     }
 

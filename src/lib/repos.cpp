@@ -3,6 +3,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -57,5 +58,24 @@ void PtitGitRepos::writeObject(Object objectToWrite) {
 
     fileToWrite << objectToWrite.getContent();
     fileToWrite.close();
+
+}
+
+std::string PtitGitRepos::get_object_content(std::string hashedContent) {
+
+    fs::path pathToObject = this->workingFolder / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    std::ifstream fileToShow(pathToObject);
+
+    if(!fileToShow.is_open()) {
+        std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << pathToObject << ")" << std::endl;
+        exit(0);
+    }
+
+    std::stringstream buffer;
+    buffer << fileToShow.rdbuf();
+    std::string content = buffer.str();
+    fileToShow.close();
+
+    return content;
 
 }

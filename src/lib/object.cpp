@@ -20,11 +20,18 @@ std::string Object::getHashedContent() {
 
 fs::path Object::getPathToWrite() {
 
-    std::string::iterator beginContent = this->hashedContent.begin();
-    std::string::iterator endContent = this->hashedContent.end();
+    return get_path_to_object(this->hashedContent);
+
+}
+
+std::string get_path_to_object(std::string hashedContent) {
+
+    std::string::iterator beginContent = hashedContent.begin();
+    std::string::iterator endContent = hashedContent.end();
     
     fs::path folder = std::string(beginContent, beginContent + 2);
     fs::path fileName = std::string(beginContent + 2, endContent);
 
     return folder / fileName;
+
 }
