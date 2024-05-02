@@ -37,13 +37,5 @@ int main(int argc,char *argv[])  {
         }
     }
 
-    init();
-    std::cout << 5 << std::endl;
-    PtitGitRepos myRepos = PtitGitRepos();
-    std::cout << 4 << std::endl;
-    File myFile = File("test.txt");
-    std::cout << 3 << std::endl;
-    myRepos.writeObject(myFile);
-
 }
     
