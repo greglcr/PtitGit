@@ -1,3 +1,6 @@
 petitGit
 .vscode/
 test/repos_test
+*.o
+*.d
+.bin/
