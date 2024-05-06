@@ -20,12 +20,16 @@ File::File(fs::path filePath) {
     std::ostringstream oss;
     oss << inputFile.rdbuf();
     
-    this->content = oss.str();
+    this->content = "blob";
+    this->content += filePath;
+    this->content += oss.str();
+    
     this->filePath = filePath;
     this->hashedContent = hashString(this->content);
 }
 
 void File::updateContent() {
+    
 
     std::ifstream inputFile(this->filePath);
 
