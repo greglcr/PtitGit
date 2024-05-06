@@ -35,7 +35,7 @@ std::string convertToHexa(int valToConvert, int length) {
 
 std::string hashString(std::string contentToHash) {
     
-    //Méthode obsolète
+    //Méthode obsolète 
 
     /*unsigned char hashedContent[SHA256_DIGEST_LENGTH];
 
