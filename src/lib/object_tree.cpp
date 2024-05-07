@@ -17,6 +17,9 @@ Tree::Tree(fs::path folderPath) {
     if (!fs::is_directory(folderPath)) {
         std::cerr << "Error in Tree construction : The given path is not a directory (" << folderPath << ")" << std::endl;
     }
+
+    this->content += "tree\n";
+    this->content += folderPath;
     
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.is_regular_file()) {
