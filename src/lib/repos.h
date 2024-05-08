@@ -21,6 +21,7 @@ class PtitGitRepos {
         void writeObject(Object myObjectToWrite);
         std::string get_object_content(std::string hashedObject);
 
+        fs::path getWorkingFolder();
     private:
 
         fs::path workingFolder;

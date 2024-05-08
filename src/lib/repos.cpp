@@ -79,3 +79,7 @@ std::string PtitGitRepos::get_object_content(std::string hashedContent) {
     return content;
 
 }
+
+fs::path PtitGitRepos::getWorkingFolder(){
+    return this->workingFolder;
+}
