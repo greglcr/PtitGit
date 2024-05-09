@@ -44,3 +44,8 @@ clean:
 
 tests: petitGit
 	@python3 test/run-tests.py
+run: all
+	@rm test/result-test/.ptitgit/ -rf
+	@cd test/result-test; ../../petitGit $(args)
+	@# use make run args=init
+

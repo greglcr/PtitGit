@@ -9,6 +9,22 @@
 
 #include <iostream>
 #include <string.h>
+#include <vector>
+
+int edit_distance(std::string a, std::string b) {
+    if (a == b) return 0;
+
+    int n = a.length();
+    int m = b.length();
+    if (n == 0)  return m;
+    if (m == 0)  return n;
+
+    std::string aBis = a.substr(0, n-1);
+    std::string bBis = b.substr(0, m-1);
+
+    if (a[n-1] == b[m-1])   return edit_distance(aBis, bBis);
+    return 1 + std::min( edit_distance(aBis, bBis), std::min(edit_distance(aBis, b), edit_distance(a, bBis)));
+}
 
 int main(int argc,char *argv[])  {
 
@@ -35,6 +51,21 @@ int main(int argc,char *argv[])  {
         else {
             std::cout << cat_object(argv[2]) << std::endl;
         }
+    }
+    else    {
+        std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file" };
+
+        int dist_min = 100000000;
+        std::string command_min = "???????";
+        for (auto cmd : lst_commands)   {
+            int dist = edit_distance(cmd, argv[1]);
+            if (dist <= dist_min)   {
+                dist_min = dist;
+                command_min = cmd;
+            }
+        }
+        std::cerr << "Maybe you want to use :    " << command_min << std::endl;
     }
 
 }
