@@ -1,12 +1,16 @@
 #include "reftag.h"
 #include "repos.h"
 #include "object.h"
+#include "object_commit.h"
+#include "hashing.h"
 
 #include <map>
 #include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -61,4 +65,15 @@ std::map <fs::path, std::string> ref_list(PtitGitRepos X, fs::path path=".", std
         }
     }
     return current;
+}
+
+Tag::Tag(Object tagObject, std::string tagAuthor = "", std::string tagger ="PtiteGit Team", std::string tagName="abc", std::string tagMessage = "New tag"){
+    this->tagObject = tagObject;
+    this->tagAuthor = tagAuthor;
+    this->tagger = tagger;
+    this->tagName = tagName;
+    this->tagMessage = tagMessage;
+
+    this->content =  "author " + tagAuthor + "\ntagger " + tagger + "\ntag_object " + tagObject.getHashedContent() + "\ntag_name " + tagName + "\n" + tagMessage;
+    this->hashedContent = hashString(this->content);
 }
