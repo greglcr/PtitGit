@@ -51,7 +51,10 @@ int main(int argc,char *argv[])  {
             std::cout << cat_object(argv[2]) << std::endl;
     }
     else if (argc > 1 && strcmp(argv[1], "server") == 0) {
-        server();
+        if (argc >= 3)
+            server(atoi(argv[2]));
+        else
+            server();
     }
     else    {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;

@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <cstdlib>
 
-void server()   {
+void server(int port)    {
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
@@ -19,12 +19,14 @@ void server()   {
     sockaddr_in sockaddr;
     sockaddr.sin_family = AF_INET;
     sockaddr.sin_addr.s_addr = INADDR_ANY;
-    sockaddr.sin_port = htons(9999);
+    sockaddr.sin_port = htons(port);
 
     if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0) {
         std::cerr << "Failed to bind  : " << errno << std::endl;
         exit(EXIT_FAILURE);
     }
+
+    std::cout << "server started on port " << port << std::endl;
 
     if (listen(sockfd, 10) < 0) {
         std::cerr << "Failed to listen on socket. errno: " << errno << std::endl;
@@ -39,7 +41,7 @@ void server()   {
     }
 
     char buffer[100];
-    auto bytesRead = read(connection, buffer, 100);
+    read(connection, buffer, 100);
     std::cout << "The message was: " << buffer;
 
     std::string response = "Good talking to you\n";

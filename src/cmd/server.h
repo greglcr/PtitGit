@@ -2,7 +2,7 @@
 #define SERVER_H
 
 
-void server();
+void server(int port=9999);
 
 #endif
 
