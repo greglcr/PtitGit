@@ -46,7 +46,7 @@ std::string ref_resolve(PtitGitRepos X, fs::path path){
     else return content;
 }
 
-std::map <fs::path, std::string> ref_list(PtitGitRepos X){
+std::map <fs::path, std::string> ref_list_basic(PtitGitRepos X){
     fs::path fun = X.getWorkingFolder() / ".ptitgit" / "refs";
     return ref_list(X,fun);
 }
