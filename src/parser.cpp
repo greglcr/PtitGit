@@ -6,9 +6,11 @@
 #include "lib/object_file.h"
 #include "lib/object_tree.h"
 #include "lib/repos.h"
+#include "lib/reftag.h"
 
 #include <iostream>
 #include <string.h>
+#include <map>
 
 int main(int argc,char *argv[])  {
 
@@ -36,6 +38,10 @@ int main(int argc,char *argv[])  {
             std::cout << cat_object(argv[2]) << std::endl;
         }
     }
-
+    else if (argc > 1 && strcmp(argv[1] , "show-ref") == 0){
+        PtitGitRepos X = PtitGitRepos();
+        std::map <fs::path, std::string> Y = ref_list_basic(X);
+        for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
+    }
 }
     
