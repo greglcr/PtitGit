@@ -17,11 +17,11 @@ std::string ref_resolve(PtitGitRepos X, fs::path path){
         fs::path path2 = path;
         fs::path parent = path2.parent_path();
         while(parent!=path2){
-            if(path2 == repo_path) break;
+            if(path2 == repo_path / ".ptitgit") break;
             path2 = parent;
             parent = path2.parent_path();
         }
-        if(path2 != repo_path){std::cerr<<"Error: Bad path";exit(0);}
+        if(path2 != repo_path / ".ptitgit"){std::cerr<<"Error: Bad path";exit(0);}
         fun = path;
     }
     else fun = repo_path / ".ptitgit" / path;
