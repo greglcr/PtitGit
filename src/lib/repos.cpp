@@ -151,7 +151,7 @@ void PtitGitRepos::set_config(std::string key, std::string value) {
         std::ofstream config_out;
         config_out.open(working_folder/".ptitgit/config");
         if (config_out.is_open())   {
-            config_out << result + "\n";
+            config_out << result;
             config_out.close();
         }   else    {
             std::cerr << "NOT ABLE TO WRITE NEW VALUE IN THE CONFIG FILE\n" << result << std::endl;
