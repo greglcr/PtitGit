@@ -11,8 +11,8 @@ class Commit : public Object {
 
     public:
 
-        Commit(std::vector<Commit> parentCommits = {}, Tree parentTree, std::string commitAuthor = "", std::string committer ="PtiteGit Team", std::string message="New commit", std::string gpgsig="");
-
+        Commit(Tree parentTree, std::vector<Commit> parentCommits = {}, std::string commitAuthor = "", std::string committer ="PtiteGit Team", std::string message="New commit", std::string gpgsig="");
+        void fromstring(std::string);
     private:
 
         std::vector<Commit> parentCommits;
@@ -22,7 +22,6 @@ class Commit : public Object {
         std::string gpgsig;
         Tree parentTree;
         //PtitGitRepos repos;
-
 };
 
 #endif

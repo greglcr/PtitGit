@@ -23,12 +23,12 @@ $(shell mkdir -p $(BINDIR))
 
 # Linking the final executable
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS) -I/usr/local/opt/openssl@3/include -L/usr/local/opt/openssl@3/lib -lssl -lcrypto
 
 # Compiling each source file to an object file
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@ -I/usr/local/opt/openssl@3/include -L/usr/local/opt/openssl@3/lib -lssl -lcrypto
 
 # Include dependencies
 -include $(DEPS)

@@ -52,22 +52,22 @@ std::string ref_resolve(PtitGitRepos X, fs::path path){
 
 std::map <fs::path, std::string> ref_list_basic(PtitGitRepos X){
     fs::path fun = X.getWorkingFolder() / ".ptitgit" / "refs";
-    return ref_list(X,fun);
+    return ref_list({},X,fun);
 }
 
-std::map <fs::path, std::string> ref_list(PtitGitRepos X, fs::path path=".", std::map <fs::path, std::string> current){
+std::map <fs::path, std::string> ref_list(std::map <fs::path, std::string> current, PtitGitRepos X, fs::path path){
     for (const auto& entry : fs::directory_iterator(path)) {
         if(fs::is_regular_file(entry.path())){
             current.insert({entry.path(), ref_resolve(X,entry.path())});
         }
         else if(fs::is_directory(entry.path())){
-            current.merge(ref_list(X,entry.path()));
+            current.merge(ref_list({},X,entry.path()));
         }
     }
     return current;
 }
 
-Tag::Tag(Object tagObject, std::string tagAuthor = "", std::string tagger ="PtiteGit Team", std::string tagName="abc", std::string tagMessage = "New tag"){
+Tag::Tag(Object tagObject, std::string tagAuthor, std::string tagger, std::string tagName, std::string tagMessage){
     this->tagObject = tagObject;
     this->tagAuthor = tagAuthor;
     this->tagger = tagger;

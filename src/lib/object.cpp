@@ -35,3 +35,7 @@ std::string get_path_to_object(std::string hashedContent) {
     return folder / fileName;
 
 }
+
+void Object::fromstring(std::string a)   {
+    // TODO
+}

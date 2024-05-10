@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-Commit::Commit(std::vector<Commit> parentCommits = {}, Tree parentTree, std::string commitAuthor = "", std::string committer ="PtiteGit Team", std::string message="New commit", std::string gpgsig=""){
+Commit::Commit(Tree parentTree, std::vector<Commit> parentCommits, std::string commitAuthor, std::string committer, std::string message, std::string gpgsig){
     this->commitAuthor = commitAuthor;
     this->committer = committer;
     this->parentCommits = parentCommits;
@@ -18,7 +18,7 @@ Commit::Commit(std::vector<Commit> parentCommits = {}, Tree parentTree, std::str
     this->message = message;
 
     this->content = "tree " + parentTree.getHashedContent() + "\n";
-    for(long long ii = 0; ii < parentCommits.size(); ii++) this->content += ("parent " + parentCommits[ii].getHashedContent() + "\n" );
+    for(long long ii = 0; ii < (long long)parentCommits.size(); ii++) this->content += ("parent " + parentCommits[ii].getHashedContent() + "\n" );
     this->content += ("author " + commitAuthor + "\ncommitter " + committer + "\ngpgsig " + gpgsig + "\n" + message + "\n");
     
     this->hashedContent = hashString(this->content);

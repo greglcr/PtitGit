@@ -10,7 +10,7 @@ class Tree : public Object {
 
     public:
 
-        Tree(fs::path folderPath=".");
+        Tree(fs::path folderPath = ".");
 
     private:
 
