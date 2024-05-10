@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = g++
 CFLAGS = -Wall -g
-LDFLAGS = -lssl -lcrypto
+LDFLAGS = -I/usr/local/opt/openssl@3/include -L/usr/local/opt/openssl@3/lib -lssl -lcrypto
 
 # Directories
 SRCDIR = src
@@ -23,12 +23,12 @@ $(shell mkdir -p $(BINDIR))
 
 # Linking the final executable
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS) -I/usr/local/opt/openssl@3/include -L/usr/local/opt/openssl@3/lib -lssl -lcrypto
+	$(CC) $(OBJS) -o $@ $(LDFLAGS) 
 
 # Compiling each source file to an object file
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@ -I/usr/local/opt/openssl@3/include -L/usr/local/opt/openssl@3/lib -lssl -lcrypto
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
 # Include dependencies
 -include $(DEPS)
