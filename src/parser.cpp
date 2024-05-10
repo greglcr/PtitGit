@@ -3,6 +3,7 @@
 #include "cmd/hash_object.h"
 #include "cmd/server.h"
 #include "cmd/help.h"
+#include "cmd/push.h"
 #include "lib/hashing.h"
 #include "lib/object.h"
 #include "lib/object_file.h"
@@ -66,9 +67,12 @@ int main(int argc,char *argv[])  {
         std::map <fs::path, std::string> Y = ref_list_basic(X);
         for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
     }
+    else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
+        push();
+    }
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help" };
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push" };
 
         int dist_min = 100000000;
         std::string command_min = "???????";
