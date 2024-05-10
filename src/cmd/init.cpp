@@ -1,6 +1,7 @@
 #include "init.h"
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 #include <vector>
 
@@ -22,6 +23,10 @@ void init() {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
+
+    std::ofstream config(".ptitgit/config");
+    config << "# this is the configuration file\n# it contains global associations key=value\n";
+    config.close();
 }
 
 void init(fs::path folderToInit) {
@@ -38,4 +43,9 @@ void init(fs::path folderToInit) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
+
+
+    std::ofstream config(folderToInit / ".ptitgit/config");
+    config << "# this is the configuration file\n# it contains global associations key=value\n";
+    config.close();
 }

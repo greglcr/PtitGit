@@ -1,8 +1,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "object.h"
-
 #include <filesystem>
 #include <string>
 #include <vector>

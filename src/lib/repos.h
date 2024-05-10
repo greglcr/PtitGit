@@ -22,6 +22,11 @@ class PtitGitRepos {
         std::string get_object_content(std::string hashedObject);
 
         fs::path getWorkingFolder();
+
+        std::string get_config(std::string key);
+        void set_config(std::string key, std::string value);
+    
+
     private:
 
         fs::path workingFolder;

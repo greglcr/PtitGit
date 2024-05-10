@@ -83,3 +83,80 @@ std::string PtitGitRepos::get_object_content(std::string hashedContent) {
 fs::path PtitGitRepos::getWorkingFolder(){
     return this->workingFolder;
 }
+
+
+
+std::string PtitGitRepos::get_config(std::string key) {
+    fs::path working_folder = this->getWorkingFolder();
+    std::ifstream config_file;
+    config_file.open(working_folder/".ptitgit/config");
+    
+
+    if ( config_file.is_open() ) {
+        while ( config_file ) {
+            std::string line;
+            std::getline (config_file, line);
+            if (line.length() > 0 and line[0] == '#') continue;
+
+            int split = line.find('=');
+            if (split == -1) continue;
+
+            std::string key_i = line.substr(0, line.find('='));
+            if (key_i == key)
+                return line.substr(split+1, std::string::npos);
+        }
+    }
+    return "";
+}
+
+
+void PtitGitRepos::set_config(std::string key, std::string value) {
+    fs::path working_folder = this->getWorkingFolder();
+    std::ifstream config_file;
+    config_file.open(working_folder/".ptitgit/config");
+    
+    bool added = false;
+    std::string result = "";
+
+    if ( config_file.is_open() ) {
+        while ( config_file ) {
+            std::string line;
+            std::getline (config_file, line);
+
+            if (line.length() > 0 and line[0] == '#')   {
+                result += line + "\n";
+                continue;
+            }
+
+            int split = line.find('=');
+            if (split == -1) {
+                result += line + "\n";
+                continue;
+            }
+
+            std::string key_i = line.substr(0, line.find('='));
+            if (key_i != key)   {
+                result += line + "\n";
+            } else  {
+                result += key+"="+value+"\n";
+                added = true;
+            }
+        }
+
+        config_file.close();
+
+        if (!added)
+            result += key+"="+value+"\n";
+        
+        std::ofstream config_out;
+        config_out.open(working_folder/".ptitgit/config");
+        if (config_out.is_open())   {
+            config_out << result + "\n";
+            config_out.close();
+        }   else    {
+            std::cerr << "NOT ABLE TO WRITE NEW VALUE IN THE CONFIG FILE\n" << result << std::endl;
+        }
+    }   else
+        std::cerr << "unable to open the config file" << std::endl;
+}
+ 

@@ -70,9 +70,19 @@ int main(int argc,char *argv[])  {
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
+    else if (argc >= 2 && strcmp(argv[1] , "config") == 0){
+        PtitGitRepos X = PtitGitRepos();
+        if (argc == 3)
+            std::cout << X.get_config(argv[2]) << std::endl;
+        else if (argc == 4)
+            X.set_config(argv[2], argv[3]);
+        else
+            std::cout << "this command takes 1 or 2 arguments (to show a config value or set a config value)" << std::endl;
+    }
+
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push" };
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config" };
 
         int dist_min = 100000000;
         std::string command_min = "???????";
