@@ -7,7 +7,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstdlib>
+#include <vector>
 
+void* handle_tcp_connection (void* arg);
 void server(int port)    {
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -32,28 +34,31 @@ void server(int port)    {
         std::cerr << "Failed to listen on socket. errno: " << errno << std::endl;
         exit(EXIT_FAILURE);
     }
+   
     
+
     auto addrlen = sizeof(sockaddr);
-    int connection = accept(sockfd, (struct sockaddr*)&sockaddr, (socklen_t*)&addrlen);
-    if (connection < 0) {
-        std::cout << "Failed to grab connection. errno: " << errno << std::endl;
-        exit(EXIT_FAILURE);
+    int accepted;
+    std::vector<pthread_t> threads;
+    while ((accepted = accept(sockfd,(struct sockaddr *)&sockaddr, (socklen_t*)&addrlen)) > 0) {
+        threads.push_back(0);
+        if( pthread_create(&(threads.back()), NULL, &handle_tcp_connection, (void*)&accepted) != 0){
+            std::cerr << "Unable to create a new thread" << std::endl;
+        }
+        std::cout << threads.front() << " " << threads.back() << std::endl;
     }
 
-    char buffer[100];
-    read(connection, buffer, 100);
-    std::cout << "The message was: " << buffer;
-
-    std::string response = "Good talking to you\n";
-    send(connection, response.c_str(), response.size(), 0);
-
-    close(connection);
-    close(sockfd);
-
-
-
+}
+void* handle_tcp_connection (void* arg)   {
+    std::cout << "Hi" << std::endl;
+    int* intPtr = (int*) arg;
+    int connection = *intPtr;
     while (true)    {
-        std::cout << "server is running" << std::endl;
-        usleep(1000000);
+        char buffer[100];
+        read(connection, buffer, 100);
+        std::cout << "The message was: " << buffer << std::endl;
+
+        std::string response = "Good talking to you\n";
+        send(connection, response.c_str(), response.size(), 0);
     }
 }
