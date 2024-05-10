@@ -66,7 +66,7 @@ int main(int argc,char *argv[])  {
         std::map <fs::path, std::string> Y = ref_list_basic(X);
         for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
     }
-    else    {
+    else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
         std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help" };
 
@@ -80,6 +80,9 @@ int main(int argc,char *argv[])  {
             }
         }
         std::cerr << "Maybe you want to use :    " << command_min << std::endl;
+    }
+    else {
+        help();
     }
 }
     
