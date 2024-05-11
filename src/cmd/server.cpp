@@ -55,7 +55,8 @@ void* handle_tcp_connection (void* arg)   {
     int connection = *intPtr;
     while (true)    {
         char buffer[100];
-        read(connection, buffer, 100);
+        int n = read(connection, buffer, 100);
+        buffer[n] = '\0';
         std::cout << "The message was: " << buffer << std::endl;
 
         std::string response = "Good talking to you\n";
