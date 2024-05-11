@@ -145,8 +145,13 @@ void PtitGitRepos::set_config(std::string key, std::string value) {
 
         config_file.close();
 
-        if (!added)
+        if (!added) {
+            result.pop_back();
             result += key+"="+value+"\n";
+        }
+        
+        if (result.length() >= 2 and result.substr(result.size()-2) == "\n\n")
+            result.pop_back();
         
         std::ofstream config_out;
         config_out.open(working_folder/".ptitgit/config");
