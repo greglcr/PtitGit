@@ -36,6 +36,3 @@ std::string get_path_to_object(std::string hashedContent) {
 
 }
 
-void Object::fromstring(std::string a)   {
-    // TODO
-}
