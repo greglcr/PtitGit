@@ -36,7 +36,13 @@ Commit Commit::fromfile(std::string hashedContent){
     std::stringstream buffer;
     buffer << input_stream.rdbuf();
 
-    return Commit::fromstring(buffer.str());
+    long long abcd = buffer.str().find(' ');
+    long long dcba = buffer.str().find('\n');
+
+    if(buffer.str().substr(0,abcd) != "commit") std::cerr<<"Not a commit!";
+    if(stoi(buffer.str().substr(abcd+1,dcba-abcd-1)) != buffer.str().size()-dcba-1) std::cerr<<"Bad size!";
+
+    return Commit::fromstring(buffer.str().substr(dcba+1));
 }
 
 Commit Commit::fromstring(std::string commitContent){
