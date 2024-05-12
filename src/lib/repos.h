@@ -33,7 +33,4 @@ class PtitGitRepos {
 
 };
 
-Object object_read(PtitGitRepos,std::string);
-
-
 #endif
