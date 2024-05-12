@@ -67,13 +67,96 @@ std::map <fs::path, std::string> ref_list(std::map <fs::path, std::string> curre
     return current;
 }
 
-Tag::Tag(Object tagObject, std::string tagAuthor, std::string tagger, std::string tagName, std::string tagMessage){
+Tag::Tag(Object tagObject, std::string tagType, std::string tagAuthor, std::string tagger, std::string tagName, std::string tagMessage){
     this->tagObject = tagObject;
     this->tagAuthor = tagAuthor;
     this->tagger = tagger;
     this->tagName = tagName;
     this->tagMessage = tagMessage;
+    this->tagType = tagType;
 
-    this->content =  "author " + tagAuthor + "\ntagger " + tagger + "\ntag_object " + tagObject.getHashedContent() + "\ntag_name " + tagName + "\n" + tagMessage;
+    std::string abcabc =  "object_type " + this->tagType + "\nauthor " + this->tagAuthor + "\ntagger " + this->tagger + "\ntag_object " + this->tagObject.getHashedContent() + "\ntag_name " + this->tagName + "\n" + this->tagMessage;
+    long long uu = abcabc.size();
+    this->content = "tag " + std::to_string(uu) + "\n" + abcabc;
     this->hashedContent = hashString(this->content);
+}
+
+void Tag::calculateContent(){
+    std::string abcabc =  "object_type " + this->tagType + "\nauthor " + this->tagAuthor + "\ntagger " + this->tagger + "\ntag_object " + this->tagObject.getHashedContent() + "\ntag_name " + this->tagName + "\n" + this->tagMessage;
+    long long uu = abcabc.size();
+    this->content = "tag " + std::to_string(uu) + "\n" + abcabc;
+    this->hashedContent = hashString(this->content);
+}
+
+void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_object, std::string tag_message, bool create){
+    if(create){
+        std::string str = X.get_object_content(tagged_object);
+        long long abcd = str.find(' ');
+        long long dcba = str.find('\n');
+        if(str.substr(0,abcd) == "commit"){
+            this->tagObject = Commit().fromstring(str.substr(dcba+1));
+            this->tagName = tag_name;
+            this->tagType = "commit";
+            this->tagMessage = tag_message;
+            this->calculateContent();
+        }
+        else if(str.substr(0,abcd) == "tag"){
+            this->tagObject = Tag().fromstring(str.substr(dcba+1));
+            this->tagName = tag_name;
+            this->tagType = "tag";
+            this->tagMessage = tag_message;
+            this->calculateContent();
+        }
+        else{std::cerr<<"Tagging not supported!";return;}
+
+    }
+
+}
+
+Tag Tag::fromfile(std::string hashedContent){
+    const std::ifstream input_stream(PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent), std::ios_base::binary);
+
+    if (input_stream.fail()) {
+        throw std::runtime_error("Failed to open file");
+    }
+
+    std::stringstream buffer;
+    buffer << input_stream.rdbuf();
+
+    long long abcd = buffer.str().find(' ');
+    long long dcba = buffer.str().find('\n');
+
+    if(buffer.str().substr(0,abcd) != "tag") std::cerr<<"Not a tag!";
+    if((long long) stoi(buffer.str().substr(abcd+1,dcba-abcd-1)) != (long long) buffer.str().size()-dcba-1) std::cerr<<"Bad size!";
+
+    return Tag::fromstring(buffer.str().substr(dcba+1));
+}
+
+Tag Tag::fromstring(std::string commitContent){
+    Tag X = Tag();
+    long long abc = commitContent.find(' ');
+    long long cba = commitContent.find('\n');
+    X.tagType = commitContent.substr(abc+1,cba-abc-1);
+    long long mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
+    X.tagAuthor = commitContent.substr(abc+1,cba-abc-1);
+    mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
+    X.tagger = commitContent.substr(abc+1,cba-abc-1);
+    mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
+    std::string abcxyz = commitContent.substr(abc+1,cba-abc-1);
+    mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
+    X.tagName = commitContent.substr(abc+1,cba-abc-1);
+    mm = cba+1;cba = commitContent.find('\n',mm);
+    X.tagMessage = commitContent.substr(mm,cba-mm);
+    if(X.tagType == "commit") X.tagObject = Commit().fromfile(abcxyz);
+    else if(X.tagType == "tag") X.tagObject = Tag().fromfile(abcxyz);
+    else std::cerr<<"Error!";
+    X.calculateContent();
+    return X;
+}
+
+void Tag::writeTag(){
+    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / this->getPathToWrite();
+    std::ofstream out(path);
+    out << this->content;
+    return;
 }
