@@ -12,6 +12,10 @@ class Tree : public Object {
 
         Tree(fs::path folderPath = ".");
 
+        fs::path get_folder_path();
+        std::vector<File> get_blobs_inside();
+        std::vector<Tree> get_trees_inside();
+
     private:
 
         fs::path folderPath;

@@ -37,3 +37,21 @@ Tree::Tree(fs::path folderPath) {
     this->hashedContent = hashString(this->content);
 
 }
+
+fs::path Tree::get_folder_path() {
+
+    return this->folderPath;
+
+}
+
+std::vector<File> Tree::get_blobs_inside() {
+
+    return this->filesInside;    
+
+}
+
+std::vector<Tree> Tree::get_trees_inside() {
+
+    return this->treesInside;
+
+}
