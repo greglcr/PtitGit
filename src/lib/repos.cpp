@@ -109,6 +109,29 @@ std::string PtitGitRepos::get_config(std::string key) {
     return "";
 }
 
+std::string PtitGitRepos::get_repos_content(fs::path filePath) {
+
+    filePath = this->workingFolder / ".ptitgit" / filePath;
+
+    if (!fs::exists(filePath)) {
+        std::cerr << "Error : invalid file path" << std::endl;
+        exit(0);
+    }
+
+    std::ifstream fileStream(filePath);
+    
+    if(!fileStream.is_open()) {
+        std::cerr << "Error : impossible to open the given file in get_repos_content" << std::endl;
+    }
+
+    std::stringstream buffer;
+    buffer << fileStream.rdbuf();
+    std::string content = buffer.str();
+    fileStream.close();    
+
+    return content;
+}
+
 
 void PtitGitRepos::set_config(std::string key, std::string value) {
     fs::path working_folder = this->getWorkingFolder();
@@ -163,4 +186,17 @@ void PtitGitRepos::set_config(std::string key, std::string value) {
         }
     }   else
         std::cerr << "unable to open the config file" << std::endl;
+}
+ 
+Object object_read(PtitGitRepos X,std::string sha){
+    //Any compression needed?
+    std::string raw = X.get_object_content(sha);
+    long long abc = raw.find(' ');
+    std::string type = raw.substr(0,abc);
+    long long cba = raw.find('\n');
+    std::string len = raw.substr(abc+1,cba-abc-1);
+    long long num = (long long) stoi(len,0,10);
+    if(cba+1+num != (long long) sha.length()) std::cerr<<"Malformed object: "<<sha<<"\n";    
+    //Below will be the actual function (from each subclass) to create the object
+    //TODO
 }
