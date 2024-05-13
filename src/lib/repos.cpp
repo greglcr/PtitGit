@@ -109,6 +109,29 @@ std::string PtitGitRepos::get_config(std::string key) {
     return "";
 }
 
+std::string PtitGitRepos::get_repos_content(fs::path filePath) {
+
+    filePath = this->workingFolder / ".ptitgit" / filePath;
+
+    if (!fs::exists(filePath)) {
+        std::cerr << "Error : invalid file path" << std::endl;
+        exit(0);
+    }
+
+    std::ifstream fileStream(filePath);
+    
+    if(!fileStream.is_open()) {
+        std::cerr << "Error : impossible to open the given file in get_repos_content" << std::endl;
+    }
+
+    std::stringstream buffer;
+    buffer << fileStream.rdbuf();
+    std::string content = buffer.str();
+    fileStream.close();    
+
+    return content;
+}
+
 
 void PtitGitRepos::set_config(std::string key, std::string value) {
     fs::path working_folder = this->getWorkingFolder();
@@ -177,3 +200,4 @@ Object object_read(PtitGitRepos X,std::string sha){
     //Below will be the actual function (from each subclass) to create the object
     //TODO
 }
+

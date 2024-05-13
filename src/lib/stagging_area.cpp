@@ -33,7 +33,6 @@ std::string get_file_hash(std::string contentLine) {
 void StaggingArea::construct_tree(std::string curFileHash) {
 
     // TODO : fix this
-    /*
     std::string fileContent = this->repos.get_repos_content(fs::path("index/objects") / get_path_to_object(curFileHash));
 
     std::pair<std::string, std::string> separatedContent = get_next_line(fileContent);
@@ -58,16 +57,13 @@ void StaggingArea::construct_tree(std::string curFileHash) {
     else {
         std::cerr << "Error in StaggingArea::construct_tree : invalid file type (" << separatedContent.first << ")\n";
     }
-    */
 
 }
 
 StaggingArea::StaggingArea(PtitGitRepos repos) {
 
-/*
     this->repos = repos;
     this->rootTree = repos.get_repos_content("index/INDEX");
 
     this->construct_tree(this->rootTree);
-*/
 }
