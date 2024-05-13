@@ -67,6 +67,35 @@ int main(int argc,char *argv[])  {
         std::map <fs::path, std::string> Y = ref_list_basic(X);
         for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
     }
+    else if (argc > 1 && strcmp(argv[1] , "tag") == 0){
+        long long k;bool create;PtitGitRepos X = PtitGitRepos();std::string sha, content;fs::path path;Tag xyz = Tag();
+        if(argc == 2){
+            std::map <fs::path, std::string> Y = ref_list({}, X, X.getWorkingFolder() / ".ptitgit" / "refs");
+            for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
+        }
+        else if(strcmp(argv[2] , "-a") == 0){create = true; k = 3;}
+        else{create = false; k = 2;}
+
+        if(argc < k + 1) std::cerr<<"Ref name missing"<<std::endl;
+        else if(argc == k + 3){
+            if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+2])){
+                sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+2]);
+                xyz.tag_create(X, argv[k+1], sha, "???", create);
+            }
+            else if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / argv[k+2])){
+                sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / argv[k+2]);
+                xyz.tag_create(X, argv[k+1], sha, "???", create);
+            }
+            else xyz.tag_create(X, argv[k+1], argv[k+2], "????", create);
+        }
+        else if(argc == k + 2){
+            if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "HEAD")){
+                sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD");
+                xyz.tag_create(X, argv[k+1], sha, "???", create);
+            }
+            else std::cerr<<"Object missing!"<<std::endl;
+        }
+    }
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
@@ -82,7 +111,7 @@ int main(int argc,char *argv[])  {
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config" };
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag" };
 
         int dist_min = 100000000;
         std::string command_min = "???????";
