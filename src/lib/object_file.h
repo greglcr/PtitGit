@@ -13,7 +13,9 @@ class File : public Object  {
     public:
 
         File(fs::path filePath);
+
         void updateContent();
+        fs::path get_file_path();
 
     private:
 

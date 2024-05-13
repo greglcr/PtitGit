@@ -43,3 +43,9 @@ void File::updateContent() {
     this->content = oss.str();
     this->hashedContent = hashString(this->hashedContent);
 }
+
+fs::path File::get_file_path() {
+
+    return this->filePath;
+
+}
