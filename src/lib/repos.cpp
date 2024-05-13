@@ -200,4 +200,3 @@ Object object_read(PtitGitRepos X,std::string sha){
     //Below will be the actual function (from each subclass) to create the object
     //TODO
 }
-
