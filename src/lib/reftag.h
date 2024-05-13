@@ -30,4 +30,5 @@ class Tag : public Object {
     std::string tagType;
 };
 
+void writeRef(std::string, std::string);
 #endif

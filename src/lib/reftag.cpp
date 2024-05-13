@@ -99,6 +99,8 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             this->tagType = "commit";
             this->tagMessage = tag_message;
             this->calculateContent();
+            this->writeTag();
+            writeRef(this->tagName, this->hashedContent);
         }
         else if(str.substr(0,abcd) == "tag"){
             this->tagObject = Tag().fromstring(str.substr(dcba+1));
@@ -106,11 +108,13 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             this->tagType = "tag";
             this->tagMessage = tag_message;
             this->calculateContent();
+            this->writeTag();
+            writeRef(this->tagName, this->hashedContent);
         }
         else{std::cerr<<"Tagging not supported!";return;}
 
     }
-
+    else writeRef(tag_name, tagged_object);
 }
 
 Tag Tag::fromfile(std::string hashedContent){
@@ -158,5 +162,12 @@ void Tag::writeTag(){
     fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / this->getPathToWrite();
     std::ofstream out(path);
     out << this->content;
+    return;
+}
+
+void writeRef(std::string refName, std::string refString){
+    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "tags" / refName;
+    std::ofstream out(path);
+    out << refString;
     return;
 }
