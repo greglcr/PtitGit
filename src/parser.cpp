@@ -68,7 +68,7 @@ int main(int argc,char *argv[])  {
         for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
     }
     else if (argc > 1 && strcmp(argv[1] , "tag") == 0){
-        long long k;bool create;PtitGitRepos X = PtitGitRepos();std::string sha, content;fs::path path;Tag xyz = Tag();
+        long long k;bool create;PtitGitRepos X = PtitGitRepos();std::string sha, content;Tag xyz = Tag();
         if(argc == 2){
             std::map <fs::path, std::string> Y = ref_list({}, X, X.getWorkingFolder() / ".ptitgit" / "refs");
             for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
@@ -96,6 +96,14 @@ int main(int argc,char *argv[])  {
             else std::cerr<<"Object missing!"<<std::endl;
         }
     }
+    else if (argc > 1 && strcmp(argv[1] , "branch") == 0){
+        PtitGitRepos X = PtitGitRepos();std::string sha, content;
+        if(argc == 2) std::cerr<<"Name missing!"<<std::endl;
+        else{
+            sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD");
+            writeBranch(argv[2], sha);
+        }
+    }
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
@@ -111,7 +119,7 @@ int main(int argc,char *argv[])  {
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag" };
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";

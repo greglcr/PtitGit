@@ -171,3 +171,10 @@ void writeRef(std::string refName, std::string refString){
     out << refString;
     return;
 }
+
+void writeBranch(std::string refName, std::string refString){
+    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / refName;
+    std::ofstream out(path);
+    out << refString;
+    return;
+}

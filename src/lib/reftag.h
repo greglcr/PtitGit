@@ -31,4 +31,5 @@ class Tag : public Object {
 };
 
 void writeRef(std::string, std::string);
+void writeBranch(std::string, std::string);
 #endif
