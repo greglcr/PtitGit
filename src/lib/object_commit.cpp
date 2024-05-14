@@ -79,3 +79,7 @@ Commit Commit::fromstring(std::string commitContent){
     X.calculateContent();
     return X;
 }
+
+Tree Commit::getTree(){
+    return this->parentTree;
+}

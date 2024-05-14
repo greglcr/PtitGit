@@ -6,6 +6,7 @@
 #include "object.h"
 #include "object_commit.h"
 #include<iostream>
+#include<vector>
 
 namespace fs = std::filesystem;
 
@@ -21,6 +22,7 @@ class Tag : public Object {
         Tag fromfile(std::string);
         Tag fromstring(std::string);
         void writeTag();
+        Object getObject();
     private:
     Object tagObject;
     std::string tagAuthor;
@@ -32,4 +34,7 @@ class Tag : public Object {
 
 void writeRef(std::string, std::string);
 void writeBranch(std::string, std::string);
+
+std::vector <std::string> objectResolve(PtitGitRepos,std::string,bool);
+std::string objectFind(PtitGitRepos X,std::string name,bool short_hash = true, std::string type = "object",bool follow = true);
 #endif

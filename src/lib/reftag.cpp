@@ -81,6 +81,10 @@ Tag::Tag(Object tagObject, std::string tagType, std::string tagAuthor, std::stri
     this->hashedContent = hashString(this->content);
 }
 
+Object Tag::getObject(){
+    return this->tagObject;
+}
+
 void Tag::calculateContent(){
     std::string abcabc =  "object_type " + this->tagType + "\nauthor " + this->tagAuthor + "\ntagger " + this->tagger + "\ntag_object " + this->tagObject.getHashedContent() + "\ntag_name " + this->tagName + "\n" + this->tagMessage;
     long long uu = abcabc.size();
@@ -177,4 +181,61 @@ void writeBranch(std::string refName, std::string refString){
     std::ofstream out(path);
     out << refString;
     return;
+}
+
+std::vector <std::string> objectResolve(PtitGitRepos X,std::string name, bool short_hash){
+    std::vector <std::string> V;V.clear();
+    if(name == "HEAD"){
+        V.push_back(ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD"));
+        return V;
+    }
+    std::string prefix = name.substr(0,2);
+    std::string rest = name.substr(2);
+    fs::path path = X.getWorkingFolder() / ".ptitgit" / "objects" / prefix;
+    std::string need_check = std::string(X.getWorkingFolder() / ".ptitgit" / "objects" / prefix / rest);
+    if(short_hash == true) for (const auto & entry : fs::directory_iterator(path)){
+        std::string contender = std::string(entry.path());
+        auto res = std::mismatch(need_check.begin(),need_check.end(),contender.begin());
+        if(res.first == need_check.end()){
+            long long abc = contender.find(".ptitgit/objects/");
+            V.push_back(contender.substr(abc+17,2) + contender.substr(abc+20));
+        }
+    }
+    if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / name)) V.push_back(ref_resolve(X,X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / name));
+    if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / name)) V.push_back(ref_resolve(X,X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / name));
+    return V;
+}
+
+std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::string type,bool follow){
+    std::vector <std::string> V = objectResolve(X,name,short_hash),W;
+    if(name == "HEAD") return V[0];
+    long long jj;
+    for(jj=0;jj<V.size();jj++){
+        std::string obj = V[jj];
+        while(true){
+            std::string content = X.get_object_content(obj);
+            long long abc = content.find(' ');
+            if(content.substr(0,abc) == "tag" && follow == true){
+                Tag G = Tag();
+                G.fromstring(content);
+                obj = G.getObject().getHashedContent();
+                continue;
+            }
+            else if(content.substr(0,abc) == "tag" && type != "tag"){
+                Tag G = Tag();
+                G.fromstring(content);
+                obj = G.getObject().getHashedContent();
+                continue;
+            }
+            else if(content.substr(0,abc) == "commit" && type == "tree"){
+                Commit C = Commit();
+                C.fromstring(content);
+                W.push_back(C.getTree().getHashedContent()); 
+            }
+            else W.push_back(obj);
+        }
+    }
+    if(W.size()>1) std::cerr<<"Misleading name!"<<std::endl;
+    else if(W.size()==0) std::cerr<<"Nothing match"<<std::endl;
+    else return W[0];
 }
