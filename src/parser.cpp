@@ -78,21 +78,21 @@ int main(int argc,char *argv[])  {
         else{create = false; k = 2;}
 
         if(argc < k + 1) std::cerr<<"Ref name missing"<<std::endl;
-        else if(argc == k + 3){
+        else if(argc == k + 2){
             if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+2])){
                 sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+2]);
-                xyz.tag_create(X, argv[k+1], sha, "???", create);
+                xyz.tag_create(X, argv[k], sha, "???", create);
             }
             else if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / argv[k+2])){
                 sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / argv[k+2]);
-                xyz.tag_create(X, argv[k+1], sha, "???", create);
+                xyz.tag_create(X, argv[k], sha, "???", create);
             }
-            else xyz.tag_create(X, argv[k+1], argv[k+2], "????", create);
+            else xyz.tag_create(X, argv[k], argv[k+1], "????", create);
         }
-        else if(argc == k + 2){
+        else if(argc == k + 1){
             if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "HEAD")){
                 sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD");
-                xyz.tag_create(X, argv[k+1], sha, "???", create);
+                xyz.tag_create(X, argv[k], sha, "???", create);
             }
             else std::cerr<<"Object missing!"<<std::endl;
         }
