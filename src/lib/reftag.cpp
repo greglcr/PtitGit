@@ -93,6 +93,7 @@ void Tag::calculateContent(){
 }
 
 void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_object, std::string tag_message, bool create){
+    tagged_object = objectFind(X,tagged_object,true,"object",true);
     if(create){
         std::string str = X.get_object_content(tagged_object);
         long long abcd = str.find(' ');
@@ -110,6 +111,15 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             this->tagObject = Tag().fromstring(str.substr(dcba+1));
             this->tagName = tag_name;
             this->tagType = "tag";
+            this->tagMessage = tag_message;
+            this->calculateContent();
+            this->writeTag();
+            writeRef(this->tagName, this->hashedContent);
+        }
+        else if(str.substr(0,abcd) == "tree"){
+            this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
+            this->tagName = tag_name;
+            this->tagType = "tree";
             this->tagMessage = tag_message;
             this->calculateContent();
             this->writeTag();
@@ -157,6 +167,7 @@ Tag Tag::fromstring(std::string commitContent){
     X.tagMessage = commitContent.substr(mm,cba-mm);
     if(X.tagType == "commit") X.tagObject = Commit().fromfile(abcxyz);
     else if(X.tagType == "tag") X.tagObject = Tag().fromfile(abcxyz);
+    else if(X.tagType == "tree") X.tagObject = Tree(PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(abcxyz));
     else std::cerr<<"Error!";
     X.calculateContent();
     return X;
@@ -235,7 +246,8 @@ std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::str
             else W.push_back(obj);
         }
     }
-    if(W.size()>1) std::cerr<<"Misleading name!"<<std::endl;
+    if(W.size()>1 && short_hash == false) std::cerr<<"Misleading name!"<<std::endl;
+    else if(W.size()>1) return objectFind(X,name,false,type,follow);
     else if(W.size()==0) std::cerr<<"Nothing match"<<std::endl;
     else return W[0];
 }
