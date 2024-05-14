@@ -27,6 +27,9 @@ void init() {
     std::ofstream config(".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
+
+    std::ofstream INDEX(".ptitgit/index/INDEX");
+    INDEX.close();
 }
 
 void init(fs::path folderToInit) {
