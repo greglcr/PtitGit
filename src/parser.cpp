@@ -4,6 +4,7 @@
 #include "cmd/server.h"
 #include "cmd/help.h"
 #include "cmd/push.h"
+#include "cmd/status.h"
 #include "lib/hashing.h"
 #include "lib/object.h"
 #include "lib/object_file.h"
@@ -116,10 +117,18 @@ int main(int argc,char *argv[])  {
         else
             std::cout << "this command takes 1 or 2 arguments (to show a config value or set a config value)" << std::endl;
     }
+    else if (argc >= 2 && strcmp(argv[1], "status") == 0) {
+        if (argc >= 3) {
+            status(argv[2]);
+        }
+        else {
+            status();
+        }
+    }
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch"};
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";

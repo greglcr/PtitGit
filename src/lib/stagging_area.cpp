@@ -96,7 +96,7 @@ void StaggingArea::construct_tree(std::string curFileHash) {
 
 void StaggingArea::show_differences() {
 
-    Tree curWorkingFolder = Tree(repos.getWorkingFolder());
+    show_differences(repos.getWorkingFolder(), repos.get_repos_content("index/INDEX"));
 
 }
 

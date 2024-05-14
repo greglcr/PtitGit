@@ -3,6 +3,7 @@
 
 #include "../lib/repos.h"
 
-void status(PtitGitRepos curRepos);
+void status();
+void status(fs::path pathToWorkingFolder);
 
 #endif
