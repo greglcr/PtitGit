@@ -72,7 +72,7 @@ int main(int argc,char *argv[])  {
         long long k;bool create;PtitGitRepos X = PtitGitRepos();std::string sha, content;Tag xyz = Tag();
         if(argc == 2){
             std::map <fs::path, std::string> Y = ref_list({}, X, X.getWorkingFolder() / ".ptitgit" / "refs");
-            for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
+            for (const auto &[k, v] : Y) std::cout<<"The ref in? "<<k<<" is "<<v<<".\n";
             std::cout<<"???";
         }
         else if(strcmp(argv[2] , "-a") == 0){create = true; k = 3;}
