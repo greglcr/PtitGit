@@ -76,10 +76,9 @@ int main(int argc,char *argv[])  {
         }
         else if(strcmp(argv[2] , "-a") == 0){create = true; k = 3;}
         else{create = false; k = 2;}
-
+        std::cerr<<"Ref name missing"<<std::endl;
         if(argc < k + 1) std::cerr<<"Ref name missing"<<std::endl;
         else if(argc == k + 2){
-            std::cerr<<"Ref name miissing"<<std::endl;
             if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+1])){
                 sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+1]);
                 xyz.tag_create(X, argv[k], sha, "???", create);
