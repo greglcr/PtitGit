@@ -94,7 +94,7 @@ int main(int argc,char *argv[])  {
                 sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD");
                 xyz.tag_create(X, argv[k], sha, "???", create);
             }
-            else std::cerr<<"Object missing!"<<argc<<std::endl;
+            else std::cerr<<argc<<std::endl;
         }
     }
     else if (argc > 1 && strcmp(argv[1] , "branch") == 0){
