@@ -83,3 +83,10 @@ Commit Commit::fromstring(std::string commitContent){
 Tree Commit::getTree(){
     return this->parentTree;
 }
+
+void Commit::writeCommit(){
+    fs::path path = this->getPathToWrite();
+    std::ofstream out(path);
+    out << this->content;
+    return;
+}
