@@ -72,12 +72,10 @@ int main(int argc,char *argv[])  {
         long long k;bool create;PtitGitRepos X = PtitGitRepos();std::string sha, content;Tag xyz = Tag();
         if(argc == 2){
             std::map <fs::path, std::string> Y = ref_list({}, X, X.getWorkingFolder() / ".ptitgit" / "refs");
-            for (const auto &[k, v] : Y) std::cout<<"The ref in? "<<k<<" is "<<v<<".\n";
-            std::cout<<"???";
+            for (const auto &[k, v] : Y) std::cout<<"The ref in "<<k<<" is "<<v<<".\n";
         }
         else if(strcmp(argv[2] , "-a") == 0){create = true; k = 3;}
         else{create = false; k = 2;}
-        std::cerr<<"Ref name missing!!!"<<std::endl;
         if(argc < k + 1) std::cerr<<"Ref name missing"<<std::endl;
         else if(argc == k + 2){
             if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / argv[k+1])){
