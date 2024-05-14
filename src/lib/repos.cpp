@@ -114,7 +114,7 @@ std::string PtitGitRepos::get_repos_content(fs::path filePath) {
     filePath = this->workingFolder / ".ptitgit" / filePath;
 
     if (!fs::exists(filePath)) {
-        std::cerr << "Error : invalid file path" << std::endl;
+        std::cerr << "Error : invalid file path in get_repos_content (" << filePath << ")" << std::endl;
         exit(0);
     }
 
