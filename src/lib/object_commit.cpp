@@ -85,7 +85,12 @@ Tree Commit::getTree(){
 }
 
 void Commit::writeCommit(){
-    fs::path path = this->getPathToWrite();
+    fs::path curPath = fs::current_path();
+    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
+        curPath = curPath.parent_path();
+    }
+    fs::path path = curPath / ".ptitgit" / "objects" / this->getPathToWrite();
+    fs::create_directory(curPath / ".ptitgit" / "objects" / std::string(this->getPathToWrite()).substr(0,2));
     std::ofstream out(path);
     out << this->content;
     return;

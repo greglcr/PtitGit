@@ -1,4 +1,6 @@
 #include "init.h"
+#include "../lib/object_commit.h"
+#include "../lib/object_tree.h"
 
 #include <iostream>
 #include <fstream>
@@ -23,6 +25,10 @@ void init() {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
+
+    Tree T = Tree();
+    Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
+    C.writeCommit();
 
     std::ofstream config(".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
