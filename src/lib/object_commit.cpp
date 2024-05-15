@@ -61,8 +61,11 @@ Commit Commit::fromstring(std::string commitContent){
     Commit X = Commit();
     long long abc = commitContent.find(' ');
     long long cba = commitContent.find('\n');
-    X.parentTree = Tree(PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(commitContent.substr(abc+1,cba-abc-1)));
-    long long mm = cba+1;
+    long long mm = cba + 1;
+    //if(commitContent.substr(mm,abc-mm) != "tree") std::cerr<<"Not a tree :(\n"<<commitContent.substr(mm,abc-mm)<<"\n";
+
+    X.parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false);
+    mm = cba+1;
     abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
     while(commitContent.substr(mm,abc-mm)=="parent"){
         std::string xyz = commitContent.substr(abc+1,cba-abc-1);
@@ -83,7 +86,7 @@ Commit Commit::fromstring(std::string commitContent){
 Tree Commit::getTree(){
     return this->parentTree;
 }
-
+/*
 void Commit::writeCommit(){
     fs::path curPath = fs::current_path();
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
@@ -94,4 +97,4 @@ void Commit::writeCommit(){
     std::ofstream out(path);
     out << this->content;
     return;
-}
+}*/

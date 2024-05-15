@@ -32,9 +32,14 @@ void init(fs::path folderToInit) {
         }
     }
 
-    Tree T = Tree();
+    Tree T = Tree(folderToInit , true);
     Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
-    C.writeCommit();
+    C.writeObject();
+
+    fs::path path = folderToInit / ".ptitgit" / "HEAD";
+    std::ofstream out(path);
+    out << C.getHashedContent();
+    return;
 
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";

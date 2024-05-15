@@ -16,11 +16,11 @@ class Object  {
         std::string getContent();
         std::string getHashedContent();
         fs::path getPathToWrite();
+        void writeObject();
     protected:
 
         std::string content;
         std::string hashedContent;
 
 };
-
 #endif

@@ -9,7 +9,7 @@
 
 namespace fs = std::filesystem;
 
-File::File(fs::path filePath) {
+File::File(fs::path filePath, bool create) {
 
     std::ifstream inputFile(filePath);
 
@@ -20,12 +20,17 @@ File::File(fs::path filePath) {
     std::ostringstream oss;
     oss << inputFile.rdbuf();
     
-    this->content = "blob";
     this->content += filePath;
     this->content += oss.str();
     
     this->filePath = filePath;
+
+    std::string abc = this->content;
+    this->content = "tree " + std::to_string(abc.size()) + '\n' + abc;
+
     this->hashedContent = hashString(this->content);
+
+    if(create) this->writeObject();
 }
 
 void File::updateContent() {

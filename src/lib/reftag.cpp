@@ -15,7 +15,6 @@
 namespace fs = std::filesystem;
 
 std::string ref_resolve(PtitGitRepos X, fs::path path){
-    std::cout<<"?><";
     fs::path fun;
     fs::path repo_path = X.getWorkingFolder();
     if(path.is_absolute()){
@@ -99,13 +98,14 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
         std::string str = X.get_object_content(tagged_object);
         long long abcd = str.find(' ');
         long long dcba = str.find('\n');
+        if( (long long) std::stoi(str.substr(abcd+1,dcba-abcd-1)) != (long long) str.size()-dcba-1) std::cerr<<"Bad size!";
         if(str.substr(0,abcd) == "commit"){
             this->tagObject = Commit().fromstring(str.substr(dcba+1));
             this->tagName = tag_name;
             this->tagType = "commit";
             this->tagMessage = tag_message;
             this->calculateContent();
-            this->writeTag();
+            this->writeObject();
             writeRef(this->tagName, this->hashedContent);
         }
         else if(str.substr(0,abcd) == "tag"){
@@ -114,16 +114,18 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             this->tagType = "tag";
             this->tagMessage = tag_message;
             this->calculateContent();
-            this->writeTag();
+            this->writeObject();
             writeRef(this->tagName, this->hashedContent);
         }
         else if(str.substr(0,abcd) == "tree"){
-            this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
+            //this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
+            long long abba = str.find('\n', dcba+1);
+            this->tagObject = Tree(str.substr(dcba+1, abba-dcba-1));
             this->tagName = tag_name;
             this->tagType = "tree";
             this->tagMessage = tag_message;
             this->calculateContent();
-            this->writeTag();
+            this->writeObject();
             writeRef(this->tagName, this->hashedContent);
         }
         else{std::cerr<<"Tagging not supported!";return;}
@@ -168,17 +170,25 @@ Tag Tag::fromstring(std::string commitContent){
     X.tagMessage = commitContent.substr(mm,cba-mm);
     if(X.tagType == "commit") X.tagObject = Commit().fromfile(abcxyz);
     else if(X.tagType == "tag") X.tagObject = Tag().fromfile(abcxyz);
-    else if(X.tagType == "tree") X.tagObject = Tree(PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(abcxyz));
+    else if(X.tagType == "tree"){
+        fs::path funpath = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(abcxyz);
+        std::ifstream fileToShow(funpath);
+
+        if(!fileToShow.is_open()) {
+            std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << funpath << ")" << std::endl;
+            exit(0);
+        }
+
+        std::stringstream buffer;
+        buffer << fileToShow.rdbuf();
+        std::string content = buffer.str();
+        fileToShow.close();
+
+        X.tagObject = findTree(content);
+    }
     else std::cerr<<"Error!";
     X.calculateContent();
     return X;
-}
-
-void Tag::writeTag(){
-    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / this->getPathToWrite();
-    std::ofstream out(path);
-    out << this->content;
-    return;
 }
 
 void writeRef(std::string refName, std::string refString){
@@ -222,7 +232,7 @@ std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::str
     std::vector <std::string> V = objectResolve(X,name,short_hash),W;
     if(name == "HEAD") return V[0];
     long long jj;
-    for(jj=0;jj<V.size();jj++){
+    for(jj=0;jj< (long long) V.size();jj++){
         std::string obj = V[jj];
         while(true){
             std::string content = X.get_object_content(obj);
@@ -247,8 +257,8 @@ std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::str
             else W.push_back(obj);
         }
     }
-    if(W.size()>1 && short_hash == false) std::cerr<<"Misleading name!"<<std::endl;
+    if(W.size()>1 && short_hash == false){std::cerr<<"Misleading name!"<<std::endl;exit(0);}
     else if(W.size()>1) return objectFind(X,name,false,type,follow);
-    else if(W.size()==0) std::cerr<<"Nothing match"<<std::endl;
+    else if(W.size()==0){std::cerr<<"Nothing match"<<std::endl;exit(0);}
     else return W[0];
 }

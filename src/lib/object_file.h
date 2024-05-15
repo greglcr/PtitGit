@@ -12,7 +12,7 @@ class File : public Object  {
 
     public:
 
-        File(fs::path filePath);
+        File(fs::path filePath, bool create = false);
 
         void updateContent();
         fs::path get_file_path();

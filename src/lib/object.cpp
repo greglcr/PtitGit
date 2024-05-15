@@ -1,8 +1,12 @@
 #include "object.h"
+#include "repos.h"
 
 #include <filesystem>
 #include <iterator>
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -36,3 +40,16 @@ std::string get_path_to_object(std::string hashedContent) {
 
 }
 
+void Object::writeObject(){
+    fs::path curPath = fs::current_path();
+
+    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
+        curPath = curPath.parent_path();
+    }
+
+    fs::path path = curPath / ".ptitgit" / "objects" / get_path_to_object(this->getHashedContent());
+    fs::create_directory(curPath / ".ptitgit" / "objects" / std::string(this->getPathToWrite()).substr(0,2));
+    std::ofstream out(path);
+    out << this->getContent();
+    return;
+}

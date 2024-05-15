@@ -10,7 +10,7 @@ class Tree : public Object {
 
     public:
 
-        Tree(fs::path folderPath = ".");
+        Tree(fs::path folderPath = ".", bool create = false);
 
         fs::path get_folder_path();
         std::vector<File> get_blobs_inside();
@@ -24,4 +24,5 @@ class Tree : public Object {
 
 };
 
+Tree findTree(std::string,bool create = false);
 #endif

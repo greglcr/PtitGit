@@ -21,7 +21,6 @@ class Tag : public Object {
         void calculateContent();
         Tag fromfile(std::string);
         Tag fromstring(std::string);
-        void writeTag();
         Object getObject();
     private:
     Object tagObject;
