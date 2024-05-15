@@ -15,6 +15,7 @@
 namespace fs = std::filesystem;
 
 std::string ref_resolve(PtitGitRepos X, fs::path path){
+    std::cout<<"?><";
     fs::path fun;
     fs::path repo_path = X.getWorkingFolder();
     if(path.is_absolute()){
@@ -93,7 +94,7 @@ void Tag::calculateContent(){
 }
 
 void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_object, std::string tag_message, bool create){
-    tagged_object = objectFind(X,tagged_object,true,"object",true);
+    //tagged_object = objectFind(X,tagged_object,true,"object",true);
     if(create){
         std::string str = X.get_object_content(tagged_object);
         long long abcd = str.find(' ');
