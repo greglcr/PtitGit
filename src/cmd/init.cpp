@@ -12,30 +12,9 @@
 namespace fs = std::filesystem;
 
 void init() {
-    if (fs::exists(".ptitgit")) {
-        std::cerr << "The current directory is already a git repos" << std::endl;
-    }
-    else {
-        try {
-            for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
-                fs::create_directory(FOLDERS_TO_CREATE[i]);
-            }
-        }
-        catch (const fs::filesystem_error& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-        }
-    }
 
-    Tree T = Tree();
-    Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
-    C.writeCommit();
+    init(fs::current_path());
 
-    std::ofstream config(".ptitgit/config");
-    config << "# this is the configuration file\n# it contains global associations key=value\n";
-    config.close();
-
-    std::ofstream INDEX(".ptitgit/index/INDEX");
-    INDEX.close();
 }
 
 void init(fs::path folderToInit) {
@@ -53,8 +32,14 @@ void init(fs::path folderToInit) {
         }
     }
 
+    Tree T = Tree();
+    Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
+    C.writeCommit();
 
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
+
+    std::ofstream INDEX(".ptitgit/index/INDEX");
+    INDEX.close();
 }
