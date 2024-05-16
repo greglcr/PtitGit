@@ -26,12 +26,12 @@ Tree::Tree(fs::path folderPath, bool create) {
     
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.is_regular_file()) {
-            File curFile = File(folderPath / entry.path().filename());
+            File curFile = File(folderPath / entry.path().filename(),create);
             this->filesInside.push_back(curFile);
             this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
         else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
-            Tree curFolder = Tree(folderPath / entry.path().filename().string());
+            Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
             this->treesInside.push_back(curFolder);
             this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }

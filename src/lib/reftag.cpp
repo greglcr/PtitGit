@@ -128,6 +128,17 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             this->writeObject();
             writeRef(this->tagName, this->hashedContent);
         }
+        else if(str.substr(0,abcd) == "file"){
+            //this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
+            long long abba = str.find('\n', dcba+1);
+            this->tagObject = File(str.substr(dcba+1, abba-dcba-1));
+            this->tagName = tag_name;
+            this->tagType = "file";
+            this->tagMessage = tag_message;
+            this->calculateContent();
+            this->writeObject();
+            writeRef(this->tagName, this->hashedContent);
+        }
         else{std::cerr<<"Tagging not supported!";return;}
 
     }
@@ -170,22 +181,8 @@ Tag Tag::fromstring(std::string commitContent){
     X.tagMessage = commitContent.substr(mm,cba-mm);
     if(X.tagType == "commit") X.tagObject = Commit().fromfile(abcxyz);
     else if(X.tagType == "tag") X.tagObject = Tag().fromfile(abcxyz);
-    else if(X.tagType == "tree"){
-        fs::path funpath = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(abcxyz);
-        std::ifstream fileToShow(funpath);
-
-        if(!fileToShow.is_open()) {
-            std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << funpath << ")" << std::endl;
-            exit(0);
-        }
-
-        std::stringstream buffer;
-        buffer << fileToShow.rdbuf();
-        std::string content = buffer.str();
-        fileToShow.close();
-
-        X.tagObject = findTree(content);
-    }
+    else if(X.tagType == "tree") X.tagObject = findTree(abcxyz);
+    else if(X.tagType == "file") X.tagObject = findFile(abcxyz);
     else std::cerr<<"Error!";
     X.calculateContent();
     return X;
