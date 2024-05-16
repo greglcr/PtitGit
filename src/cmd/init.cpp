@@ -35,17 +35,23 @@ void init(fs::path folderToInit) {
     Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
     C.writeObject();
 
-    fs::path path = folderToInit / ".ptitgit" / "HEAD";
+    fs::path path = folderToInit / ".ptitgit" / "refs" / "heads" / "main";
     std::ofstream out(path);
     out << C.getHashedContent();
     //return;
+
+    fs::path headPath = folderToInit / ".ptitgit" / "HEAD";
+    std::ofstream outHead(headPath);
+    std::string indirectPath = "ref: " + std::string(path);
+    outHead << indirectPath;
+    
 
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
 
     std::ofstream INDEX(".ptitgit/index/INDEX");
-    INDEX << C.get_hash_parent_tree();
+    INDEX << C.get_hash_parent_tree() << '\n';
     INDEX.close();
 
     fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
