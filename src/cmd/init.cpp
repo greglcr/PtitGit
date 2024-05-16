@@ -20,16 +20,15 @@ void init() {
 void init(fs::path folderToInit) {
     if(fs::exists(folderToInit / ".ptitgit")) {
         std::cerr << "The given directory is already a git repos" << std::endl;
+        return;
     }
-    else {
-        try {
-            for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
-                fs::create_directories(folderToInit / FOLDERS_TO_CREATE[i]);
-            }
+    try {
+        for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
+            fs::create_directories(folderToInit / FOLDERS_TO_CREATE[i]);
         }
-        catch (const fs::filesystem_error& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-        }
+    }
+    catch (const fs::filesystem_error& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
 
     Tree T = Tree(folderToInit , true);
@@ -39,12 +38,16 @@ void init(fs::path folderToInit) {
     fs::path path = folderToInit / ".ptitgit" / "HEAD";
     std::ofstream out(path);
     out << C.getHashedContent();
-    return;
+    //return;
 
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
 
     std::ofstream INDEX(".ptitgit/index/INDEX");
+    INDEX << C.get_hash_parent_tree() << '\n';
     INDEX.close();
+
+    fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
+    fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
 }
