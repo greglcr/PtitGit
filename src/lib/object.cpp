@@ -22,9 +22,24 @@ std::string Object::getHashedContent() {
 
 }
 
+fs::path Object::get_folder_to_write() {
+
+    return get_folder_to_object(this->hashedContent);
+
+}
+
 fs::path Object::getPathToWrite() {
 
     return get_path_to_object(this->hashedContent);
+
+}
+
+std::string get_folder_to_object(std::string hashedContent) {
+
+    std::string::iterator beginContent = hashedContent.begin();
+    std::string folder = std::string(beginContent, beginContent + 2);
+
+    return folder;
 
 }
 
