@@ -120,3 +120,9 @@ void tree_checkout(Tree T, fs::path placeToWrite, bool force){
     for(std::vector<Tree>::iterator it = T.get_trees_inside().begin(); it!=T.get_trees_inside().end(); ++it)
         tree_checkout(*it,placeToWrite / it->get_folder_path().parent_path().filename(), force);
 }
+
+std::string Commit::get_hash_parent_tree() {
+
+    return this->parentTree.getHashedContent();
+
+}
