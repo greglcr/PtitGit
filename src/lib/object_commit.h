@@ -27,4 +27,7 @@ class Commit : public Object {
         Tree parentTree;
         //PtitGitRepos repos;
 };
+
+void checkout(std::string,fs::path,bool force = false);
+void tree_checkout(Tree,fs::path,bool force = false);
 #endif

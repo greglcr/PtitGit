@@ -244,14 +244,12 @@ std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::str
                 continue;
             }
             else if(content.substr(0,abc) == "tag" && type != "tag"){
-                Tag G = Tag();
-                G.fromstring(content);
+                Tag G = Tag().fromstring(content);
                 obj = G.getObject().getHashedContent();
                 continue;
             }
             else if(content.substr(0,abc) == "commit" && type == "tree"){
-                Commit C = Commit();
-                C.fromstring(content);
+                Commit C = Commit().fromstring(content);
                 W.push_back(C.getTree().getHashedContent()); 
             }
             else W.push_back(obj);

@@ -104,6 +104,13 @@ int main(int argc,char *argv[])  {
             writeBranch(argv[2], sha);
         }
     }
+    else if (argc > 1 && strcmp(argv[1] , "checkout") == 0){
+        long long k;bool force;
+        if(strcmp(argv[2] , "-f") == 0){k=5;force = true;}
+        else{k=4;force = false;}
+        if(argc < k) std::cerr<<"Something missing!\n";
+        checkout(argv[k-2], argv[k-1], force);
+    }
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
@@ -127,7 +134,7 @@ int main(int argc,char *argv[])  {
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status"};
+        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";
