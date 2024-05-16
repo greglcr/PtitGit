@@ -18,7 +18,7 @@ std::string get_next_line(std::string &s) {
     }
     
     std::string nextLine = s.substr(0, pos);
-    s = s.substr(pos, s.size());
+    s = s.substr(pos + 1, s.size());
     return nextLine;
 
 }
@@ -30,12 +30,12 @@ std::map<std::string, std::string> cut_line(std::string contentLine) {
     size_t pos1 = contentLine.find(' ');
     m["type"] = contentLine.substr(0, pos1);
 
-    contentLine = contentLine.substr(pos1, contentLine.size());
+    contentLine = contentLine.substr(pos1 + 1, contentLine.size());
 
     size_t pos2 = contentLine.find(' ');
     m["hash"] = contentLine.substr(0, pos2);
 
-    contentLine = contentLine.substr(pos2, contentLine.size());
+    contentLine = contentLine.substr(pos2 + 1, contentLine.size());
 
     size_t pos3 = contentLine.find(' ');
     m["path"] = contentLine.substr(0, pos3);
@@ -103,8 +103,10 @@ void StaggingArea::show_differences() {
 void StaggingArea::show_differences(fs::path curPathInWorkingArea, std::string curHashStaggingArea) {
 
     Tree curTreeInWorkingArea = Tree(curPathInWorkingArea);
+
     std::string curContentStaggingArea = repos.get_repos_content(fs::path("index") / get_path_to_object(curHashStaggingArea));
     get_next_line(curContentStaggingArea);
+
     fs::path curPathStaggingArea = fs::path(get_next_line(curContentStaggingArea));
 
     std::vector<File> blobsInCurWorkingFolder = curTreeInWorkingArea.get_blobs_inside();
@@ -125,35 +127,47 @@ void StaggingArea::show_differences(fs::path curPathInWorkingArea, std::string c
         std::string curLine = get_next_line(curContentStaggingArea);
         
         if (get_object_type(curLine) == "file") {
-            pathToBlobsInCurStaggingArea.push_back(std::pair(get_object_path(curLine), get_object_hash(curLine)));
+            pathToBlobsInCurStaggingArea.push_back(std::pair(curPathStaggingArea / get_object_path(curLine), get_object_hash(curLine)));
         }
         else {
-            pathToTreesInCurStaggingArea.push_back(std::pair(get_object_path(curLine), get_object_hash(curLine)));
+            pathToTreesInCurStaggingArea.push_back(std::pair(curPathStaggingArea / get_object_path(curLine), get_object_hash(curLine)));
         }
     }
 
     std::sort(pathToBlobsInCurWorkingFolder.begin(), pathToBlobsInCurWorkingFolder.end());
-    std::sort(pathToBlobsInCurStaggingArea.begin(), pathToTreesInCurStaggingArea.end());
+    std::sort(pathToBlobsInCurStaggingArea.begin(), pathToBlobsInCurStaggingArea.end());
     int posWorkingFolder = 0, posStaggingArea = 0;
     while (posWorkingFolder < (int)pathToBlobsInCurWorkingFolder.size() || posStaggingArea < (int)pathToBlobsInCurStaggingArea.size()) {
 
-        if (posWorkingFolder == (int)pathToBlobsInCurWorkingFolder.size() || pathToBlobsInCurWorkingFolder[posWorkingFolder].first > pathToBlobsInCurStaggingArea[posStaggingArea].first) {
+        if (posWorkingFolder == (int)pathToBlobsInCurWorkingFolder.size()) {
             std::cout << "Fichier supprimé : " << pathToBlobsInCurStaggingArea[posStaggingArea].first << std::endl;
             posStaggingArea++;
         }
-        else if (posStaggingArea == (int)pathToBlobsInCurStaggingArea.size() || pathToBlobsInCurStaggingArea[posStaggingArea].first > pathToBlobsInCurWorkingFolder[posWorkingFolder].first) {
+        else if (posStaggingArea == (int)pathToBlobsInCurStaggingArea.size()) {
             std::cout << "Fichier ajouté : " << pathToBlobsInCurWorkingFolder[posWorkingFolder].first << std::endl;
             posWorkingFolder++;
         }
+        else if (pathToBlobsInCurWorkingFolder[posWorkingFolder].first > pathToBlobsInCurStaggingArea[posStaggingArea].first) {
+            std::cout << "Fichier supprimé : " << pathToBlobsInCurWorkingFolder[posWorkingFolder].first << std::endl;
+            posStaggingArea++;
+        }
+        else if (pathToBlobsInCurStaggingArea[posStaggingArea].first > pathToBlobsInCurWorkingFolder[posWorkingFolder].first) {
+            std::cout << "Fichier ajouté : " << pathToBlobsInCurWorkingFolder[posWorkingFolder].first << std::endl;
+            posWorkingFolder++;
+        }   
         else if (pathToBlobsInCurStaggingArea[posStaggingArea].second != pathToBlobsInCurWorkingFolder[posWorkingFolder].second) {
             std::cout << "Fichier modifié : " << pathToBlobsInCurWorkingFolder[posWorkingFolder].first << std::endl;
             posWorkingFolder++;
             posStaggingArea++;
         }
+        else {
+            posWorkingFolder++;
+            posStaggingArea++;
+        }
 
     }
 
-    std::sort(pathToTreesInCurWorkingFolder.begin(), pathToBlobsInCurWorkingFolder.end());
+    std::sort(pathToTreesInCurWorkingFolder.begin(), pathToTreesInCurWorkingFolder.end());
     std::sort(pathToTreesInCurStaggingArea.begin(), pathToTreesInCurStaggingArea.end());
     posWorkingFolder = 0;
     posStaggingArea = 0;
@@ -163,7 +177,15 @@ void StaggingArea::show_differences(fs::path curPathInWorkingArea, std::string c
             std::cout << "Dossier supprimé : " << pathToTreesInCurStaggingArea[posStaggingArea].first << std::endl;
             posStaggingArea++;
         }
-        else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size() || pathToTreesInCurStaggingArea[posStaggingArea].first > pathToTreesInCurWorkingFolder[posWorkingFolder].first) {
+        else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()){
+            std::cout << "Dossier ajouté : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;
+            posWorkingFolder++;
+        }
+        else if (pathToTreesInCurWorkingFolder[posWorkingFolder].first > pathToTreesInCurStaggingArea[posStaggingArea].first) {
+            std::cout << "Dossier supprimé : " << pathToTreesInCurStaggingArea[posStaggingArea].first << std::endl;
+            posStaggingArea++;
+        }
+        else if (pathToTreesInCurStaggingArea[posStaggingArea].first > pathToTreesInCurWorkingFolder[posWorkingFolder].first) {
             std::cout << "Dossier ajouté : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;
             posWorkingFolder++;
         }
@@ -189,4 +211,10 @@ StaggingArea::StaggingArea(PtitGitRepos repos) {
     this->rootTree = repos.get_repos_content("index/INDEX");
 
     this->construct_tree(this->rootTree);
+}
+
+std::string StaggingArea::get_root_tree() {
+
+    return this->rootTree;
+
 }

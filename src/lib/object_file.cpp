@@ -11,6 +11,10 @@ namespace fs = std::filesystem;
 
 File::File(fs::path filePath, bool create) {
 
+    if (filePath.is_relative()) {
+        filePath = fs::current_path() / filePath;
+    }
+
     std::ifstream inputFile(filePath);
 
     if (!inputFile.is_open()) {
