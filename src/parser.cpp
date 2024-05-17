@@ -5,6 +5,7 @@
 #include "cmd/help.h"
 #include "cmd/push.h"
 #include "cmd/status.h"
+#include "cmd/commit.h"
 #include "lib/hashing.h"
 #include "lib/object.h"
 #include "lib/object_file.h"
@@ -111,6 +112,11 @@ int main(int argc,char *argv[])  {
         if(argc < k) std::cerr<<"Something missing!\n";
         checkout(argv[k-2], argv[k-1], force);
     }
+    else if (argc > 1 && strcmp(argv[1] , "commit") == 0){
+        if(argc > 3 && strcmp(argv[2] , "-m") == 0) cmdCommit(argv[3]);
+        else cmdCommit();
+    }
+
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
