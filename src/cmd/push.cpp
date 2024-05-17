@@ -27,51 +27,22 @@ void push() {
         return;
     }
     
-    std::string port_str = repos.get_config("port");
-    if (repos_id == "")  {
+    std::string port = repos.get_config("port");
+    if (port == "")  {
         std::cerr << "port of the repos not available. Please add it with :\n    petitGit config port your_port" << std::endl;
         return;
     }
 
-
-
-
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
-
-    int port = stoi(port_str);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        std::cerr << "ERROR when opening the socket" << std::endl;
-        exit(-1);
-    }
-    server = gethostbyname(url.c_str());
-    if (server == NULL) {
-        std::cerr << "ERROR : no such host" << std::endl;
-        exit(-1);
-    }
-
-
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr,  server->h_length);
-
-    serv_addr.sin_port = htons(port);
-    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        std::cerr << "ERROR connecting" << std::endl;
-        exit(-1);
-    }
+    int sockfd = connect_to_server(url, stoi(port));
+    send_message(sockfd, "push");
 
     if (!send_repos(sockfd))    {
         std::cerr << "unable to send the repose" << std::endl;
         return;
     }
 
-    char response [1000];
-    bzero(response, 1000);
-    read(sockfd, response, 1000-1);
-    std::cout << response << std::endl;
+    std::string reponse = read_message(sockfd, 1000);
+    std::cout << reponse << std::endl;
 
     close(sockfd);
 }

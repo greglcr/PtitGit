@@ -7,6 +7,7 @@
 #include "cmd/push.h"
 #include "cmd/status.h"
 #include "cmd/commit.h"
+#include "cmd/init-remote.h"
 #include "lib/hashing.h"
 #include "lib/object.h"
 #include "lib/object_file.h"
@@ -141,10 +142,17 @@ int main(int argc,char *argv[])  {
     else if (argc >= 2 && strcmp(argv[1], "add") == 0) {
         add();
     }
+    else if (argc >= 2 && strcmp(argv[1], "init-remote") == 0) {
+        if (argc >= 4)
+            init_remote(argv[2], atoi(argv[3]));
+        else
+            std::cout << "Please specify url and port" << std::endl;
+    }
+
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout"};
+        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout", "init-remote"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";

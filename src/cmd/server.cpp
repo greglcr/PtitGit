@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <vector>
+#include <string.h>
 #include <sys/stat.h>
 #include "../lib/tcp.h"
 
@@ -48,14 +49,18 @@ void server(int port)    {
 
 
 void* handle_tcp_connection (void* arg)   {
-    std::cout << "new connection..." << std::endl;
     int* intPtr = (int*) arg;
     int connection = *intPtr;
-    
-    std::string directory = receive_repos(connection);
- 
-    std::string response = "Well received\nPlease note that this version of 'push' does not contain any guards.";
-    send(connection, response.c_str(), response.size(), 0);
 
+    std::string cmd = read_message(connection, 100);
+
+    if (cmd == "push")  {
+        std::string directory = receive_repos(connection);
+        send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+    } else if (cmd == "init-remote")    {
+        send_message(connection,"ok");
+    } else  {
+        send_message(connection,"INVALID ACTION");
+    }
     pthread_exit(EXIT_SUCCESS);
 }
