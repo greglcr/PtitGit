@@ -7,6 +7,7 @@
 #include <vector>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include "../lib/tcp.h"
 
 void* handle_tcp_connection (void* arg);
@@ -58,7 +59,14 @@ void* handle_tcp_connection (void* arg)   {
         std::string directory = receive_repos(connection);
         send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
     } else if (cmd == "init-remote")    {
-        send_message(connection,"ok");
+        long long repos_id = 1;
+        struct stat info;
+        while (stat(std::to_string(repos_id).c_str(), &info) == 0)
+            repos_id++;
+        mkdir(std::to_string(repos_id).c_str(), 0700);
+        std::cout << "Create repos with id : " << repos_id << std::endl;
+        
+        send_message(connection,"repos created with id " + std::to_string(repos_id));
     } else  {
         send_message(connection,"INVALID ACTION");
     }
