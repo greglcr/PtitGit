@@ -2,9 +2,11 @@
 #include "stagging_area.h"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -177,7 +179,7 @@ void StaggingArea::show_differences(fs::path curPathInWorkingArea, std::string c
             std::cout << "Dossier supprimé : " << pathToTreesInCurStaggingArea[posStaggingArea].first << std::endl;
             posStaggingArea++;
         }
-        else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()){
+        else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()) {
             std::cout << "Dossier ajouté : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;
             posWorkingFolder++;
         }
@@ -217,4 +219,53 @@ std::string StaggingArea::get_root_tree() {
 
     return this->rootTree;
 
+}
+
+
+void StaggingArea::add_all() {
+
+    Tree rootTree = Tree(this->repos.getWorkingFolder());
+
+    std::ofstream INDEX(this->repos.getWorkingFolder() / ".ptitgit/index/INDEX");
+    INDEX << rootTree.getHashedContent();
+    INDEX.close();
+
+    add_all(Tree(this->repos.getWorkingFolder()));
+
+}
+
+void StaggingArea::add_all(Tree curTree) {
+
+    this->write_content(curTree);
+
+    std::vector<File> filesInside = curTree.get_blobs_inside();
+    for (size_t i = 0; i < filesInside.size(); i++) {
+        this->write_content(filesInside[i]);
+    }
+
+    std::vector<Tree> treesInside = curTree.get_trees_inside();
+    for(size_t i = 0; i < treesInside.size(); i++) {
+        this->add_all(treesInside[i]);
+    }
+
+}
+
+void StaggingArea::write_content(Object curObject) {
+
+    if (!fs::exists(get_folder_to_object(curObject.getHashedContent()))) {
+        fs::create_directory(this->repos.getWorkingFolder() / ".ptitgit/index" / get_folder_to_object(curObject.getHashedContent()));
+    }
+
+    std::ofstream fileToComplete(this->repos.getWorkingFolder() / ".ptitgit/index" / get_path_to_object(curObject.getHashedContent()));
+    fileToComplete << curObject.getContent();
+    fileToComplete.close();
+
+}
+
+void StaggingArea::add_file(File fileToAdd) {
+
+}
+
+void StaggingArea::add_tree(Tree treeToAdd) {
+    
 }

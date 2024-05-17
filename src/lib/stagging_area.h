@@ -17,6 +17,9 @@ class StaggingArea {
         void show_differences(fs::path curPosWorkingArea, std::string curHashStaggingArea);
         void add_tree(Tree treeToAdd);
         void add_file(File fileToAdd);
+        void add_all();
+        void add_all(Tree curTree);
+        void write_content(Object curObject);
         std::string get_root_tree();
         //Besoin de deux fonctions différentes. En effet, il va être possible d'ajouter deux types de fonctions différentes lorqu'on fait un add normalement.
         //Difficulté : quand on ajoute un fichier, il faut reconstruire tout l'arbre. Est-ce qu'on a les outils pour faire ça?

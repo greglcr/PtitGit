@@ -8,6 +8,8 @@
 
 namespace fs = std::filesystem;
 
+void add();
+
 void add(std::vector<fs::path> listObject, PtitGitRepos curRepos);
 
 #endif

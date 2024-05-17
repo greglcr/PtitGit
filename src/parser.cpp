@@ -1,3 +1,4 @@
+#include "cmd/add.h"
 #include "cmd/cat-object.h"
 #include "cmd/init.h"
 #include "cmd/hash_object.h"
@@ -137,10 +138,13 @@ int main(int argc,char *argv[])  {
             status();
         }
     }
+    else if (argc >= 2 && strcmp(argv[1], "add") == 0) {
+        add();
+    }
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout"};
+        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";
