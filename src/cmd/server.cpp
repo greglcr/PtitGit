@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "../lib/tcp.h"
+#include "../cmd/init.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -63,10 +64,12 @@ void* handle_tcp_connection (void* arg)   {
         struct stat info;
         while (stat(std::to_string(repos_id).c_str(), &info) == 0)
             repos_id++;
-        mkdir(std::to_string(repos_id).c_str(), 0700);
-        std::cout << "Create repos with id : " << repos_id << std::endl;
         
-        send_message(connection,"repos created with id " + std::to_string(repos_id));
+        std::string name_folder = std::to_string(repos_id);
+        mkdir(name_folder.c_str(), 0700);
+        std::cout << "Create repos with id : " << repos_id << std::endl;
+        init(name_folder);
+        send_message(connection,"repos created with id " + name_folder);
     } else  {
         send_message(connection,"INVALID ACTION");
     }
