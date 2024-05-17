@@ -4,6 +4,7 @@
 #include "object.h"
 #include "object_file.h"
 
+#include <map>
 #include <vector>
 
 class Tree : public Object {
@@ -25,4 +26,12 @@ class Tree : public Object {
 };
 
 Tree findTree(std::string,bool create = false);
+std::string get_next_line(std::string &s);
+std::map<std::string, std::string> cut_line(std::string contentLine);
+std::string get_object_type(std::string contentLine);
+std::string get_object_hash(std::string contentLine);
+std::string get_object_path(std::string contentLine);
+std::string insert_new_object(std::string content, std::string typeToInsert, std::string hashToInsert, std::string nameToInsert);
+std::pair<std::string, std::string> delete_object(std::string content, std::string hashToDelete);
+
 #endif

@@ -16,6 +16,7 @@ class File : public Object  {
 
         void updateContent();
         fs::path get_file_path();
+        
     private:
 
         fs::path filePath;
