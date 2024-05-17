@@ -1,6 +1,3 @@
-// comes from  https://ncona.com/2019/04/building-a-simple-server-with-cpp/
-// will be changed soon
-
 #include "server.h"
 #include <iostream>
 #include <unistd.h>
@@ -8,6 +5,9 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <vector>
+#include <string.h>
+#include <sys/stat.h>
+#include "../lib/tcp.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -34,8 +34,6 @@ void server(int port)    {
         std::cerr << "Failed to listen on socket. errno: " << errno << std::endl;
         exit(EXIT_FAILURE);
     }
-   
-    
 
     auto addrlen = sizeof(sockaddr);
     int accepted;
@@ -47,19 +45,22 @@ void server(int port)    {
         }
         std::cout << threads.front() << " " << threads.back() << std::endl;
     }
-
 }
+
+
 void* handle_tcp_connection (void* arg)   {
-    std::cout << "Hi" << std::endl;
     int* intPtr = (int*) arg;
     int connection = *intPtr;
-    while (true)    {
-        char buffer[100];
-        int n = read(connection, buffer, 100);
-        buffer[n] = '\0';
-        std::cout << "The message was: " << buffer << std::endl;
 
-        std::string response = "Good talking to you\n";
-        send(connection, response.c_str(), response.size(), 0);
+    std::string cmd = read_message(connection, 100);
+
+    if (cmd == "push")  {
+        std::string directory = receive_repos(connection);
+        send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+    } else if (cmd == "init-remote")    {
+        send_message(connection,"ok");
+    } else  {
+        send_message(connection,"INVALID ACTION");
     }
+    pthread_exit(EXIT_SUCCESS);
 }

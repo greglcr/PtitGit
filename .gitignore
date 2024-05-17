@@ -1,7 +1,9 @@
 petitGit
 .vscode/
 test/repos_test
+test/result-test
 *.o
 *.d
 .bin/
 Makefile
+test/__pycache__/
