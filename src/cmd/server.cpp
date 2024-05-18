@@ -7,7 +7,10 @@
 #include <vector>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include "../lib/tcp.h"
+#include "../cmd/init.h"
+#include "../lib/compare_repos.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -55,10 +58,28 @@ void* handle_tcp_connection (void* arg)   {
     std::string cmd = read_message(connection, 100);
 
     if (cmd == "push")  {
+        std::string repos_id = read_message(connection, 20);
         std::string directory = receive_repos(connection);
+        if (!copy_all_objects(directory, repos_id)) {
+            send_message(connection, "An error as occured, try again.");
+            pthread_exit(EXIT_SUCCESS);
+        }
+            
         send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+    } else if (cmd == "pull")   {
+        std::string repos_id = read_message(connection, 200);
+        send_repos(connection, repos_id);
     } else if (cmd == "init-remote")    {
-        send_message(connection,"ok");
+        long long repos_id = 1;
+        struct stat info;
+        while (stat(std::to_string(repos_id).c_str(), &info) == 0)
+            repos_id++;
+        
+        std::string name_folder = std::to_string(repos_id);
+        mkdir(name_folder.c_str(), 0700);
+        std::cout << "Create repos with id : " << repos_id << std::endl;
+        init(name_folder);
+        send_message(connection,"repos created with id " + name_folder);
     } else  {
         send_message(connection,"INVALID ACTION");
     }

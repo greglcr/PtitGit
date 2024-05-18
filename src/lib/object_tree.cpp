@@ -68,12 +68,13 @@ std::vector<Tree> Tree::get_trees_inside() {
 }
 
 Tree findTree(std::string hashedContent, bool create){
+    fs::path path;
     fs::path curPath = fs::current_path();
-
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
         curPath = curPath.parent_path();
     }
-    fs::path path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    if(!fs::exists(path)) path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 
     std::ifstream fileToShow(path);
 
@@ -87,15 +88,36 @@ Tree findTree(std::string hashedContent, bool create){
     std::string content = buffer.str();
     fileToShow.close();
 
-    long long abcd = content.find(' ');
-    long long dcba = content.find('\n');
+    Tree T = Tree().createTreeFromContent(content,create);
+    return T;
+}
 
-    if(content.substr(0,abcd) != "tree") std::cerr<<"Not a tree in fromstring Commit creation\n";
-    if((long long) std::stoi(content.substr(abcd+1,dcba-abcd-1)) != (long long) content.size()-dcba-1) std::cerr<<"Bad size!\n";
+Tree Tree::createTreeFromContent(std::string content, bool create){
+    File F;
+    this->content = content;
+    long long findSpace = content.find(' ');
+    long long findEndl = content.find('\n');
+    long long findNextSpace;
+    if(content.substr(0,findSpace) != "tree") std::cerr<<"Not a tree here\n";
+    if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n";
 
-    long long abba = content.find('\n',dcba+1);
+    long long findNextEndl = content.find('\n',findEndl+1);
+    this->folderPath = content.substr(findEndl+1, findNextEndl - findEndl -1);
 
-    return Tree(content.substr(dcba+1,abba-dcba-1),create);
+    while(findNextEndl < (long long) content.size()-1){
+        findEndl = findNextEndl;
+        findSpace = content.find(' ' , findNextEndl + 1);
+        findNextSpace = content.find(' ' , findSpace + 1);
+        findNextEndl = content.find('\n', findNextSpace + 1);
+        if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "file")
+            this->filesInside.push_back(findFile(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
+        else if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "tree")
+            this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
+        else std::cerr<<"What object is this? \n";
+    }
+    this->hashedContent = hashString(this->content);
+    if(create) this->writeObject();
+    return *this;
 }
 
 std::string get_next_line(std::string &s) {

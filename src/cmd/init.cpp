@@ -51,7 +51,7 @@ void init(fs::path folderToInit) {
     config.close();
 
     std::ofstream INDEX(".ptitgit/index/INDEX");
-    INDEX << C.get_hash_parent_tree() << '\n';
+    INDEX << C.get_hash_parent_tree();
     INDEX.close();
 
     fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));

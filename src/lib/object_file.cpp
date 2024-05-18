@@ -51,7 +51,7 @@ void File::updateContent() {
     oss << inputFile.rdbuf();
 
     this->content = oss.str();
-    this->hashedContent = hashString(this->hashedContent);
+    this->hashedContent = hashString(this->content);
 }
 
 fs::path File::get_file_path() {
@@ -60,12 +60,13 @@ fs::path File::get_file_path() {
 
 }
 File findFile(std::string hashedContent, bool create){
+    fs::path path;
     fs::path curPath = fs::current_path();
-
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
         curPath = curPath.parent_path();
     }
-    fs::path path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    if(!fs::exists(path)) path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 
     std::ifstream fileToShow(path);
 
@@ -78,14 +79,22 @@ File findFile(std::string hashedContent, bool create){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
+    return File().createFileFromContent(content,create);
+}
 
-    long long abcd = content.find(' ');
-    long long dcba = content.find('\n');
+File File::createFileFromContent(std::string content, bool create){
+    this->content = content;
+    long long findSpace = content.find(' ');
+    long long findEndl = content.find('\n');
+    
+    if(content.substr(0,findSpace) != "file") std::cerr<<"Not a file here\n";
+    if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n";
 
-    if(content.substr(0,abcd) != "file") std::cerr<<"Not a file in fromstring Commit creation\n";
-    if((long long) std::stoi(content.substr(abcd+1,dcba-abcd-1)) != (long long) content.size()-dcba-1) std::cerr<<"Bad size!\n";
+    long long findNextEndl = content.find('\n',findEndl+1);
+    this->filePath = content.substr(findEndl + 1, findNextEndl - findEndl - 1);
 
-    long long abba = content.find('\n',dcba+1);
+    this->hashedContent = hashString(this->content);
 
-    return File(content.substr(dcba+1,abba-dcba-1),create);
+    if(create) this->writeObject();
+    return *this;
 }

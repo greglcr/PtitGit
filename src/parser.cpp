@@ -5,6 +5,7 @@
 #include "cmd/server.h"
 #include "cmd/help.h"
 #include "cmd/push.h"
+#include "cmd/pull.h"
 #include "cmd/status.h"
 #include "cmd/commit.h"
 #include "cmd/init-remote.h"
@@ -108,11 +109,11 @@ int main(int argc,char *argv[])  {
         }
     }
     else if (argc > 1 && strcmp(argv[1] , "checkout") == 0){
-        long long k;bool force;
-        if(strcmp(argv[2] , "-f") == 0){k=5;force = true;}
-        else{k=4;force = false;}
-        if(argc < k) std::cerr<<"Something missing!\n";
-        checkout(argv[k-2], argv[k-1], force);
+        long long k;bool force;PtitGitRepos X = PtitGitRepos();
+        if(argc < 4) std::cerr<<"Something missing!\n";
+        else if(strcmp(argv[2] , "-f") == 0 && argc == 4) checkout(argv[3], X.getWorkingFolder() , true);
+        else if(strcmp(argv[2] , "-f") == 0) checkout(argv[3], argv[4], true);
+        else checkout(argv[2], argv[3]);
     }
     else if (argc > 1 && strcmp(argv[1] , "commit") == 0){
         if(argc > 3 && strcmp(argv[2] , "-m") == 0) cmdCommit(argv[3]);
@@ -122,6 +123,10 @@ int main(int argc,char *argv[])  {
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }
+    else if (argc >= 2 && strcmp(argv[1] , "pull") == 0){
+        pull();
+    }
+
     else if (argc >= 2 && strcmp(argv[1] , "config") == 0){
         PtitGitRepos X = PtitGitRepos();
         if (argc == 3)
@@ -152,7 +157,7 @@ int main(int argc,char *argv[])  {
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout", "init-remote"};
+        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout", "init-remote", "pull"};
 
         int dist_min = 100000000;
         std::string command_min = "???????";

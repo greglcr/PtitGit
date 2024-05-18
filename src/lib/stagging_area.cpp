@@ -20,9 +20,14 @@ bool NodeTree::operator<(const NodeTree &other) {
 void StaggingArea::construct_tree(std::string curFileHash) {
 
 
-    std::string fileContent = this->repos.get_repos_content(fs::path("index/objects") / get_path_to_object(curFileHash));
+    std::string fileContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(curFileHash));
 
-    std::string fileType = get_next_line(fileContent);
+    //std::string fileType = get_next_line(fileContent);
+    //The line above need changing, since I've noticed that there is now 
+    //a strlen stored as well on the first line
+
+    long long nextSpace = fileContent.find(' ');
+    std::string fileType = fileContent.substr(0,nextSpace);
 
     if (fileType == "tree") {
         try {
