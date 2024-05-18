@@ -87,6 +87,11 @@ Commit Commit::fromstring(std::string commitContent){
 Tree Commit::getTree(){
     return this->parentTree;
 }
+
+
+std::vector<std::string> Commit::get_parents_hash() {
+    return this->parentCommitsHash;
+}
 /*
 void Commit::writeCommit(){
     fs::path curPath = fs::current_path();
