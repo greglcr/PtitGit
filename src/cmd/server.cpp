@@ -66,6 +66,9 @@ void* handle_tcp_connection (void* arg)   {
         }
             
         send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+    } else if (cmd == "pull")   {
+        std::string repos_id = read_message(connection, 200);
+        send_repos(connection, repos_id);
     } else if (cmd == "init-remote")    {
         long long repos_id = 1;
         struct stat info;

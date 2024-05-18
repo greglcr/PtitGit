@@ -1,8 +1,8 @@
-#include "push.h"
+#include "pull.h"
 #include "../lib/repos.h"
 #include "../lib/tcp.h"
+#include "../lib/compare_repos.h"
 #include <iostream>
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-void push() {
+void pull() {
 
     PtitGitRepos repos = PtitGitRepos();
 
@@ -34,16 +34,22 @@ void push() {
     }
 
     int sockfd = connect_to_server(url, stoi(port));
-    send_message(sockfd, "push");
+    send_message(sockfd, "pull");
     send_message(sockfd, repos_id);
 
-    if (!send_repos(sockfd, "."))    {
-        std::cerr << "unable to send the repose" << std::endl;
+    std::string tmp_dir = receive_repos(sockfd);
+    if (tmp_dir == "")  {
+        std::cout << "repository not received" << std::endl;
+        close(sockfd);
         return;
     }
-
-    std::string reponse = read_message(sockfd, 1000);
-    std::cout << reponse << std::endl;
-
+    std::cout << "tmp dir : " << tmp_dir << std::endl; 
     close(sockfd);
+
+
+    if (!copy_all_objects(tmp_dir, ".")) {
+        std::cerr << "An error as occured, try again." << std::endl;
+        return;
+    }
+ 
 }

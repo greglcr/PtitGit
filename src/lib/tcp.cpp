@@ -44,11 +44,18 @@ void send_message(int sockfd, std::string message)  {
     send(sockfd, message.c_str(), message.size()+1, 0);
 }
 std::string read_message(int sockfd, int size_max)  {
-    char result [size_max+1];
-    bzero(result, size_max+1);
-    read(sockfd, result, size_max);
-    std::string s (result);
-    return s;
+    // read until '\0'
+    char cara [1];
+    bool ok = true;
+    std::string result = "";
+    while (ok)  {
+        int r = read(sockfd, cara, 1);
+        if (r != 1 || cara[0] == '\0')
+            ok = false;
+        else
+            result += cara[0];
+    }
+    return result;
 }
 
 bool send_int(int sockfd, long val) {
@@ -72,13 +79,12 @@ long read_int(int sockfd)   {
 }
 
 
-bool send_repos(int sockfd)    {
+bool send_repos(int sockfd, std::string repos)    {
     // store the .ptitgit in a tgz archive
     char name_tgz [L_tmpnam];
     std::tmpnam(name_tgz);
     std::string name_tgz_str (name_tgz);
-    system(("tar -czf "+name_tgz_str+" .ptitgit").c_str());
-
+    system(("tar -czf "+name_tgz_str+" -C "+repos+" .ptitgit").c_str());
     
     // read this file
     FILE *tar;

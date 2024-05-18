@@ -11,7 +11,7 @@ std::string read_message(int sockfd, int size_max);
 bool send_int(int sockfd, long val);
 long read_int(int sockfd);
 
-bool send_repos(int sockfd);
+bool send_repos(int sockfd, std::string dir);
 std::string receive_repos(int connection);
 
 #endif
