@@ -22,5 +22,5 @@ class File : public Object  {
         fs::path filePath;
 
 };
-File findFile(std::string, bool create = false, bool objectOrNot = true);
+File findFile(std::string, bool create = false);
 #endif

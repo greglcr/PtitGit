@@ -25,7 +25,7 @@ class Tree : public Object {
 
 };
 
-Tree findTree(std::string,bool create = false, bool objectOrNot = true);
+Tree findTree(std::string,bool create = false);
 std::string get_next_line(std::string &s);
 std::map<std::string, std::string> cut_line(std::string contentLine);
 std::string get_object_type(std::string contentLine);

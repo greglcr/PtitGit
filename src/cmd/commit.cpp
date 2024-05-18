@@ -17,8 +17,8 @@ void cmdCommit(std::string message){
     path = path / "INDEX";
 
     std::string oldsha = X.get_repos_content(path);
-    long long endlFind = oldsha.find('\n');
-    Tree T = findTree(oldsha.substr(0,endlFind),true);
+    Tree T = findTree(oldsha, true);
+    //std::cerr<<"NO";
     std::string sha = ref_resolve(X,"HEAD");
     Commit New = Commit(T,{sha},"","",message,"");
     New.writeObject();

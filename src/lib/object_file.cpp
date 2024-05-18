@@ -59,14 +59,14 @@ fs::path File::get_file_path() {
     return this->filePath;
 
 }
-File findFile(std::string hashedContent, bool create, bool objectOrNot){
+File findFile(std::string hashedContent, bool create){
     fs::path path;
     fs::path curPath = fs::current_path();
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
         curPath = curPath.parent_path();
     }
-    if(objectOrNot == true) path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
-    else path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
+    path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    if(!fs::exists(path)) path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 
     std::ifstream fileToShow(path);
 
@@ -79,7 +79,7 @@ File findFile(std::string hashedContent, bool create, bool objectOrNot){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
-    return File(".").createFileFromContent(content,create);
+    return File().createFileFromContent(content,create);
 }
 
 File File::createFileFromContent(std::string content, bool create){
@@ -96,4 +96,5 @@ File File::createFileFromContent(std::string content, bool create){
     this->hashedContent = hashString(this->content);
 
     if(create) this->writeObject();
+    return *this;
 }
