@@ -62,7 +62,8 @@ void pull() {
     std::string HEAD = buffer_HEAD.str();
 
     if (HEAD.find("ref: ") == 0)   {
-        std::cout << "You are working on the branch '" << HEAD.substr(HEAD.rfind("/")+1) << "'" << std::endl;
+        std::string branchName = HEAD.substr(HEAD.rfind("/")+1);
+        std::cout << "You are working on the branch '" << branchName << "'" << std::endl;
         std::string commit_local = ref_resolve(PtitGitRepos(), "HEAD");
         std::cout << commit_local << std::endl;
     
@@ -72,6 +73,23 @@ void pull() {
         } else  {
             std::string commit_remote = ref_resolve(PtitGitRepos(tmp_dir), "HEAD");
             std::cout << commit_remote << std::endl;
+            
+            Commit c_local, c_remote;
+            c_local.fromfile(commit_local);
+            c_remote.fromfile(commit_remote);
+            std::string lca_hash = last_common_ancestor(c_local, c_remote);
+
+            if (commit_local == commit_remote)  {
+                std::cout << "Your branch is up to date" << std::endl;
+            } else if (lca_hash == commit_remote)   {
+                std::cout << "You're a few commits ahead of the server. Use 'pull' to send them." << std::endl;
+            } else if (lca_hash == commit_local)    {
+                std::cout << "Download and update (the remote repository was a few commits ahead)" << std::endl;
+                writeBranch(branchName, commit_remote);
+            } else  {
+                std::cout << "MERGE CONFLICT on your branch !\nlocal last commit :  " << commit_local << "\nremote last commit : " << commit_remote << "\nlca commit :         " << lca_hash << std::endl;
+                std::cout << "please, merge them" << std::endl;
+            }
         }
     } else  {
         std::cout << "Warning, you are not working on a branch. Therefore the 'pull' did nothing" << std::endl;

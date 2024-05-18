@@ -36,24 +36,28 @@ void bfs(std::string start, std::map<std::string, int> & ancestors)  {
         ancestors[hash] = dist;
         std::cout << hash << " -> " << dist << std::endl;
         dist++;
-
+        
+        
         Commit commit;
         commit.fromfile(hash);
 
         for (std::string parent : commit.get_parents_hash())    {
+            std::cout << "parent |" << parent << "|" << std::endl;
+            if (parent == "0") continue;
             queue.push_back({parent, dist});
         }
     }
 }
 
-Commit last_common_ancestor(Commit a, Commit b) {
+std::string last_common_ancestor(Commit a, Commit b) {
     std::map<std::string, int> ancestorsA, ancestorsB;
 
     bfs(a.getHashedContent(), ancestorsA);
     bfs(b.getHashedContent(), ancestorsB);
-    
+
     // TODO
-    return a;
+    
+    return a.getHashedContent();
 }
 
     

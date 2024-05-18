@@ -5,6 +5,6 @@
 #include "object_commit.h"
 
 bool copy_all_objects(std::string src, std::string target);
-Commit last_common_ancestor(Commit a, Commit b);
+std::string last_common_ancestor(Commit a, Commit b);
 
 #endif
