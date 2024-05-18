@@ -142,7 +142,7 @@ std::string receive_repos(int sockfd)    {
     char templatebuf[80];
     char *name_directory = mkdtemp(strcpy(templatebuf, "/tmp/ptitgitXXXXXX"));
     std::string name_directory_str (name_directory);
-    std::cout << "repos received in directory : " << name_directory << std::endl;
+    //std::cout << "repos received in directory : " << name_directory << std::endl;
     
     // extract into the directory
     system(("tar -xf " + name_tgz_str + " -C " + name_directory_str).c_str());
