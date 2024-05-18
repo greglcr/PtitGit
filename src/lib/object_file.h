@@ -12,8 +12,8 @@ class File : public Object  {
 
     public:
 
-        File(fs::path filePath, bool create = false);
-
+        File(fs::path filePath = ".", bool create = false);
+        File createFileFromContent(std::string, bool = false);
         void updateContent();
         fs::path get_file_path();
     private:
@@ -21,5 +21,5 @@ class File : public Object  {
         fs::path filePath;
 
 };
-File findFile(std::string,bool create = false);
+File findFile(std::string, bool create = false, bool objectOrNot = true);
 #endif
