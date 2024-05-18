@@ -107,15 +107,16 @@ void checkout(std::string committ, fs::path placeToWrite, bool force){
     tree_checkout(T,placeToWrite,force);
 
     fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / committ;
+    fs::path pathHEAD = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "HEAD";
     if(fs::exists(path)){
-        fs::remove(path);
-        std::ofstream out(path);
-        out << C.getHashedContent();
+        fs::remove(pathHEAD);
+        std::ofstream out(pathHEAD);
+        out << "ref: " + std::string(path);
+        std::cout<<"HEAD is attached to branch "<<committ<<'\n';
     }
     else{
-        path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "HEAD";
-        fs::remove(path);
-        std::ofstream out(path);
+        fs::remove(pathHEAD);
+        std::ofstream out(pathHEAD);
         out << C.getHashedContent();
         std::cout<<"Detached HEAD state\n";
     }
