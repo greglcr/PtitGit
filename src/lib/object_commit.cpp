@@ -105,6 +105,20 @@ void checkout(std::string committ, fs::path placeToWrite, bool force){
     Commit C = Commit().fromfile(commit);
     Tree T = C.getTree();
     tree_checkout(T,placeToWrite,force);
+
+    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / committ;
+    if(fs::exists(path)){
+        fs::remove(path);
+        std::ofstream out(path);
+        out << C.getHashedContent();
+    }
+    else{
+        path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "HEAD";
+        fs::remove(path);
+        std::ofstream out(path);
+        out << C.getHashedContent();
+        std::cout<<"Detached HEAD state\n";
+    }
 }
 
 void tree_checkout(Tree T, fs::path placeToWrite, bool force){

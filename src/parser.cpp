@@ -108,11 +108,11 @@ int main(int argc,char *argv[])  {
         }
     }
     else if (argc > 1 && strcmp(argv[1] , "checkout") == 0){
-        long long k;bool force;
-        if(strcmp(argv[2] , "-f") == 0){k=5;force = true;}
-        else{k=4;force = false;}
-        if(argc < k) std::cerr<<"Something missing!\n";
-        checkout(argv[k-2], argv[k-1], force);
+        long long k;bool force;PtitGitRepos X = PtitGitRepos();
+        if(argc < 4) std::cerr<<"Something missing!\n";
+        else if(strcmp(argv[2] , "-f") == 0 && argc == 4) checkout(argv[3], X.getWorkingFolder() , true);
+        else if(strcmp(argv[2] , "-f") == 0) checkout(argv[3], argv[4], true);
+        else checkout(argv[2], argv[3]);
     }
     else if (argc > 1 && strcmp(argv[1] , "commit") == 0){
         if(argc > 3 && strcmp(argv[2] , "-m") == 0) cmdCommit(argv[3]);
