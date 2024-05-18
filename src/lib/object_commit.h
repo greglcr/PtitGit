@@ -17,6 +17,7 @@ class Commit : public Object {
         void calculateContent();
         Tree getTree();
         std::string get_hash_parent_tree();
+        std::vector<std::string> get_parents_hash();
         //void writeCommit();
     private:
 
