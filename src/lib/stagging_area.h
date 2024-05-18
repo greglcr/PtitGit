@@ -43,6 +43,7 @@ class StaggingArea {
         std::string rootTree;
         std::map<std::string, std::vector<std::string> > treeStaggingArea;
         std::map<std::string, std::string> treeStaggingAreaReversed;
+        std::map<fs::path, std::string> status;
 
 };
 
