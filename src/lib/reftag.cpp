@@ -42,6 +42,9 @@ std::string ref_resolve(PtitGitRepos X, fs::path path){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
+
+    if (content.back() == '\n')
+        content.pop_back();
     
     if(content[0]=='r' && content[1]=='e' && content[2]=='f' && content[3]==':' && content[4]==' '){
         content.erase(0,5);
