@@ -1,6 +1,3 @@
-// comes from  https://ncona.com/2019/04/building-a-simple-server-with-cpp/
-// will be changed soon
-
 #include "server.h"
 #include <iostream>
 #include <unistd.h>
@@ -8,6 +5,11 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <vector>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include "../lib/tcp.h"
+#include "../cmd/init.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -34,8 +36,6 @@ void server(int port)    {
         std::cerr << "Failed to listen on socket. errno: " << errno << std::endl;
         exit(EXIT_FAILURE);
     }
-   
-    
 
     auto addrlen = sizeof(sockaddr);
     int accepted;
@@ -47,19 +47,31 @@ void server(int port)    {
         }
         std::cout << threads.front() << " " << threads.back() << std::endl;
     }
-
 }
+
+
 void* handle_tcp_connection (void* arg)   {
-    std::cout << "Hi" << std::endl;
     int* intPtr = (int*) arg;
     int connection = *intPtr;
-    while (true)    {
-        char buffer[100];
-        int n = read(connection, buffer, 100);
-        buffer[n] = '\0';
-        std::cout << "The message was: " << buffer << std::endl;
 
-        std::string response = "Good talking to you\n";
-        send(connection, response.c_str(), response.size(), 0);
+    std::string cmd = read_message(connection, 100);
+
+    if (cmd == "push")  {
+        std::string directory = receive_repos(connection);
+        send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+    } else if (cmd == "init-remote")    {
+        long long repos_id = 1;
+        struct stat info;
+        while (stat(std::to_string(repos_id).c_str(), &info) == 0)
+            repos_id++;
+        
+        std::string name_folder = std::to_string(repos_id);
+        mkdir(name_folder.c_str(), 0700);
+        std::cout << "Create repos with id : " << repos_id << std::endl;
+        init(name_folder);
+        send_message(connection,"repos created with id " + name_folder);
+    } else  {
+        send_message(connection,"INVALID ACTION");
     }
+    pthread_exit(EXIT_SUCCESS);
 }

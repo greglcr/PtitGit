@@ -5,7 +5,17 @@
 #include "object_tree.h"
 
 #include <map>
+#include <string>
 #include <vector>
+
+struct NodeTree {
+
+    std::string nodeHash;
+    std::string fatherHash = ".";
+
+    bool operator<(const NodeTree &other);
+
+};
 
 class StaggingArea {
 
@@ -15,12 +25,15 @@ class StaggingArea {
         void construct_tree(std::string curFileHash);
         void show_differences();
         void show_differences(fs::path curPosWorkingArea, std::string curHashStaggingArea);
+        void add(fs::path pathToAdd);
         void add_tree(Tree treeToAdd);
         void add_file(File fileToAdd);
         void add_all();
         void add_all(Tree curTree);
         void write_content(Object curObject);
-        std::string get_root_tree();
+        void write_content(std::string content, std::string hashedContent);
+        void update_node(std::string curFileHash, std::string hashToDelete, std::string hashToInsert);
+        std::string get_root_tree();    
         //Besoin de deux fonctions différentes. En effet, il va être possible d'ajouter deux types de fonctions différentes lorqu'on fait un add normalement.
         //Difficulté : quand on ajoute un fichier, il faut reconstruire tout l'arbre. Est-ce qu'on a les outils pour faire ça?
 
@@ -28,7 +41,8 @@ class StaggingArea {
 
         PtitGitRepos repos;
         std::string rootTree;
-        std::map<std::pair<std::string, fs::path> , std::vector<std::string> > treeStaggingArea; //Need to store the file path to check if there is a creation of something
+        std::map<std::string, std::vector<std::string> > treeStaggingArea;
+        std::map<std::string, std::string> treeStaggingAreaReversed;
 
 };
 

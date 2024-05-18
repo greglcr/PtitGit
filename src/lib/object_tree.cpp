@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <map>
 #include <sstream>
 
 namespace fs = std::filesystem;
@@ -24,6 +25,9 @@ Tree::Tree(fs::path folderPath, bool create) {
     this->content += folderPath;
     this->content += '\n';
     
+    //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
+    //that
+
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.is_regular_file()) {
             File curFile = File(folderPath / entry.path().filename(),create);
@@ -84,36 +88,119 @@ Tree findTree(std::string hashedContent, bool create, bool objectOrNot){
     std::string content = buffer.str();
     fileToShow.close();
 
-    Tree T = Tree().createTreeFromContent(content,create);
-    return T;
+    long long abcd = content.find(' ');
+    long long dcba = content.find('\n');
+
+    if(content.substr(0,abcd) != "tree") std::cerr<<"Not a tree in fromstring Commit creation\n";
+    if((long long) std::stoi(content.substr(abcd+1,dcba-abcd-1)) != (long long) content.size()-dcba-1) std::cerr<<"Bad size!\n";
+
+    long long abba = content.find('\n',dcba+1);
+
+    return Tree(content.substr(dcba+1,abba-dcba-1),create);
 }
 
-Tree Tree::createTreeFromContent(std::string content, bool create){
-    File F;
-    this->content = content;
-    long long findSpace = content.find(' ');
-    long long findEndl = content.find('\n');
-    long long findNextSpace;
-    if(content.substr(0,findSpace) != "tree") std::cerr<<"Not a tree here\n";
-    if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n";
+std::string get_next_line(std::string &s) {
 
-    long long findNextEndl = content.find('\n',findEndl+1);
-    this->folderPath = content.substr(findEndl+1, findNextEndl - findEndl -1);std::cout<<content.size()<<std::endl;
+    size_t pos = s.find('\n');
 
-    while(findNextEndl < (long long) content.size()-1){
-        findEndl = findNextEndl;
-        findSpace = content.find(' ' , findNextEndl + 1);
-        findNextSpace = content.find(' ' , findSpace + 1);
-        findNextEndl = content.find('\n', findNextSpace + 1);
-        std::cout<<findSpace <<" "<<findNextSpace<<" "<<findNextEndl<<std::endl;
-        if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "file")
-            this->filesInside.push_back(findFile(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create, false));
-        else if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "tree")
-            this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create, false));
-        else std::cerr<<"What object is this? \n";
+    if(pos == std::string::npos) {
+        throw std::runtime_error("No newline found is the string");
+    }
+    
+    std::string nextLine = s.substr(0, pos);
+    s = s.substr(pos + 1, s.size());
+    return nextLine;
+
+}
+
+std::map<std::string, std::string> cut_line(std::string contentLine) {
+
+    std::map<std::string, std::string> m;
+
+    size_t pos1 = contentLine.find(' ');
+    m["type"] = contentLine.substr(0, pos1);
+
+    contentLine = contentLine.substr(pos1 + 1, contentLine.size());
+
+    size_t pos2 = contentLine.find(' ');
+    m["hash"] = contentLine.substr(0, pos2);
+
+    contentLine = contentLine.substr(pos2 + 1, contentLine.size());
+
+    size_t pos3 = contentLine.find(' ');
+    m["path"] = contentLine.substr(0, pos3);
+
+    return m;
+
+}
+
+std::string get_object_type(std::string contentLine) {
+
+    return cut_line(contentLine)["type"];
+
+}
+
+std::string get_object_hash(std::string contentLine) {
+
+    return cut_line(contentLine)["hash"];
+
+}
+
+std::string get_object_path(std::string contentLine) {
+
+    return cut_line(contentLine)["path"];
+
+}
+
+std::string insert_new_object(std::string content, std::string typeToInsert, std::string hashToInsert, std::string pathToInsert) {
+
+    std::string updatedContent;
+
+    get_next_line(content);
+    std::string filePath = get_next_line(content);
+
+    bool added = false;
+
+    while (content != "") {
+        std::string curLine = get_next_line(content);
+        std::string curPath = get_object_path(curLine);
+        if (curPath > pathToInsert && !added) {
+            updatedContent += typeToInsert + " " + hashToInsert + " " + pathToInsert + '\n';
+            added = true;
+        }
+        updatedContent += curLine + '\n';
+    }
+    if (!added) {
+        updatedContent += typeToInsert + " " + hashToInsert + " " + pathToInsert + '\n';
     }
 
-    this->hashedContent = hashString(this->content);
+    updatedContent = "tree " + std::to_string(updatedContent.size()) + '\n' + filePath + '\n' + updatedContent;
 
-    if(create) this->writeObject();
+    return updatedContent;
+
+}
+
+std::pair<std::string, std::string> delete_object(std::string content, std::string hashToDelete) {
+
+    std::string updatedContent;
+    std::string deletedLine;
+
+    get_next_line(content);
+    std::string filePath = get_next_line(content);
+
+    while (content != "") {
+        std::string curLine = get_next_line(content);
+        std::string curHash = get_object_hash(curLine);
+        if (curHash != hashToDelete) {
+            updatedContent += curLine + '\n';
+        }
+        else {
+            deletedLine = curLine;
+        }
+    }
+
+    updatedContent = "tree " + std::to_string(updatedContent.size()) + '\n' + filePath + '\n' + updatedContent;
+
+    return std::pair(updatedContent, deletedLine);
+
 }

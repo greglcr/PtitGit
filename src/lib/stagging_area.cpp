@@ -1,5 +1,7 @@
+#include "hashing.h"
 #include "repos.h"
 #include "stagging_area.h"
+#include "object_tree.h"
 
 #include <algorithm>
 #include <fstream>
@@ -11,90 +13,44 @@
 
 namespace fs = std::filesystem;
 
-std::string get_next_line(std::string &s) {
-
-    size_t pos = s.find('\n');
-
-    if(pos == std::string::npos) {
-        throw std::runtime_error("No newline found is the string");
-    }
-    
-    std::string nextLine = s.substr(0, pos);
-    s = s.substr(pos + 1, s.size());
-    return nextLine;
-
-}
-
-std::map<std::string, std::string> cut_line(std::string contentLine) {
-
-    std::map<std::string, std::string> m;
-
-    size_t pos1 = contentLine.find(' ');
-    m["type"] = contentLine.substr(0, pos1);
-
-    contentLine = contentLine.substr(pos1 + 1, contentLine.size());
-
-    size_t pos2 = contentLine.find(' ');
-    m["hash"] = contentLine.substr(0, pos2);
-
-    contentLine = contentLine.substr(pos2 + 1, contentLine.size());
-
-    size_t pos3 = contentLine.find(' ');
-    m["path"] = contentLine.substr(0, pos3);
-
-    return m;
-
-}
-
-std::string get_object_type(std::string contentLine) {
-
-    return cut_line(contentLine)["type"];
-
-}
-
-std::string get_object_hash(std::string contentLine) {
-
-    return cut_line(contentLine)["hash"];
-
-}
-
-std::string get_object_path(std::string contentLine) {
-
-    return cut_line(contentLine)["path"];
-
+bool NodeTree::operator<(const NodeTree &other) {
+    return this->nodeHash < other.nodeHash;
 }
 
 void StaggingArea::construct_tree(std::string curFileHash) {
 
-    // TODO : fix this
-    /*
+
     std::string fileContent = this->repos.get_repos_content(fs::path("index/objects") / get_path_to_object(curFileHash));
 
-    std::pair<std::string, std::string> separatedContent = get_next_line(fileContent);
+    std::string fileType = get_next_line(fileContent);
 
-    if (separatedContent.first == "tree") {
+    if (fileType == "tree") {
         try {
-            fileContent = get_next_line(separatedContent.second).second; //Erase file name
+            get_next_line(fileContent); //Erase file name
             while(fileContent != "") {
-                separatedContent = get_next_line(fileContent);
-                std::string nextFileHash = get_file_hash(separatedContent.first);
+                std::string curLine = get_next_line(fileContent);
+                std::string nextFileHash = get_object_hash(curLine);
+                NodeTree curNode;
+                curNode.fatherHash = curFileHash;
+                curNode.nodeHash = nextFileHash;
                 this->treeStaggingArea[curFileHash].push_back(nextFileHash);
-                fileContent = separatedContent.second;
+                this->treeStaggingAreaReversed[nextFileHash] = curFileHash;
             }
         }
         catch (const std::runtime_error &e) {
-            
+            //Rien à faire ici
         }
     }
-    else if (separatedContent.second == "blob") {
-        
+    else if (fileType == "blob") {
+        //En fait il n'y a rien à faire
     }
     else {
-        std::cerr << "Error in StaggingArea::construct_tree : invalid file type (" << separatedContent.first << ")\n";
+        std::cerr << "Error in StaggingArea::construct_tree : invalid file type (" << fileType << ")\n";
     }
-    */
 
 }
+
+
 
 void StaggingArea::show_differences() {
 
@@ -222,6 +178,7 @@ std::string StaggingArea::get_root_tree() {
 }
 
 
+
 void StaggingArea::add_all() {
 
     Tree rootTree = Tree(this->repos.getWorkingFolder());
@@ -252,17 +209,45 @@ void StaggingArea::add_all(Tree curTree) {
 
 void StaggingArea::write_content(Object curObject) {
 
-    if (!fs::exists(get_folder_to_object(curObject.getHashedContent()))) {
-        fs::create_directory(this->repos.getWorkingFolder() / ".ptitgit/index" / get_folder_to_object(curObject.getHashedContent()));
+    write_content(curObject.getContent(), curObject.getHashedContent());
+
+}
+
+void StaggingArea::write_content(std::string content, std::string hashedContent) {
+
+    if (!fs::exists(get_folder_to_object(hashedContent))) {
+        fs::create_directory(this->repos.getWorkingFolder() / ".ptitgit/index" / get_folder_to_object(hashedContent));
     }
 
-    std::ofstream fileToComplete(this->repos.getWorkingFolder() / ".ptitgit/index" / get_path_to_object(curObject.getHashedContent()));
-    fileToComplete << curObject.getContent();
+    std::ofstream fileToComplete(this->repos.getWorkingFolder() / ".ptitgit/index" / get_path_to_object(hashedContent));
+    fileToComplete << content;
     fileToComplete.close();
 
 }
 
+void StaggingArea::update_node(std::string curHash, std::string hashToDelete, std::string hashToInsert) {
+
+    if (this->treeStaggingArea[curHash].empty()) {
+        return;
+    }
+
+    std::string content = this->repos.get_repos_content(this->repos.getWorkingFolder() / ".ptitgit/index" / get_folder_to_object(curHash));
+
+    std::pair<std::string, std::string> infoDelete = delete_object(content, hashToDelete);
+    std::string updatedContent1 = infoDelete.first;
+    std::string deletedLine = infoDelete.second;
+
+    std::string updatedContent2 = insert_new_object(content, get_object_type(deletedLine), get_object_hash(deletedLine), get_object_path(deletedLine));
+
+    this->write_content(updatedContent2, hashString(updatedContent2));
+
+    update_node(this->treeStaggingAreaReversed[curHash], curHash, hashString(updatedContent2));
+
+}
+
 void StaggingArea::add_file(File fileToAdd) {
+
+    write_content(fileToAdd);
 
 }
 

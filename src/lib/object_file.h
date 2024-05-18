@@ -16,6 +16,7 @@ class File : public Object  {
         File createFileFromContent(std::string, bool = false);
         void updateContent();
         fs::path get_file_path();
+        
     private:
 
         fs::path filePath;
