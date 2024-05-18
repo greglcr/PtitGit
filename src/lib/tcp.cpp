@@ -51,6 +51,27 @@ std::string read_message(int sockfd, int size_max)  {
     return s;
 }
 
+bool send_int(int sockfd, long val) {
+    unsigned char bytes[5];
+    bytes[0] = (val >> 24) & 0xFF;
+    bytes[1] = (val >> 16) & 0xFF;
+    bytes[2] = (val >> 8) & 0xFF;
+    bytes[3] = val & 0xFF;
+    bytes[4] = '\0';
+    if (write(sockfd, bytes, 5)==0)    {
+        std::cerr << "Can not send value" << std::endl;
+        return false;
+    }
+    return true;
+}
+long read_int(int sockfd)   {
+    char buffer[5];
+    read(sockfd, buffer, 5);
+    long result = ((long)buffer[3]&0xFF) + (((long)buffer[2]&0xFF) << 8) + (((long)buffer[1]&0xFF) << 16) + (((long)buffer[0]&0xFF) << 24);
+    return result;
+}
+
+
 bool send_repos(int sockfd)    {
     // store the .ptitgit in a tgz archive
     char name_tgz [L_tmpnam];
@@ -81,18 +102,7 @@ bool send_repos(int sockfd)    {
     fclose(tar);
 
     // first, we send the size :
-    unsigned char size_tar_bytes[5];
-    size_tar_bytes[0] = (size_tar >> 24) & 0xFF;
-    size_tar_bytes[1] = (size_tar >> 16) & 0xFF;
-    size_tar_bytes[2] = (size_tar >> 8) & 0xFF;
-    size_tar_bytes[3] = size_tar & 0xFF;
-    size_tar_bytes[4] = '\0';
-
-
-    if (write(sockfd, size_tar_bytes, 5)==0)    {
-        std::cerr << "Can not send data" << std::endl;
-        return false;
-    }
+    if (!send_int(sockfd, size_tar)) return false;
 
     // then we send the content
     if (write(sockfd, tarContent, size_tar+1) == 0) {
@@ -103,15 +113,13 @@ bool send_repos(int sockfd)    {
 }
 
 
-std::string receive_repos(int connection)    {
+std::string receive_repos(int sockfd)    {
     // read the tar size
-    char buffer_size[5];
-    read(connection, buffer_size, 5);
-    long size_tar = ((long)buffer_size[3]&0xFF) + (((long)buffer_size[2]&0xFF) << 8) + (((long)buffer_size[1]&0xFF) << 16) + (((long)buffer_size[0]&0xFF) << 24);
+    long size_tar = read_int(sockfd);
 
     // read the tar
     char tarContent [size_tar];
-    read(connection, tarContent, size_tar);
+    read(sockfd, tarContent, size_tar);
 
     // write it
     char name_tgz [L_tmpnam];
@@ -126,7 +134,7 @@ std::string receive_repos(int connection)    {
     // create a directory to store the repos
     
     char templatebuf[80];
-    char *name_directory = mkdtemp(strcpy(templatebuf, "/tmp/ptitgitXXXXXXXX"));
+    char *name_directory = mkdtemp(strcpy(templatebuf, "/tmp/ptitgitXXXXXX"));
     std::string name_directory_str (name_directory);
     std::cout << "repos received in directory : " << name_directory << std::endl;
     

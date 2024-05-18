@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include "../lib/tcp.h"
 #include "../cmd/init.h"
+#include "../lib/compare_repos.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -57,7 +58,13 @@ void* handle_tcp_connection (void* arg)   {
     std::string cmd = read_message(connection, 100);
 
     if (cmd == "push")  {
+        std::string repos_id = read_message(connection, 20);
         std::string directory = receive_repos(connection);
+        if (!copy_all_objects(directory, repos_id)) {
+            send_message(connection, "An error as occured, try again.");
+            pthread_exit(EXIT_SUCCESS);
+        }
+            
         send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
     } else if (cmd == "init-remote")    {
         long long repos_id = 1;

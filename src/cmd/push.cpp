@@ -35,6 +35,7 @@ void push() {
 
     int sockfd = connect_to_server(url, stoi(port));
     send_message(sockfd, "push");
+    send_message(sockfd, repos_id);
 
     if (!send_repos(sockfd))    {
         std::cerr << "unable to send the repose" << std::endl;
