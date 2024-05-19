@@ -47,12 +47,13 @@ Tree::Tree(fs::path folderPath, bool create) {
             this->treesInside.push_back(curFolder);
             //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
-        sort(this->treesInside.begin(), this->treesInside.end(), compareTree);
-        sort(this->filesInside.begin(), this->filesInside.end(), compareFile);
-        long long kk;
-        for(kk = 0;kk < (long long) treesInside.size();kk++) this->content += "tree " + treesInside[kk].getHashedContent() + " " + treesInside[kk].get_folder_path().filename().string() + "\n";
-        for(kk = 0;kk < (long long) filesInside.size();kk++) this->content += "tree " + filesInside[kk].getHashedContent() + " " + filesInside[kk].get_file_path().filename().string() + "\n";
     }
+
+    sort(this->treesInside.begin(), this->treesInside.end(), compareTree);
+    sort(this->filesInside.begin(), this->filesInside.end(), compareFile);
+    long long kk;
+    for(kk = 0;kk < (long long) treesInside.size();kk++) this->content += "tree " + treesInside[kk].getHashedContent() + " " + treesInside[kk].get_folder_path().filename().string() + "\n";
+    for(kk = 0;kk < (long long) filesInside.size();kk++) this->content += "file " + filesInside[kk].getHashedContent() + " " + filesInside[kk].get_file_path().filename().string() + "\n";
 
     std::string abc = this->content;
     this->content = "tree " + std::to_string(abc.size()) + '\n' + abc;

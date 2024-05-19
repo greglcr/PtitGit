@@ -160,7 +160,7 @@ void INDEXreset(Commit C){
     INDEX.close();
 
     fs::path folderToInit = PtitGitRepos().getWorkingFolder();
-    fs::remove(folderToInit / ".ptitgit/index");
+    fs::remove_all(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
     fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
