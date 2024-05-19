@@ -28,7 +28,7 @@ File::File(fs::path filePath, bool create) {
     this->content += '\n';
     this->content += oss.str();
     
-    this->filePath = filePath;
+    this->filePath = relativeToRepo(filePath);
 
     std::string abc = this->content;
     this->content = "file " + std::to_string(abc.size()) + '\n' + abc;
