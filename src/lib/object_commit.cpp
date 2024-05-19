@@ -155,13 +155,14 @@ std::string Commit::get_hash_parent_tree() {
 }
 
 void INDEXreset(Commit C){
-    std::ofstream INDEX(".ptitgit/index/INDEX");
-    INDEX << C.get_hash_parent_tree();
-    INDEX.close();
 
     fs::path folderToInit = PtitGitRepos().getWorkingFolder();
     fs::remove_all(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
     fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
+    
+    std::ofstream INDEX(".ptitgit/index/INDEX");
+    INDEX << C.get_hash_parent_tree();
+    INDEX.close();
 }

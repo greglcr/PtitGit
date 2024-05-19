@@ -23,8 +23,8 @@ class StaggingArea {
 
         StaggingArea(PtitGitRepos repos);
         void construct_tree(std::string curFileHash);
-        void show_differences();
-        void show_differences(fs::path curPosWorkingArea, std::string curHashStaggingArea);
+        void calc_differences(bool verbose);
+        void calc_differences(fs::path curPosWorkingArea, std::string curHashStaggingArea, bool verbose);
         void add(fs::path pathToAdd);
         void add_tree(Tree treeToAdd);
         void add_file(File fileToAdd);
@@ -43,7 +43,10 @@ class StaggingArea {
         std::string rootTree;
         std::map<std::string, std::vector<std::string> > treeStaggingArea;
         std::map<std::string, std::string> treeStaggingAreaReversed;
-        std::map<fs::path, std::string> status;
+        std::map<fs::path, std::pair<std::string, std::string> > status;
+
+        //std::string delete_in_file(std::string curHash, std::string hashToDelete);
+        //void add_in_file(std::string curHash, std::string typeToAdd, std::string hashToAdd, std::string pathToAdd);
 
 };
 
