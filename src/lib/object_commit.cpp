@@ -154,15 +154,45 @@ std::string Commit::get_hash_parent_tree() {
 
 }
 
+void add_files(std::string curHash, PtitGitRepos &curRepos) {
+
+    fs::path folderToInit = curRepos.getWorkingFolder();
+    fs::path folderToObject = folderToInit / ".ptitgit/index" / get_folder_to_object(curHash);
+    if (!fs::exists(folderToObject)) {
+        fs::create_directory(folderToObject);
+    }
+
+    fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(curHash), folderToInit / ".ptitgit/index" / get_path_to_object(curHash));
+
+    //First we must get the file type
+    std::string contentFile = curRepos.get_object_content(curHash);
+    size_t pos = contentFile.find(' ');
+    std::string fileType = contentFile.substr(0, pos);
+    if (fileType == "tree") {
+        get_next_line(contentFile);
+        get_next_line(contentFile);
+        while (contentFile != "") {
+            std::string curLine = get_next_line(contentFile);
+            add_files(get_object_hash(curLine), curRepos);
+        }
+    }
+
+}
+
 void INDEXreset(Commit C){
 
     fs::path folderToInit = PtitGitRepos().getWorkingFolder();
     fs::remove_all(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index");
-    fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
-    fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
+
+    PtitGitRepos curRepos = PtitGitRepos(folderToInit);
+    add_files(C.get_hash_parent_tree(), curRepos);
+
+    //fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
+    //fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
     
     std::ofstream INDEX(".ptitgit/index/INDEX");
     INDEX << C.get_hash_parent_tree();
     INDEX.close();
+
 }
