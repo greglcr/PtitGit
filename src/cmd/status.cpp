@@ -14,7 +14,7 @@ void status() {
 
     PtitGitRepos curRepos = PtitGitRepos();
     StaggingArea curStaggingArea = StaggingArea(curRepos);
-    curStaggingArea.show_differences();
+    curStaggingArea.calc_differences(true);
 
 }
 
@@ -22,6 +22,6 @@ void status(fs::path pathToWorkingFolder) {
 
     PtitGitRepos curRepos = PtitGitRepos(pathToWorkingFolder);
     StaggingArea curStaggingArea = StaggingArea(curRepos);
-    curStaggingArea.show_differences();
+    curStaggingArea.calc_differences(true);
 
 }
