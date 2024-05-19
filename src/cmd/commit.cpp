@@ -29,12 +29,14 @@ void cmdCommit(std::string message){
         std::ofstream out(path);
         out << New.getHashedContent();
         std::cout<<"The hash of the commit for branch "<<path.filename()<<" is now "<<New.getHashedContent()<<std::endl;
+        INDEXreset(New);
         return;        
     }
     else{
         std::ofstream out(X.getWorkingFolder() / ".ptitgit" / "HEAD");
         out << New.getHashedContent();
         std::cout<<"The hash of the commit for the detached HEAD is now "<<New.getHashedContent()<<std::endl;
+        INDEXreset(New);
         return;
     }
 }

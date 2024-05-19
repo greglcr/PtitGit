@@ -8,6 +8,7 @@
 #include "cmd/pull.h"
 #include "cmd/status.h"
 #include "cmd/commit.h"
+#include "cmd/merge.h"
 #include "cmd/init-remote.h"
 #include "lib/hashing.h"
 #include "lib/object.h"
@@ -119,7 +120,11 @@ int main(int argc,char *argv[])  {
         if(argc > 3 && strcmp(argv[2] , "-m") == 0) cmdCommit(argv[3]);
         else cmdCommit();
     }
-
+    else if (argc > 1 && strcmp(argv[1] , "merge") == 0){
+        if(argc == 2) std::cerr<<"Where is the other commit?\n";
+        else if(argc == 3) merge(argv[2]);
+        else merge(argv[2],argv[3]);
+    }
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
     }

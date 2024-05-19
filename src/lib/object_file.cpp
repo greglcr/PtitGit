@@ -1,6 +1,7 @@
 #include "hashing.h"
 #include "object.h"
 #include "object_file.h"
+#include "repos.h"
 
 #include <iostream>
 #include <fstream>
@@ -27,7 +28,7 @@ File::File(fs::path filePath, bool create) {
     this->content += relativeToRepo(filePath);
     this->content += '\n';
     this->content += oss.str();
-    
+    this->actualFile = oss.str();
     this->filePath = relativeToRepo(filePath);
 
     std::string abc = this->content;
@@ -40,6 +41,7 @@ File::File(fs::path filePath, bool create) {
 
 void File::updateContent() {
     
+    if(filePath.is_relative()) filePath = PtitGitRepos().getWorkingFolder() / filePath;
 
     std::ifstream inputFile(this->filePath);
 
@@ -49,8 +51,12 @@ void File::updateContent() {
 
     std::ostringstream oss;
     oss << inputFile.rdbuf();
-
-    this->content = oss.str();
+    this->content = relativeToRepo(filePath);
+    this->content += '\n';
+    this->content += oss.str();
+    this->actualFile = oss.str();
+    std::string abc = this->content;
+    this->content = "file " + std::to_string(abc.size()) + '\n' + abc;
     this->hashedContent = hashString(this->content);
 }
 
@@ -59,6 +65,11 @@ fs::path File::get_file_path() {
     return this->filePath;
 
 }
+
+std::string File::getActualFile(){
+    return this->actualFile;
+}
+
 File findFile(std::string hashedContent, bool create){
     fs::path path;
     fs::path curPath = fs::current_path();
@@ -97,4 +108,9 @@ File File::createFileFromContent(std::string content, bool create){
 
     if(create) this->writeObject();
     return *this;
+}
+
+bool compareFile(File F1, File F2){
+    if(F1.get_file_path().filename().string() < F2.get_file_path().filename().string()) return true;
+    else return false;
 }

@@ -9,6 +9,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
@@ -33,17 +34,24 @@ Tree::Tree(fs::path folderPath, bool create) {
     //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
     //that
 
+
+
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.is_regular_file()) {
             File curFile = File(folderPath / entry.path().filename(),create);
             this->filesInside.push_back(curFile);
-            this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
+            //this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
         else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
             Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
             this->treesInside.push_back(curFolder);
-            this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
+            //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
+        sort(this->treesInside.begin(), this->treesInside.end(), compareTree);
+        sort(this->filesInside.begin(), this->filesInside.end(), compareFile);
+        long long kk;
+        for(kk = 0;kk < (long long) treesInside.size();kk++) this->content += "tree " + treesInside[kk].getHashedContent() + " " + treesInside[kk].get_folder_path().filename().string() + "\n";
+        for(kk = 0;kk < (long long) filesInside.size();kk++) this->content += "tree " + filesInside[kk].getHashedContent() + " " + filesInside[kk].get_file_path().filename().string() + "\n";
     }
 
     std::string abc = this->content;
@@ -229,4 +237,9 @@ std::pair<std::string, std::string> delete_object(std::string content, std::stri
 
     return std::pair(updatedContent, deletedLine);
 
+}
+
+bool compareTree(Tree T1, Tree T2){
+    if(T1.get_folder_path().filename().string() < T2.get_folder_path().filename().string()) return true;
+    else return false;
 }

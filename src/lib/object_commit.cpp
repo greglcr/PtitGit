@@ -114,17 +114,16 @@ void checkout(std::string committ, fs::path placeToWrite, bool force){
     fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / committ;
     fs::path pathHEAD = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "HEAD";
     if(fs::exists(path)){
-        fs::remove(pathHEAD);
         std::ofstream out(pathHEAD);
         out << "ref: " + std::string(relativeToRepo(path));
         std::cout<<"HEAD is attached to branch "<<committ<<'\n';
     }
     else{
-        fs::remove(pathHEAD);
         std::ofstream out(pathHEAD);
         out << C.getHashedContent();
         std::cout<<"Detached HEAD state\n";
     }
+    INDEXreset(C);
 }
 
 void tree_checkout(Tree T, fs::path placeToWrite, bool force){
@@ -153,4 +152,16 @@ std::string Commit::get_hash_parent_tree() {
 
     return this->parentTree.getHashedContent();
 
+}
+
+void INDEXreset(Commit C){
+    std::ofstream INDEX(".ptitgit/index/INDEX");
+    INDEX << C.get_hash_parent_tree();
+    INDEX.close();
+
+    fs::path folderToInit = PtitGitRepos().getWorkingFolder();
+    fs::remove(folderToInit / ".ptitgit/index");
+    fs::create_directory(folderToInit / ".ptitgit/index");
+    fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
+    fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
 }

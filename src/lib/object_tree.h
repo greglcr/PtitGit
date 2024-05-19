@@ -33,5 +33,5 @@ std::string get_object_hash(std::string contentLine);
 std::string get_object_path(std::string contentLine);
 std::string insert_new_object(std::string content, std::string typeToInsert, std::string hashToInsert, std::string nameToInsert);
 std::pair<std::string, std::string> delete_object(std::string content, std::string hashToDelete);
-
+bool compareTree(Tree,Tree);
 #endif

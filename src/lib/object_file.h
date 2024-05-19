@@ -16,11 +16,12 @@ class File : public Object  {
         File createFileFromContent(std::string, bool = false);
         void updateContent();
         fs::path get_file_path();
-        
+        std::string getActualFile();
     private:
-
+        std::string actualFile;
         fs::path filePath;
 
 };
 File findFile(std::string, bool create = false);
+bool compareFile(File,File);
 #endif

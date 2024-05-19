@@ -50,10 +50,14 @@ void init(fs::path folderToInit) {
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
 
+    INDEXreset(C);
+    /*
+    The INDEXreset function, defined in object_commit.cpp file, will replace the part below
     std::ofstream INDEX(".ptitgit/index/INDEX");
     INDEX << C.get_hash_parent_tree();
     INDEX.close();
 
     fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
     fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
+    */
 }
