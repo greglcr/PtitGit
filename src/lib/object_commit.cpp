@@ -116,7 +116,7 @@ void checkout(std::string committ, fs::path placeToWrite, bool force){
     if(fs::exists(path)){
         fs::remove(pathHEAD);
         std::ofstream out(pathHEAD);
-        out << "ref: " + std::string(path);
+        out << "ref: " + std::string(relativeToRepo(path));
         std::cout<<"HEAD is attached to branch "<<committ<<'\n';
     }
     else{
@@ -128,17 +128,25 @@ void checkout(std::string committ, fs::path placeToWrite, bool force){
 }
 
 void tree_checkout(Tree T, fs::path placeToWrite, bool force){
+    std::string fileContent;
     if(!fs::exists(placeToWrite)) fs::create_directory(placeToWrite);
     if(!fs::is_empty(placeToWrite) && force == false) std::cerr<<"The directory given is not empty\n";
-    std::vector<File> V = T.get_blobs_inside();
-    for(long long kk = 0; kk < (long long) V.size(); kk++){
-        fs::path path = V[kk].get_file_path().parent_path().filename();
+    std::vector<File> V = T.get_blobs_inside();long long kk;
+    for(kk = 0; kk < (long long) V.size(); kk++){
+        fs::path path = V[kk].get_file_path().filename();
+        fileContent = V[kk].getContent();
+        long long findEndl = fileContent.find('\n');
+        long long findNextEndl = fileContent.find('\n', findEndl + 1);
+
         std::ofstream out(placeToWrite / path);
-        out << V[kk].getContent();
+        out << V[kk].getContent().substr(findNextEndl + 1);
     }
-    
-    for(std::vector<Tree>::iterator it = T.get_trees_inside().begin(); it!=T.get_trees_inside().end(); ++it)
-        tree_checkout(*it,placeToWrite / it->get_folder_path().parent_path().filename(), force);
+    std::vector<Tree> VV = T.get_trees_inside();long long kkk;
+    for(kkk = 0; kkk < (long long) VV.size(); kkk++){
+        tree_checkout(VV[kkk], placeToWrite / VV[kkk].get_folder_path().filename(), force);
+    }
+    //for(std::vector<Tree>::iterator it = T.get_trees_inside().begin(); it!=T.get_trees_inside().nd(); ++it)
+    //    tree_checkout(*it,placeToWrite / it->get_folder_path().parent_path().filename(), force);e
 }
 
 std::string Commit::get_hash_parent_tree() {

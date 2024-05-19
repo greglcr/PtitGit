@@ -101,7 +101,7 @@ int main(int argc,char *argv[])  {
         }
     }
     else if (argc > 1 && strcmp(argv[1] , "branch") == 0){
-        PtitGitRepos X = PtitGitRepos();std::string sha, content;
+        PtitGitRepos X = PtitGitRepos();std::string sha;
         if(argc == 2) std::cerr<<"Name missing!"<<std::endl;
         else{
             sha = ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD");
@@ -109,7 +109,7 @@ int main(int argc,char *argv[])  {
         }
     }
     else if (argc > 1 && strcmp(argv[1] , "checkout") == 0){
-        long long k;bool force;PtitGitRepos X = PtitGitRepos();
+        PtitGitRepos X = PtitGitRepos();
         if(argc < 4) std::cerr<<"Something missing!\n";
         else if(strcmp(argv[2] , "-f") == 0 && argc == 4) checkout(argv[3], X.getWorkingFolder() , true);
         else if(strcmp(argv[2] , "-f") == 0) checkout(argv[3], argv[4], true);

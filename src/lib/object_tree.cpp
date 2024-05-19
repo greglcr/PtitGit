@@ -21,10 +21,14 @@ Tree::Tree(fs::path folderPath, bool create) {
         std::cerr << "Error in Tree construction : The given path is not a directory (" << folderPath << ")" << std::endl;
     }
 
+    if (folderPath.is_relative()) {
+        folderPath = fs::current_path() / folderPath;
+    }
+
     //this->content += "tree\n";
-    this->content += folderPath;
+    this->content += relativeToRepo(folderPath);
     this->content += '\n';
-    
+   
     //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
     //that
 
@@ -94,7 +98,7 @@ Tree findTree(std::string hashedContent, bool create){
 
 Tree Tree::createTreeFromContent(std::string content, bool create){
     File F;
-    this->content = content;
+    this->content = content;this->filesInside = {}; this->treesInside = {};
     long long findSpace = content.find(' ');
     long long findEndl = content.find('\n');
     long long findNextSpace;

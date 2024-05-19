@@ -1,6 +1,7 @@
 #include "init.h"
 #include "../lib/object_commit.h"
 #include "../lib/object_tree.h"
+#include "../lib/object.h"
 
 #include <iostream>
 #include <fstream>
@@ -42,10 +43,9 @@ void init(fs::path folderToInit) {
 
     fs::path headPath = folderToInit / ".ptitgit" / "HEAD";
     std::ofstream outHead(headPath);
-    std::string indirectPath = "ref: " + std::string(path);
+    std::string indirectPath = "ref: " + std::string(relativeToRepo(path));
     outHead << indirectPath;
     
-
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();

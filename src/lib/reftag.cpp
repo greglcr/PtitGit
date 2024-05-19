@@ -28,9 +28,10 @@ std::string ref_resolve(PtitGitRepos X, fs::path path){
         if(path2 != repo_path / ".ptitgit"){std::cerr<<"Error: Bad path";exit(0);}
         fun = path;
     }
+    else if(std::string(path).substr(0,8) == ".ptitgit") fun = repo_path / path;
     else fun = repo_path / ".ptitgit" / path;
 
-    if(!fs::exists(fun)){std::cerr<<"Error: Nothing to resolve";exit(0);}
+    if(!fs::exists(fun)){std::cerr<<"Error: Nothing to resolve"<<std::endl<<fun<<std::endl;exit(0);}
     std::ifstream fileToShow(fun);
 
     if(!fileToShow.is_open()) {
@@ -215,7 +216,7 @@ std::vector <std::string> objectResolve(PtitGitRepos X,std::string name, bool sh
     std::string rest = name.substr(2);
     fs::path path = X.getWorkingFolder() / ".ptitgit" / "objects" / prefix;
     std::string need_check = std::string(X.getWorkingFolder() / ".ptitgit" / "objects" / prefix / rest);
-    if(short_hash == true) for (const auto & entry : fs::directory_iterator(path)){
+    if(short_hash == true && fs::exists(path)) for (const auto & entry : fs::directory_iterator(path)){
         std::string contender = std::string(entry.path());
         auto res = std::mismatch(need_check.begin(),need_check.end(),contender.begin());
         if(res.first == need_check.end()){
@@ -229,7 +230,7 @@ std::vector <std::string> objectResolve(PtitGitRepos X,std::string name, bool sh
 }
 
 std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::string type,bool follow){
-    std::vector <std::string> V = objectResolve(X,name,short_hash),W;
+    std::vector <std::string> V = objectResolve(X,name,short_hash),W;W.clear();
     if(name == "HEAD") return V[0];
     long long jj;
     for(jj=0;jj< (long long) V.size();jj++){
@@ -250,9 +251,10 @@ std::string objectFind(PtitGitRepos X,std::string name,bool short_hash, std::str
             }
             else if(content.substr(0,abc) == "commit" && type == "tree"){
                 Commit C = Commit().fromstring(content);
-                W.push_back(C.getTree().getHashedContent()); 
+                W.push_back(C.getTree().getHashedContent());
+                break; 
             }
-            else W.push_back(obj);
+            else{W.push_back(obj);break;}
         }
     }
     if(W.size()>1 && short_hash == false){std::cerr<<"Misleading name!"<<std::endl;exit(0);}

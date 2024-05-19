@@ -68,3 +68,11 @@ void Object::writeObject(){
     out << this->getContent();
     return;
 }
+
+fs::path relativeToRepo(fs::path path){
+    fs::path repoPath = PtitGitRepos().getWorkingFolder();
+    long long length = std::string(repoPath).size();
+    //std::cerr<<path<<std::endl<<repoPath<<std::endl;
+    if(path == repoPath) return ".ptitgit/..";
+    return std::string(path).substr(length+1);
+}

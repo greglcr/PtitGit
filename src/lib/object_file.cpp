@@ -24,7 +24,7 @@ File::File(fs::path filePath, bool create) {
     std::ostringstream oss;
     oss << inputFile.rdbuf();
     
-    this->content += filePath;
+    this->content += relativeToRepo(filePath);
     this->content += '\n';
     this->content += oss.str();
     

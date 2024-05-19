@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 std::string get_folder_to_object(std::string hashedContent);
 std::string get_path_to_object(std::string hashedContent);
-
+fs::path relativeToRepo(fs::path);
 class Object  {
 
     public:
