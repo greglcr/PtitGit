@@ -26,15 +26,16 @@ void cmdCommit(std::string message){
     std::string content = X.get_repos_content("HEAD");
     if(content[0] == 'r' && content[1] == 'e' && content[2] == 'f' && content[3] == ':' && content[4] == ' '){
         path = content.substr(5);
-        remove(path);
         std::ofstream out(path);
         out << New.getHashedContent();
+        std::cout<<"The hash of the commit for branch "<<path.filename()<<" is now "<<New.getHashedContent()<<std::endl;
         return;        
     }
     else{
         remove(X.getWorkingFolder() / ".ptitgit" / "HEAD");
         std::ofstream out(X.getWorkingFolder() / ".ptitgit" / "HEAD");
         out << New.getHashedContent();
+        std::cout<<"The hash of the commit for the detached HEAD is now "<<New.getHashedContent()<<std::endl;
         return;
     }
 }
