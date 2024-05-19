@@ -109,9 +109,9 @@ std::string PtitGitRepos::get_config(std::string key) {
     return "";
 }
 
-std::string PtitGitRepos::get_repos_content(fs::path filePath) {
+std::string PtitGitRepos::get_working_folder_content(fs::path filePath) {
 
-    filePath = this->workingFolder / ".ptitgit" / filePath;
+    filePath = this->workingFolder / filePath;
 
     if (!fs::exists(filePath)) {
         std::cerr << "Error : invalid file path in get_repos_content (" << filePath << ")" << std::endl;
@@ -131,6 +131,13 @@ std::string PtitGitRepos::get_repos_content(fs::path filePath) {
     fileStream.close();    
 
     return content;
+
+}
+
+std::string PtitGitRepos::get_repos_content(fs::path filePath) {
+
+    return get_working_folder_content(fs::path(".ptitgit") / filePath);
+
 }
 
 

@@ -24,6 +24,7 @@ class PtitGitRepos {
         std::string get_config(std::string key);
         void set_config(std::string key, std::string value);
         std::string get_repos_content(fs::path filePath);
+        std::string get_working_folder_content(fs::path filePath);
     
 
     private:
