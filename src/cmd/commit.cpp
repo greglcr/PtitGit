@@ -32,7 +32,6 @@ void cmdCommit(std::string message){
         return;        
     }
     else{
-        remove(X.getWorkingFolder() / ".ptitgit" / "HEAD");
         std::ofstream out(X.getWorkingFolder() / ".ptitgit" / "HEAD");
         out << New.getHashedContent();
         std::cout<<"The hash of the commit for the detached HEAD is now "<<New.getHashedContent()<<std::endl;
