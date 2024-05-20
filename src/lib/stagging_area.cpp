@@ -38,7 +38,6 @@ void StaggingArea::construct_tree(std::string curFileHash) {
                 std::string nextFileHash = get_object_hash(curLine);
                 this->treeStaggingArea[curFileHash].push_back(nextFileHash);
                 this->treeStaggingAreaReversed[nextFileHash] = curFileHash;
-                std::cout << curFileHash << " " << nextFileHash << " " << 555 << std::endl;
                 construct_tree(nextFileHash);
             }
         }
@@ -235,7 +234,7 @@ void StaggingArea::add(fs::path pathToAdd) {
         if (this->status[pathToAdd].first == "deleted") {
 
             //Dans ce cas là, même pas besoin de regarder le contenu, juste on récupère son hash, on le supprime du parent puis on appel update_node
-            //Mais justement on ne pas accèder au contenu vu que ça  a été supprimé.
+            //Mais justement on ne pas accèder au contenu vu que ça a été supprimé.
             std::string hashedContent = this->status[pathToAdd].second;
             std::string fatherHash = this->treeStaggingAreaReversed[hashedContent];
             std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).second;
@@ -248,9 +247,10 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "modified") {
 
-            //Dans ce cas là, on a besoin de l'ancien hash qu'on récupère dans status
             std::string pastHashedContent = this->status[pathToAdd].second; //C'est le hash correspondant actuellement stocké dans la stagging area
             std::string curContent = this->repos.get_working_folder_content(pathToAdd);
+            curContent = std::string(pathToAdd) + '\n' + curContent;
+            curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             //On doit maintenant retirer l'ancien hash du père du fichier
@@ -342,17 +342,17 @@ void StaggingArea::update_node(std::string curHash, std::string hashToDelete, st
         return;
     }
 
-    std::string content = this->repos.get_repos_content(this->repos.getWorkingFolder() / ".ptitgit/index" / get_path_to_object(curHash));
+    std::string content = this->repos.get_repos_content(fs::path("index") / get_path_to_object(curHash));
 
     std::pair<std::string, std::string> infoDelete = delete_object(content, hashToDelete);
     std::string updatedContent1 = infoDelete.first;
     std::string deletedLine = infoDelete.second;
 
-    std::string updatedContent2 = insert_new_object(content, get_object_type(deletedLine), get_object_hash(deletedLine), get_object_path(deletedLine));
+    std::string updatedContent2 = insert_new_object(updatedContent1, get_object_type(deletedLine), hashToInsert, get_object_path(deletedLine));
 
     this->write_content(updatedContent2, hashString(updatedContent2));
 
-    if (this->treeStaggingAreaReversed[curHash] == ".") { //Means that we are on the root tree, so we must add it to INDEX
+    if (this->treeStaggingAreaReversed[curHash] == "") { //Means that we are on the root tree, so we must add it to INDEX
         std::ofstream INDEX(this->repos.getWorkingFolder() / ".ptitgit/index/INDEX");
         INDEX << hashString(updatedContent2);
         INDEX.close();

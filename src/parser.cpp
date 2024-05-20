@@ -150,7 +150,12 @@ int main(int argc,char *argv[])  {
         }
     }
     else if (argc >= 2 && strcmp(argv[1], "add") == 0) {
-        add();
+        if (argc >= 3) {
+            add(argv[2]);
+        }
+        else {
+            add();
+        }
     }
     else if (argc >= 2 && strcmp(argv[1], "init-remote") == 0) {
         if (argc >= 4)
