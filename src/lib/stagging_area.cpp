@@ -31,23 +31,23 @@ void StaggingArea::construct_tree(std::string curFileHash) {
 
     if (fileType == "tree") {
         try {
-            get_next_line(fileContent); //Erase file name
+            get_next_line(fileContent);
+            get_next_line(fileContent);
             while(fileContent != "") {
                 std::string curLine = get_next_line(fileContent);
                 std::string nextFileHash = get_object_hash(curLine);
-                NodeTree curNode;
-                curNode.fatherHash = curFileHash;
-                curNode.nodeHash = nextFileHash;
                 this->treeStaggingArea[curFileHash].push_back(nextFileHash);
                 this->treeStaggingAreaReversed[nextFileHash] = curFileHash;
+                std::cout << curFileHash << " " << nextFileHash << " " << 555 << std::endl;
+                construct_tree(nextFileHash);
             }
         }
         catch (const std::runtime_error &e) {
             //Rien à faire ici
         }
     }
-    else if (fileType == "blob") {
-        //En fait il n'y a rien à faire
+    else if (fileType == "file") {
+        //En fait rien à faire ici
     }
     else {
         std::cerr << "Error in StaggingArea::construct_tree : invalid file type (" << fileType << ")\n";
@@ -57,7 +57,7 @@ void StaggingArea::construct_tree(std::string curFileHash) {
 
 
 
-void StaggingArea::calc_differences(bool verbose) {
+void StaggingArea::calc_differences(bool verbose = false) {
 
     calc_differences(repos.getWorkingFolder(), repos.get_repos_content("index/INDEX"), verbose);
 
@@ -208,6 +208,7 @@ StaggingArea::StaggingArea(PtitGitRepos repos) {
     this->rootTree = repos.get_repos_content("index/INDEX");
 
     this->construct_tree(this->rootTree);
+    this->calc_differences();
 }
 
 std::string StaggingArea::get_root_tree() {
@@ -217,6 +218,8 @@ std::string StaggingArea::get_root_tree() {
 }
 
 void StaggingArea::add(fs::path pathToAdd) {
+
+    std::cout << pathToAdd << std::endl;
 
     if (this->status[pathToAdd].first == "unchanged") {
         std::cout << "Dernière version de cet objet déjà ajoutée" << std::endl;
@@ -235,7 +238,7 @@ void StaggingArea::add(fs::path pathToAdd) {
             //Mais justement on ne pas accèder au contenu vu que ça  a été supprimé.
             std::string hashedContent = this->status[pathToAdd].second;
             std::string fatherHash = this->treeStaggingAreaReversed[hashedContent];
-            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path(".ptitgit/index") / get_path_to_object(fatherHash)), hashedContent).second;
+            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).second;
             std::string hashUpdatedFather = hashString(updatedFather);
             this->write_content(updatedFather, hashUpdatedFather);
             std::string grandFatherHash = this->treeStaggingAreaReversed[fatherHash];
@@ -247,14 +250,14 @@ void StaggingArea::add(fs::path pathToAdd) {
 
             //Dans ce cas là, on a besoin de l'ancien hash qu'on récupère dans status
             std::string pastHashedContent = this->status[pathToAdd].second; //C'est le hash correspondant actuellement stocké dans la stagging area
-            std::string curContent = this->repos.get_repos_content(pathToAdd);
+            std::string curContent = this->repos.get_working_folder_content(pathToAdd);
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             //On doit maintenant retirer l'ancien hash du père du fichier
             std::string pastFatherHash = this->treeStaggingAreaReversed[pastHashedContent];
-            std::pair<std::string, std::string> infoDelete = delete_object(this->repos.get_repos_content(fs::path(".ptitgit/index") / get_path_to_object(pastFatherHash)), pastHashedContent);
-            std::string lineDelete = infoDelete.first;
-            std::string newFatherContent1 = infoDelete.second;
+            std::pair<std::string, std::string> infoDelete = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash)), pastHashedContent);
+            std::string newFatherContent1 = infoDelete.first;
+            std::string lineDelete = infoDelete.second;
             //Maintenant il faut écrire le nouveau fichier dans la stagging area, puis update le father
             std::string newFatherContent2 = insert_new_object(newFatherContent1, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent2);
