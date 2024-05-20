@@ -191,10 +191,7 @@ std::string insert_new_object(std::string content, std::string typeToInsert, std
 
     std::string updatedContent;
 
-    std::cout << "Dans insert " << content << " " << hashToInsert << std::endl;
-
     get_next_line(content);
-    std::cout << "Dans insert" << std::endl;
     std::string filePath = get_next_line(content);
 
     bool added = false;

@@ -197,8 +197,6 @@ std::string StaggingArea::get_root_tree() {
 
 void StaggingArea::add(fs::path pathToAdd) {
 
-    std::cout << pathToAdd << std::endl;
-
     if (this->status[pathToAdd].first == "unchanged") {
         std::cout << "Dernière version de cet objet déjà ajoutée" << std::endl;
         return;
@@ -254,7 +252,7 @@ void StaggingArea::add(fs::path pathToAdd) {
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
             this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash);
-            
+
         }
     }
 
