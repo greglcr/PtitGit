@@ -229,13 +229,7 @@ void StaggingArea::add(fs::path pathToAdd) {
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             std::string pastFatherHash = this->treeStaggingAreaReversed[pastHashedContent];
-            std::pair<std::string, std::string> infoDelete = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash)), pastHashedContent);
-            std::string newFatherContent1 = infoDelete.first;
-            std::string lineDelete = infoDelete.second;
-            std::string newFatherContent2 = insert_new_object(newFatherContent1, "file", curHashedContent, pathToAdd.filename());
-            std::string newFatherHash = hashString(newFatherContent2);
-            this->write_content(newFatherContent2, newFatherHash);
-            update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash);
+            update_node(pastFatherHash, pastHashedContent, curHashedContent);
 
         }
 
@@ -309,6 +303,11 @@ void StaggingArea::write_content(std::string content, std::string hashedContent)
 void StaggingArea::update_node(std::string curHash, std::string hashToDelete, std::string hashToInsert) {
 
     if (this->treeStaggingArea[curHash].empty()) {
+        //Si on arrrive dans ce cas là, alors forcèment c'est qu'on a update un fichier qui est directement dans le working folder, donc on peut remplacer INDEX par
+        //hashToInsert
+        std::ofstream INDEX(this->repos.getWorkingFolder() / ".ptitgit/index/INDEX");
+        INDEX << hashString(hashToInsert);
+        INDEX.close();
         return;
     }
 
