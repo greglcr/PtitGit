@@ -7,37 +7,39 @@
 
 namespace fs = std::filesystem;
 
-PtitGitRepos::PtitGitRepos() {
+fs::path find_working_directory(fs::path curPath) {
 
-    fs::path curPath = fs::current_path();
+    if(curPath.is_relative()) {
+        curPath = fs::current_path() / curPath;
+    }
 
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
         curPath = curPath.parent_path();
-    }
+    }    
 
-    if (!fs::exists(curPath / ".ptitgit")) {
-        std::cerr << "Erreur : Pas de repos git dans les dossiers parents" << std::endl;
-        exit(0);
-    }
-    else {
-        this->workingFolder = curPath;
-    }
-    
-}
-
-PtitGitRepos::PtitGitRepos(fs::path workingFolder) {
-
-    if(workingFolder.is_relative()) {
-        workingFolder = fs::current_path() / workingFolder;
-    }
-
-    if(!fs::exists(workingFolder / ".ptitgit")) {
+    if(!fs::exists(curPath / ".ptitgit")) {
         std::cerr << "Erreur : Le dossier indiqué n'est pas un repos git" << std::endl;
         exit(0);
     }
     else {
-        this->workingFolder = workingFolder;
+        return curPath;
     }
+
+}
+
+PtitGitRepos::PtitGitRepos() {
+
+    this->workingFolder = find_working_directory(fs::current_path());
+
+}
+
+PtitGitRepos::PtitGitRepos(fs::path curPath) {
+
+    if(curPath.is_relative()) {
+        curPath = fs::current_path() / curPath;
+    }
+
+    this->workingFolder = find_working_directory(curPath);
 
 }
 
