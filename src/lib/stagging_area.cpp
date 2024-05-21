@@ -91,6 +91,8 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
         }
     }
 
+    //std::cout << curPathInWorkingArea << std::endl;
+
     std::sort(pathToBlobsInCurWorkingFolder.begin(), pathToBlobsInCurWorkingFolder.end());
     std::sort(pathToBlobsInCurStaggingArea.begin(), pathToBlobsInCurStaggingArea.end());
     int posWorkingFolder = 0, posStaggingArea = 0;
@@ -133,35 +135,43 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
 
     }
 
+    //std::cout << curPathInWorkingArea << std::endl;
     std::sort(pathToTreesInCurWorkingFolder.begin(), pathToTreesInCurWorkingFolder.end());
     std::sort(pathToTreesInCurStaggingArea.begin(), pathToTreesInCurStaggingArea.end());
     posWorkingFolder = 0;
     posStaggingArea = 0;
     while (posWorkingFolder < (int)pathToTreesInCurWorkingFolder.size() || posStaggingArea < (int)pathToTreesInCurStaggingArea.size()) {
 
+        //std::cout << posWorkingFolder << " " << posStaggingArea << std::endl;
+
         if (posWorkingFolder == (int)pathToTreesInCurWorkingFolder.size()) {
+            //std::cout << 1 << std::endl;
             if(verbose){std::cout << "Dossier supprimé : " << pathToTreesInCurStaggingArea[posStaggingArea].first << std::endl;}
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()) {
+            std::cout << 2 << std::endl;
             if(verbose){std::cout << "Dossier ajouté : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;}
-            this->status[pathToTreesInCurWorkingFolder[posStaggingArea].first].first = "added";
+            this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurWorkingFolder[posWorkingFolder].first > pathToTreesInCurStaggingArea[posStaggingArea].first) {
+            //std::cout << 3 << std::endl;
             if(verbose){std::cout << "Dossier supprimé : " << pathToTreesInCurStaggingArea[posStaggingArea].first << std::endl;}
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].first > pathToTreesInCurWorkingFolder[posWorkingFolder].first) {
+            //std::cout << 4 << std::endl;
             if(verbose){std::cout << "Dossier ajouté : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;}
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].second != pathToTreesInCurWorkingFolder[posWorkingFolder].second) {
+            //std::cout << 5 << std::endl;
             if(verbose){std::cout << "Dossier modifié : " << pathToTreesInCurWorkingFolder[posWorkingFolder].first << std::endl;}
             calc_differences(pathToTreesInCurWorkingFolder[posWorkingFolder].first, pathToTreesInCurStaggingArea[posStaggingArea].second, verbose);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "modified";
@@ -170,6 +180,7 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
             posStaggingArea++;
         }
         else {
+            //std::cout << 6 << std::endl;
             calc_differences(pathToTreesInCurWorkingFolder[posWorkingFolder].first, pathToTreesInCurStaggingArea[posStaggingArea].second, verbose);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "unchanged";
             posWorkingFolder++;
@@ -241,16 +252,9 @@ void StaggingArea::add(fs::path pathToAdd) {
             fs::path fatherPath = pathToAdd.parent_path();
             std::string pastFatherHash = this->status[fatherPath].second;
             std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
-            std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd);
-            std::string newFatherHash = hashString(newFatherContent);
-            this->write_content(newFatherContent, newFatherHash);
-            /*Tree fatherTree = Tree(this->repos.getWorkingFolder() / fatherPath);
-            std::string pastFatherContent = fatherTree.getContent();
-            std::string pastFatherHash = fatherTree.getHashedContent();
             std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
-            this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash); Tout est faux ici?*/
 
         }
     }
@@ -259,12 +263,10 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         if (this->status[pathToAdd].first == "deleted") {
 
-            //C'est littéralement le même code que pour le cas ou c'est une file, à modifier plus tard
             std::string hashedContent = this->status[pathToAdd].second;
             std::string fatherHash = this->treeStaggingAreaReversed[hashedContent];
             std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).first;
             std::string hashUpdatedFather = hashString(updatedFather);
-            std::cout << hashedContent << " " << fatherHash << " " << updatedFather << std::endl;
             this->write_content(updatedFather, hashUpdatedFather);
             std::string grandFatherHash = this->treeStaggingAreaReversed[fatherHash];
             update_node(grandFatherHash, fatherHash, hashUpdatedFather);
@@ -273,10 +275,8 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "modified") {
 
-            //Ici, on doit quand même récupere le nouveau tree avant de tout mettre à jour
             Tree curTree = Tree(pathToAdd);
-            this->add_all(curTree); //Ici ça va écrire tout notre tree dedans
-            //Une fois qu'on a fait ça, c'est exactement la même chose qu'il nous reste à faire.
+            this->add_all(curTree);
             std::string pastHashedContent = this->status[pathToAdd].second;
             std::string pastFatherHash = this->treeStaggingAreaReversed[pastHashedContent];
             update_node(pastFatherHash, pastHashedContent, curTree.getHashedContent());
@@ -285,17 +285,13 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "added") {
 
-            //Le bug c'est qu'en fait, le fatherTree contient deja le nouveau contenu. Il faut récupérer l'ancien contenu du fatherTree.
-            //En fait on peut pas construire le fatherTree, parce que ça va forcèment tout ajouter.
-
-
             Tree curTree = Tree(pathToAdd);
             this->add_all(curTree);
             std::string curHashedContent = curTree.getHashedContent();
             fs::path fatherPath = pathToAdd.parent_path();
             std::string pastFatherHash = this->status[fatherPath].second;
             std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
-            std::string newFatherContent = insert_new_object(pastFatherContent, "tree", curHashedContent, pathToAdd);
+            std::string newFatherContent = insert_new_object(pastFatherContent, "tree", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
             this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash);
