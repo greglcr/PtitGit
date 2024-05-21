@@ -1,4 +1,5 @@
 from test1 import test1
+from test2 import test2
 from test_config import test_config
 
 class Color:
@@ -24,6 +25,7 @@ def exec_test(name, fct):
     nbFail += fail_test
 
 exec_test("test 1", test1)
+exec_test("test 2", test2)
 exec_test("config", test_config)
 
 print(Color.blue + "end of tests" + Color.reset)

@@ -34,7 +34,6 @@ void bfs(std::string start, std::map<std::string, int> & ancestors)  {
         if (ancestors.find(hash) != ancestors.end())
             continue;
         ancestors[hash] = dist;
-        std::cout << hash << " -> " << dist << std::endl;
         dist++;
         
         
@@ -42,7 +41,6 @@ void bfs(std::string start, std::map<std::string, int> & ancestors)  {
         commit.fromfile(hash);
 
         for (std::string parent : commit.get_parents_hash())    {
-            std::cout << "parent |" << parent << "|" << std::endl;
             if (parent == "0") continue;
             queue.push_back({parent, dist});
         }
@@ -50,14 +48,31 @@ void bfs(std::string start, std::map<std::string, int> & ancestors)  {
 }
 
 std::string last_common_ancestor(Commit a, Commit b) {
+    if (a.getHashedContent() == b.getHashedContent()) return a.getHashedContent();
     std::map<std::string, int> ancestorsA, ancestorsB;
+
 
     bfs(a.getHashedContent(), ancestorsA);
     bfs(b.getHashedContent(), ancestorsB);
 
-    // TODO
-    
-    return a.getHashedContent();
+    if (ancestorsA.find(b.getHashedContent()) != ancestorsA.end())
+        return b.getHashedContent();
+
+    if (ancestorsB.find(a.getHashedContent()) != ancestorsB.end())
+        return a.getHashedContent();
+
+    int mini = 1000000000;
+    std::string commit_result = "??????????????????";
+    for (auto it = ancestorsA.begin(); it != ancestorsA.end(); it++)    {
+        if (ancestorsB.find(it->first) != ancestorsB.end())  {
+            int val = std::min(it->second, ancestorsB[it->first]);
+            if (val <= mini)    {
+                mini = val;
+                commit_result = it->first;
+            }
+        }
+    }
+    return commit_result;
 }
 
     
