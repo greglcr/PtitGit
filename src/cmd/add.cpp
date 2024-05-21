@@ -10,6 +10,12 @@ namespace fs = std::filesystem;
 
 void add(fs::path pathToAdd) {
 
+    std::string stringPath = pathToAdd.string();
+    if (stringPath.back() == '/') {
+        stringPath.pop_back();
+    }
+    pathToAdd = fs::path(stringPath);
+
     PtitGitRepos curRepos = PtitGitRepos();
     StaggingArea curStagginArea = StaggingArea(curRepos);
     curStagginArea.add(pathToAdd);
