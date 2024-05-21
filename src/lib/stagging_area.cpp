@@ -235,8 +235,9 @@ void StaggingArea::add(fs::path pathToAdd) {
 
             std::string pastHashedContent = this->status[pathToAdd].second;
             std::string curContent = this->repos.get_working_folder_content(pathToAdd);
-            curContent = std::string(pathToAdd) + '\n' + curContent;
-            curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
+            //curContent = std::string(pathToAdd) + '\n' + curContent;
+            //curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
+            curContent = "file " + std::to_string(curContent.size() + std::string(pathToAdd).size() + 1) + '\n' + std::string(pathToAdd) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             std::string pastFatherHash = this->treeStaggingAreaReversed[pastHashedContent];
@@ -247,6 +248,9 @@ void StaggingArea::add(fs::path pathToAdd) {
         else if (this->status[pathToAdd].first == "added") {
 
             std::string curContent = this->repos.get_working_folder_content(pathToAdd);
+            //curContent = std::string(pathToAdd) + '\n' + curContent;
+            //curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
+            curContent = "file " + std::to_string(curContent.size() + std::string(pathToAdd).size() + 1) + '\n' + std::string(pathToAdd) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             fs::path fatherPath = pathToAdd.parent_path();
@@ -255,6 +259,8 @@ void StaggingArea::add(fs::path pathToAdd) {
             std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
+            std::string pastGrandFatherHash = this->treeStaggingAreaReversed[pastFatherHash];
+            update_node(pastGrandFatherHash, pastFatherHash, newFatherHash);
 
         }
     }
