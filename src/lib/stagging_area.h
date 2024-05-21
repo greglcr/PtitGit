@@ -26,8 +26,6 @@ class StaggingArea {
         void calc_differences(bool verbose);
         void calc_differences(fs::path curPosWorkingArea, std::string curHashStaggingArea, bool verbose);
         void add(fs::path pathToAdd);
-        void add_tree(Tree treeToAdd);
-        void add_file(File fileToAdd);
         void add_all();
         void add_all(Tree curTree);
         void write_content(Object curObject);

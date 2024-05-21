@@ -10,6 +10,6 @@ namespace fs = std::filesystem;
 
 void add();
 
-void add(fs::path fileToAdd);
+void add(fs::path pathToAdd);
 
 #endif

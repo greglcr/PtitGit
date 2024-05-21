@@ -8,16 +8,11 @@
 
 namespace fs = std::filesystem;
 
-void add(fs::path fileToAdd) {
-
-    if (fs::is_directory(fileToAdd)) {
-        std::cerr << "Error : Only file adding is supported for the moment, use ./petitgit add to add everything" << std::endl;
-        exit(0);
-    }
+void add(fs::path pathToAdd) {
 
     PtitGitRepos curRepos = PtitGitRepos();
     StaggingArea curStagginArea = StaggingArea(curRepos);
-    curStagginArea.add(fileToAdd);
+    curStagginArea.add(pathToAdd);
 }
 
 void add() {
