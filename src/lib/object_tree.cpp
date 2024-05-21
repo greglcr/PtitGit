@@ -199,7 +199,8 @@ std::string insert_new_object(std::string content, std::string typeToInsert, std
     while (content != "") {
         std::string curLine = get_next_line(content);
         std::string curPath = get_object_path(curLine);
-        if (curPath > pathToInsert && !added) {
+        std::string curType = get_object_type(curLine);
+        if (!added && ((curPath > pathToInsert  && curType == typeToInsert) || (typeToInsert == "tree" && curType == "file"))) {
             updatedContent += typeToInsert + " " + hashToInsert + " " + pathToInsert + '\n';
             added = true;
         }
