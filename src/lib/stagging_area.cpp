@@ -212,7 +212,7 @@ void StaggingArea::add(fs::path pathToAdd) {
 
             std::string hashedContent = this->status[pathToAdd].second;
             std::string fatherHash = this->treeStaggingAreaReversed[hashedContent];
-            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).second;
+            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).first;
             std::string hashUpdatedFather = hashString(updatedFather);
             this->write_content(updatedFather, hashUpdatedFather);
             std::string grandFatherHash = this->treeStaggingAreaReversed[fatherHash];
@@ -239,13 +239,18 @@ void StaggingArea::add(fs::path pathToAdd) {
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             fs::path fatherPath = pathToAdd.parent_path();
-            Tree fatherTree = Tree(this->repos.getWorkingFolder() / fatherPath);
+            std::string pastFatherHash = this->status[fatherPath].second;
+            std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
+            std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd);
+            std::string newFatherHash = hashString(newFatherContent);
+            this->write_content(newFatherContent, newFatherHash);
+            /*Tree fatherTree = Tree(this->repos.getWorkingFolder() / fatherPath);
             std::string pastFatherContent = fatherTree.getContent();
             std::string pastFatherHash = fatherTree.getHashedContent();
             std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
-            this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash);
+            this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash); Tout est faux ici?*/
 
         }
     }
@@ -257,8 +262,9 @@ void StaggingArea::add(fs::path pathToAdd) {
             //C'est littéralement le même code que pour le cas ou c'est une file, à modifier plus tard
             std::string hashedContent = this->status[pathToAdd].second;
             std::string fatherHash = this->treeStaggingAreaReversed[hashedContent];
-            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).second;
+            std::string updatedFather = delete_object(this->repos.get_repos_content(fs::path("index") / get_path_to_object(fatherHash)), hashedContent).first;
             std::string hashUpdatedFather = hashString(updatedFather);
+            std::cout << hashedContent << " " << fatherHash << " " << updatedFather << std::endl;
             this->write_content(updatedFather, hashUpdatedFather);
             std::string grandFatherHash = this->treeStaggingAreaReversed[fatherHash];
             update_node(grandFatherHash, fatherHash, hashUpdatedFather);
@@ -279,13 +285,17 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "added") {
 
+            //Le bug c'est qu'en fait, le fatherTree contient deja le nouveau contenu. Il faut récupérer l'ancien contenu du fatherTree.
+            //En fait on peut pas construire le fatherTree, parce que ça va forcèment tout ajouter.
+
+
             Tree curTree = Tree(pathToAdd);
             this->add_all(curTree);
+            std::string curHashedContent = curTree.getHashedContent();
             fs::path fatherPath = pathToAdd.parent_path();
-            Tree fatherTree = Tree(this->repos.getWorkingFolder() / fatherPath);
-            std::string pastFatherContent = fatherTree.getContent();
-            std::string pastFatherHash = fatherTree.getHashedContent();
-            std::string newFatherContent = insert_new_object(pastFatherContent, "file", curTree.getHashedContent(), pathToAdd.filename());
+            std::string pastFatherHash = this->status[fatherPath].second;
+            std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
+            std::string newFatherContent = insert_new_object(pastFatherContent, "tree", curHashedContent, pathToAdd);
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
             this->update_node(this->treeStaggingAreaReversed[pastFatherHash], pastFatherHash, newFatherHash);
@@ -350,7 +360,7 @@ void StaggingArea::update_node(std::string curHash, std::string hashToDelete, st
         //Si on arrrive dans ce cas là, alors forcèment c'est qu'on a update un fichier qui est directement dans le working folder, donc on peut remplacer INDEX par
         //hashToInsert
         std::ofstream INDEX(this->repos.getWorkingFolder() / ".ptitgit/index/INDEX");
-        INDEX << hashString(hashToInsert);
+        INDEX << hashToInsert;
         INDEX.close();
         return;
     }
