@@ -59,7 +59,7 @@ Tree::Tree(fs::path folderPath, bool create) {
     this->content = "tree " + std::to_string(abc.size()) + '\n' + abc;
 
     this->hashedContent = hashString(this->content);
-
+    //std::cout<<content<<std::endl<<create<<std::endl;
     if(create) this->writeObject();
 }
 
@@ -113,7 +113,7 @@ Tree Tree::createTreeFromContent(std::string content, bool create){
     long long findEndl = content.find('\n');
     long long findNextSpace;
     if(content.substr(0,findSpace) != "tree") std::cerr<<"Not a tree here\n";
-    if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n";
+    if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n"<<content.substr(findSpace+1,findEndl-findSpace-1)<<" "<<content.size()-findEndl-1<<std::endl;
 
     long long findNextEndl = content.find('\n',findEndl+1);
     this->folderPath = content.substr(findEndl+1, findNextEndl - findEndl -1);
@@ -209,7 +209,7 @@ std::string insert_new_object(std::string content, std::string typeToInsert, std
         updatedContent += typeToInsert + " " + hashToInsert + " " + pathToInsert + '\n';
     }
 
-    updatedContent = "tree " + std::to_string(updatedContent.size()) + '\n' + filePath + '\n' + updatedContent;
+    updatedContent = "tree " + std::to_string(updatedContent.size()+std::string(filePath).size()+1) + '\n' + filePath + '\n' + updatedContent;
 
     return updatedContent;
 

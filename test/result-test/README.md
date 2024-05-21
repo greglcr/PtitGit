@@ -1,1 +1,1 @@
-This folder aims to store the git repos created by the test
+This is our version of Git!

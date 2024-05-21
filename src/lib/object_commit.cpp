@@ -53,35 +53,36 @@ Commit Commit::fromfile(std::string hashedContent){
     long long dcba = buffer.str().find('\n');
 
     if(buffer.str().substr(0,abcd) != "commit") std::cerr<<"Not a commit!";
-    if((long long) stoi(buffer.str().substr(abcd+1,dcba-abcd-1)) != (long long) buffer.str().size()-dcba-1) std::cerr<<"Bad size!";
+    if((long long) stoi(buffer.str().substr(abcd+1,dcba-abcd-1)) != (long long) (buffer.str().size()-dcba-1)) std::cerr<<"Bad size!"<<std::endl<<stoi(buffer.str().substr(abcd+1,dcba-abcd-1))<<" "<<(long long) (buffer.str().size()-dcba-1)<<std::endl;
 
     return Commit::fromstring(buffer.str().substr(dcba+1));
 }
 
 Commit Commit::fromstring(std::string commitContent){
-    Commit X = Commit();
+    //Commit X = Commit();
+    this->parentCommitsHash.clear();
     long long abc = commitContent.find(' ');
     long long cba = commitContent.find('\n');
     long long mm = cba + 1;
     //if(commitContent.substr(mm,abc-mm) != "tree") std::cerr<<"Not a tree :(\n"<<commitContent.substr(mm,abc-mm)<<"\n";
 
-    X.parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false);
+    this->parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false);
     mm = cba+1;
     abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
     while(commitContent.substr(mm,abc-mm)=="parent"){
         std::string xyz = commitContent.substr(abc+1,cba-abc-1);
-        X.parentCommitsHash.push_back(xyz);
+        this->parentCommitsHash.push_back(xyz);
         mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
     }
-    X.commitAuthor = commitContent.substr(abc+1,cba-abc-1);
+    this->commitAuthor = commitContent.substr(abc+1,cba-abc-1);
     mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
-    X.committer = commitContent.substr(abc+1,cba-abc-1);
+    this->committer = commitContent.substr(abc+1,cba-abc-1);
     mm = cba+1;abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
-    X.gpgsig = commitContent.substr(abc+1,cba-abc-1);
+    this->gpgsig = commitContent.substr(abc+1,cba-abc-1);
     mm = cba+1;cba = commitContent.find('\n',mm);
-    X.message = commitContent.substr(mm,cba-mm);
-    X.calculateContent();
-    return X;
+    this->message = commitContent.substr(mm,cba-mm);
+    this->calculateContent();
+    return *this;
 }
 
 Tree Commit::getTree(){

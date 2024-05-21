@@ -45,7 +45,7 @@ void init(fs::path folderToInit) {
     std::ofstream outHead(headPath);
     std::string indirectPath = "ref: " + std::string(relativeToRepo(path));
     outHead << indirectPath;
-    
+
     std::ofstream config(folderToInit / ".ptitgit/config");
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
