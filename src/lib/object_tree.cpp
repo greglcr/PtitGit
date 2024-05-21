@@ -210,7 +210,7 @@ std::string insert_new_object(std::string content, std::string typeToInsert, std
         updatedContent += typeToInsert + " " + hashToInsert + " " + pathToInsert + '\n';
     }
 
-    updatedContent = "tree " + std::to_string(updatedContent.size()+std::string(filePath).size()+1) + '\n' + filePath + '\n' + updatedContent;
+    updatedContent = "tree " + std::to_string(updatedContent.size() + std::string(filePath).size() + 1) + '\n' + filePath + '\n' + updatedContent;
 
     return updatedContent;
 
@@ -235,7 +235,7 @@ std::pair<std::string, std::string> delete_object(std::string content, std::stri
         }
     }
 
-    updatedContent = "tree " + std::to_string(updatedContent.size()) + '\n' + filePath + '\n' + updatedContent;
+    updatedContent = "tree " + std::to_string(updatedContent.size() + std::string(filePath).size() + 1) + '\n' + filePath + '\n' + updatedContent;
 
     return std::pair(updatedContent, deletedLine);
 
