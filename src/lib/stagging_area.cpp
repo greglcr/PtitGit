@@ -246,7 +246,7 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "added") {
 
-            std::string curContent = this->repos.get_repos_content(pathToAdd);
+            std::string curContent = this->repos.get_working_folder_content(pathToAdd);
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
             fs::path fatherPath = pathToAdd.parent_path();
