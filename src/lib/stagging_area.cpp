@@ -268,7 +268,7 @@ void StaggingArea::add(fs::path pathToAdd) {
         else if (this->status[pathToAdd].first == "modified") {
 
             //Ici, on doit quand même récupere le nouveau tree avant de tout mettre à jour
-            Tree curTree = Tree(status[pathToAdd].first);
+            Tree curTree = Tree(pathToAdd);
             this->add_all(curTree); //Ici ça va écrire tout notre tree dedans
             //Une fois qu'on a fait ça, c'est exactement la même chose qu'il nous reste à faire.
             std::string pastHashedContent = this->status[pathToAdd].second;
@@ -279,7 +279,7 @@ void StaggingArea::add(fs::path pathToAdd) {
 
         else if (this->status[pathToAdd].first == "added") {
 
-            Tree curTree = Tree(status[pathToAdd].first);
+            Tree curTree = Tree(pathToAdd);
             this->add_all(curTree);
             fs::path fatherPath = pathToAdd.parent_path();
             Tree fatherTree = Tree(this->repos.getWorkingFolder() / fatherPath);
