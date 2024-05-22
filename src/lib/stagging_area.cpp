@@ -54,6 +54,7 @@ void StaggingArea::construct_tree(std::string curFileHash) {
 
 void StaggingArea::calc_differences(bool verbose = false) {
 
+    this->status[repos.getWorkingFolder()].second = repos.get_repos_content("index/INDEX");
     calc_differences(repos.getWorkingFolder(), repos.get_repos_content("index/INDEX"), verbose);
 
 }
@@ -86,7 +87,7 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
     std::vector<std::pair<fs::path, std::string> > pathToTreesInCurWorkingFolder;
     for (size_t i = 0; i < treesInCurWorkingFolder.size(); i++) {
         pathToTreesInCurWorkingFolder.push_back(std::pair(treesInCurWorkingFolder[i].get_folder_path(), treesInCurWorkingFolder[i].getHashedContent()));
-        std::cout << treesInCurWorkingFolder[i].get_folder_path() << " " << 555 << std::endl;
+        //std::cout << treesInCurWorkingFolder[i].get_folder_path() << " " << 555 << std::endl;
     }
 
     std::vector<std::pair<fs::path, std::string> > pathToBlobsInCurStaggingArea;
@@ -162,7 +163,7 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
             posStaggingArea++;
         }
         else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()) {
-            std::cout << 2 << std::endl;
+            //std::cout << 2 << std::endl;
             if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
@@ -218,7 +219,7 @@ std::string StaggingArea::get_root_tree() {
 
 void StaggingArea::add(fs::path pathToAdd) {
 
-    std::cout <<pathToAdd << std::endl;
+    //std::cout << pathToAdd << std::endl;
 
     if (this->status[pathToAdd].first == "unchanged") {
         std::cout << "Dernière version de cet objet déjà ajoutée" << std::endl;
@@ -264,14 +265,14 @@ void StaggingArea::add(fs::path pathToAdd) {
             //curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
             curContent = "file " + std::to_string(curContent.size() + std::string(relativeToRepo(pathToAdd)).size() + 1) + '\n' + std::string(relativeToRepo(pathToAdd)) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
-            std::cout << curContent << " " << curHashedContent << std::endl;
+            //std::cout << curContent << " " << curHashedContent << std::endl;
             this->write_content(curContent, curHashedContent);
             fs::path fatherPath = pathToAdd.parent_path();
-            std::cout << fatherPath << std::endl;
+            //std::cout << fatherPath << std::endl;
             std::string pastFatherHash = this->status[fatherPath].second;
-            std::cout << pastFatherHash << std::endl;
+            //std::cout << pastFatherHash << std::endl;
             std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
-            std::cout << pastFatherContent << " " << pastFatherHash << std::endl;
+            //std::cout << pastFatherContent << " " << pastFatherHash << std::endl;
             std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
