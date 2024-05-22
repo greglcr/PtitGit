@@ -66,9 +66,7 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
     this->hashedContent = hashString(this->content);
     //std::cout<<content<<std::endl<<create<<std::endl;
     if(create) {
-        std::cout << folderPath << std::endl;
         PtitGitRepos curRepos = PtitGitRepos(folderPath);
-        std::cout << 11 << std::endl;
         curRepos.writeObject(*this);
     }
 }
@@ -114,26 +112,21 @@ Tree findTree(std::string hashedContent, bool create, PtitGitRepos repos){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
-    std::cout << "go create" << std::endl;
     Tree T = Tree().createTreeFromContent(content,create,repos);
     return T;
 }
 
 Tree Tree::createTreeFromContent(std::string content, bool create, PtitGitRepos repos){
-    std::cout << "create1" << std::endl;
     this->content = content;this->filesInside = {}; this->treesInside = {};
     long long findSpace = content.find(' ');
     long long findEndl = content.find('\n');
     long long findNextSpace;
-    std::cout << "create1b" << std::endl;
     if(content.substr(0,findSpace) != "tree") std::cerr<<"Not a tree here\n";
     if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n"<<content.substr(findSpace+1,findEndl-findSpace-1)<<" "<<content.size()-findEndl-1<<std::endl;
 
-    std::cout << "create1c" << std::endl;
     long long findNextEndl = content.find('\n',findEndl+1);
     this->folderPath = content.substr(findEndl+1, findNextEndl - findEndl -1);
 
-    std::cout << "create2" << std::endl;
     while(findNextEndl < (long long) content.size()-1){
         findEndl = findNextEndl;
         findSpace = content.find(' ' , findNextEndl + 1);
@@ -145,11 +138,8 @@ Tree Tree::createTreeFromContent(std::string content, bool create, PtitGitRepos 
             this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
         else std::cerr<<"What object is this? \n";
     }
-    std::cout << "create3" << std::endl;
     this->hashedContent = hashString(this->content);
-    std::cout << "create4" << std::endl;
     if(create) this->writeObject(repos.getWorkingFolder());
-    std::cout << "create5" << std::endl;
     return *this;
 }
 

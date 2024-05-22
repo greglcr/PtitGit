@@ -32,7 +32,6 @@ void init(fs::path folderToInit) {
     try {
         for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
             fs::create_directories(folderToInit / FOLDERS_TO_CREATE[i]);
-            std::cout << folderToInit / FOLDERS_TO_CREATE[i] << std::endl;
         }
     }
     catch (const fs::filesystem_error& e) {
