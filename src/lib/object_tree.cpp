@@ -2,6 +2,7 @@
 #include "object.h"
 #include "object_file.h"
 #include "object_tree.h"
+#include "repos.h"
 
 #include <filesystem>
 #include <iostream>
@@ -15,6 +16,8 @@ namespace fs = std::filesystem;
 
 Tree::Tree(fs::path folderPath, bool create) {
 
+    //std::cout << folderPath << std::endl;
+
     if (!fs::exists(folderPath)) {
         std::cerr << "Error in Tree construction : The given path doesn't exists (" << folderPath << ")" << std::endl;
     }
@@ -25,7 +28,7 @@ Tree::Tree(fs::path folderPath, bool create) {
     if (folderPath.is_relative()) {
         folderPath = fs::current_path() / folderPath;
     }
-
+    
     //this->content += "tree\n";
     this->content += relativeToRepo(folderPath);
     this->content += '\n';
@@ -38,11 +41,13 @@ Tree::Tree(fs::path folderPath, bool create) {
 
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.is_regular_file()) {
+            std::cout << entry << " " << folderPath << std::endl;
             File curFile = File(folderPath / entry.path().filename(),create);
             this->filesInside.push_back(curFile);
             //this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
         }
         else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
+            std::cout << 1212121 << std::endl;
             Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
             this->treesInside.push_back(curFolder);
             //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
@@ -60,7 +65,12 @@ Tree::Tree(fs::path folderPath, bool create) {
 
     this->hashedContent = hashString(this->content);
     //std::cout<<content<<std::endl<<create<<std::endl;
-    if(create) this->writeObject();
+    if(create) {
+        std::cout << folderPath << std::endl;
+        PtitGitRepos curRepos = PtitGitRepos(folderPath);
+        std::cout << 11 << std::endl;
+        curRepos.writeObject(*this);
+    }
 }
 
 fs::path Tree::get_folder_path() {

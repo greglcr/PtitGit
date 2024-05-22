@@ -36,7 +36,12 @@ File::File(fs::path filePath, bool create) {
     this->content = "file " + std::to_string(abc.size()) + '\n' + abc;
 
     this->hashedContent = hashString(this->content);
-    if(create) this->writeObject();
+    if(create) {
+        //std::cout << filePath << " " << 33333 << std::endl;
+        PtitGitRepos curRepos = PtitGitRepos(filePath);
+        curRepos.writeObject(*this);
+        //std::cout << 222 << std::endl;
+    }
 }
 
 void File::updateContent() {
