@@ -24,9 +24,9 @@ def exec_test(name, fct):
     nbOk += ok_test
     nbFail += fail_test
 
+exec_test("config", test_config)
 exec_test("test 1", test1)
 exec_test("test 2", test2)
-exec_test("config", test_config)
 
 print(Color.blue + "end of tests" + Color.reset)
 print("ok :",nbOk)
