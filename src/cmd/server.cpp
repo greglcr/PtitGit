@@ -11,6 +11,7 @@
 #include "../lib/tcp.h"
 #include "../cmd/init.h"
 #include "../lib/compare_repos.h"
+#include "../lib/reftag.h"
 
 void* handle_tcp_connection (void* arg);
 void server(int port)    {
@@ -69,9 +70,21 @@ void* handle_tcp_connection (void* arg)   {
         std::cout << "dir : " << directory << std::endl;
         result_compare branches = compare_branch(PtitGitRepos(directory), PtitGitRepos(repos_id));
         std::cout << "ok, " << branches.branch_name << " " << branches.commit_A << " " << branches.commit_B << std::endl;
-
-            
-        send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
+        if (branches.branch_name == "") {
+            send_message(connection, "You are not on a branch, you can not push");
+        } else if (branches.commit_B == "") {
+            send_message(connection,"this branch doesn't exist on the remote repository. Initializing....");
+            writeBranch(branches.branch_name, branches.commit_A, PtitGitRepos(repos_id));
+        } else if (branches.commit_A == branches.commit_B)  {
+            send_message(connection, "nothing to push. This branch is already synchronized with the server.");
+        } else if (branches.commit_A == branches.commit_lca)    {
+            send_message(connection, "Nothing to push. All your commits are already on the server.\nBe careful, the server is a few commits ahead.");
+        } else if (branches.commit_B == branches.commit_lca)    {
+            writeBranch(branches.branch_name, branches.commit_A, PtitGitRepos(repos_id));
+            send_message(connection, "Well received !");
+        } else  {
+            send_message(connection, "'push' impossible. Your branches diverge.");
+        }
     } else if (cmd == "pull")   {
         std::string repos_id = read_message(connection, 200);
         send_repos(connection, repos_id);

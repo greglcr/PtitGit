@@ -192,15 +192,15 @@ Tag Tag::fromstring(std::string commitContent){
     return X;
 }
 
-void writeRef(std::string refName, std::string refString){
-    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "tags" / refName;
+void writeRef(std::string refName, std::string refString, PtitGitRepos repos){
+    fs::path path = repos.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / refName;
     std::ofstream out(path);
     out << refString;
     return;
 }
 
-void writeBranch(std::string refName, std::string refString){
-    fs::path path = PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / refName;
+void writeBranch(std::string refName, std::string refString, PtitGitRepos repos){
+    fs::path path = repos.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / refName;
     std::ofstream out(path);
     out << refString;
     return;

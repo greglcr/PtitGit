@@ -31,8 +31,8 @@ class Tag : public Object {
     std::string tagType;
 };
 
-void writeRef(std::string, std::string);
-void writeBranch(std::string, std::string);
+void writeRef(std::string, std::string, PtitGitRepos repos = PtitGitRepos());
+void writeBranch(std::string, std::string, PtitGitRepos repos = PtitGitRepos());
 
 std::vector <std::string> objectResolve(PtitGitRepos,std::string,bool);
 std::string objectFind(PtitGitRepos X,std::string name,bool short_hash = true, std::string type = "object",bool follow = true);
