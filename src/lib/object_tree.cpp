@@ -32,7 +32,7 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
     //this->content += "tree\n";
     this->content += relativeToRepo(folderPath);
     this->content += '\n';
-    this->folderPath = relativeToRepo(folderPath);
+    this->folderPath = folderPath;
 
    
     //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
