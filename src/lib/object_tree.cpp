@@ -2,6 +2,7 @@
 #include "object.h"
 #include "object_file.h"
 #include "object_tree.h"
+#include "repos.h"
 
 #include <filesystem>
 #include <iostream>
@@ -15,6 +16,8 @@ namespace fs = std::filesystem;
 
 Tree::Tree(fs::path folderPath, bool create, bool empty) {
 
+    //std::cout << folderPath << std::endl;
+
     if (!fs::exists(folderPath)) {
         std::cerr << "Error in Tree construction : The given path doesn't exists (" << folderPath << ")" << std::endl;
     }
@@ -25,7 +28,7 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
     if (folderPath.is_relative()) {
         folderPath = fs::current_path() / folderPath;
     }
-
+    
     //this->content += "tree\n";
     this->content += relativeToRepo(folderPath);
     this->content += '\n';
@@ -62,7 +65,12 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
 
     this->hashedContent = hashString(this->content);
     //std::cout<<content<<std::endl<<create<<std::endl;
-    if(create) this->writeObject();
+    if(create) {
+        std::cout << folderPath << std::endl;
+        PtitGitRepos curRepos = PtitGitRepos(folderPath);
+        std::cout << 11 << std::endl;
+        curRepos.writeObject(*this);
+    }
 }
 
 fs::path Tree::get_folder_path() {

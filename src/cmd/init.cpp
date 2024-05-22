@@ -19,6 +19,12 @@ void init() {
 }
 
 void init(fs::path folderToInit) {
+    
+
+    if (folderToInit.is_relative()) {
+        folderToInit = fs::current_path() / folderToInit;
+    }
+
     if(fs::exists(folderToInit / ".ptitgit")) {
         std::cerr << "The given directory is already a git repos" << std::endl;
         return;
@@ -26,6 +32,7 @@ void init(fs::path folderToInit) {
     try {
         for(size_t i = 0; i < FOLDERS_TO_CREATE.size(); i++) {
             fs::create_directories(folderToInit / FOLDERS_TO_CREATE[i]);
+            std::cout << folderToInit / FOLDERS_TO_CREATE[i] << std::endl;
         }
     }
     catch (const fs::filesystem_error& e) {
@@ -34,7 +41,11 @@ void init(fs::path folderToInit) {
 
     Tree T = Tree(folderToInit, true, true);
     Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
-    C.writeObject();
+    //std::cout << 57 << std::endl;
+    PtitGitRepos curRepos = PtitGitRepos(folderToInit);
+    curRepos.writeObject(C);
+
+    //std::cout << 555 << std::endl;
 
     fs::path path = folderToInit / ".ptitgit" / "refs" / "heads" / "main";
     std::ofstream out(path);

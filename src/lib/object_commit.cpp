@@ -13,12 +13,17 @@
 #include <vector>
 
 Commit::Commit(Tree parentTree, std::vector<std::string> parentCommitsHash, std::string commitAuthor, std::string committer, std::string message, std::string gpgsig){
+
+    std::cout << 1234567 << std::endl;
+
     this->commitAuthor = commitAuthor;
     this->committer = committer;
     this->parentCommitsHash = parentCommitsHash;
     this->parentTree = parentTree;
     this->gpgsig = gpgsig;
     this->message = message;
+
+    std::cout << 12345 << std::endl;
 
     std::string abcabc = "tree " + this->parentTree.getHashedContent() + "\n";
     for(long long ii = 0; ii < (long long) this->parentCommitsHash.size(); ii++) abcabc += ("parent " + this->parentCommitsHash[ii] + "\n" );
@@ -27,6 +32,7 @@ Commit::Commit(Tree parentTree, std::vector<std::string> parentCommitsHash, std:
     long long uu = abcabc.size();
     this->content = "commit " + std::to_string(uu) + "\n" + abcabc;
     this->hashedContent = hashString(this->content);
+    std::cout << 1234 << std::endl;
 }
 
 void Commit::calculateContent(){
