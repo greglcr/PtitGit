@@ -2,9 +2,6 @@
 #define REPOS_H
 
 #include "object.h"
-#include "object_file.h"
-#include "object_tree.h"
-#include "object_commit.h"
 
 #include <filesystem>
 #include <string>

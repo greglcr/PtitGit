@@ -11,9 +11,10 @@ class Commit : public Object {
 
     public:
 
-        Commit(Tree parentTree = Tree(), std::vector<std::string> parentCommitsHash = {}, std::string commitAuthor = "", std::string committer ="PtiteGit Team", std::string message="New commit", std::string gpgsig="");
-        Commit fromstring(std::string);
-        Commit fromfile(std::string);
+        Commit(Tree parentTree, std::vector<std::string> parentCommitsHash = {}, std::string commitAuthor = "", std::string committer ="PtiteGit Team", std::string message="New commit", std::string gpgsig="");
+        Commit();
+        Commit fromstring(std::string, PtitGitRepos repos = PtitGitRepos());
+        Commit fromfile(std::string, PtitGitRepos repos = PtitGitRepos ());
         void calculateContent();
         Tree getTree();
         std::string get_hash_parent_tree();

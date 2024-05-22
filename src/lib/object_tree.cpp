@@ -72,6 +72,9 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
         curRepos.writeObject(*this);
     }
 }
+Tree::Tree()    {
+
+}
 
 fs::path Tree::get_folder_path() {
 
@@ -91,14 +94,14 @@ std::vector<Tree> Tree::get_trees_inside() {
 
 }
 
-Tree findTree(std::string hashedContent, bool create){
-    fs::path path;
-    fs::path curPath = fs::current_path();
-    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-        curPath = curPath.parent_path();
-    }
-    path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
-    if(!fs::exists(path)) path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
+Tree findTree(std::string hashedContent, bool create, PtitGitRepos repos){
+    //fs::path path = repos.getWorkingFolder();
+    //fs::path curPath = fs::current_path();
+    //while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
+    //    curPath = curPath.parent_path();
+    //}
+    fs::path path = repos.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    if(!fs::exists(path)) path = repos.getWorkingFolder() / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 
     std::ifstream fileToShow(path);
 
@@ -111,23 +114,26 @@ Tree findTree(std::string hashedContent, bool create){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
-
-    Tree T = Tree().createTreeFromContent(content,create);
+    std::cout << "go create" << std::endl;
+    Tree T = Tree().createTreeFromContent(content,create,repos);
     return T;
 }
 
-Tree Tree::createTreeFromContent(std::string content, bool create){
-    File F;
+Tree Tree::createTreeFromContent(std::string content, bool create, PtitGitRepos repos){
+    std::cout << "create1" << std::endl;
     this->content = content;this->filesInside = {}; this->treesInside = {};
     long long findSpace = content.find(' ');
     long long findEndl = content.find('\n');
     long long findNextSpace;
+    std::cout << "create1b" << std::endl;
     if(content.substr(0,findSpace) != "tree") std::cerr<<"Not a tree here\n";
     if((long long) std::stoi(content.substr(findSpace+1,findEndl-findSpace-1)) != (long long) content.size()-findEndl-1) std::cerr<<"Bad size!\n"<<content.substr(findSpace+1,findEndl-findSpace-1)<<" "<<content.size()-findEndl-1<<std::endl;
 
+    std::cout << "create1c" << std::endl;
     long long findNextEndl = content.find('\n',findEndl+1);
     this->folderPath = content.substr(findEndl+1, findNextEndl - findEndl -1);
 
+    std::cout << "create2" << std::endl;
     while(findNextEndl < (long long) content.size()-1){
         findEndl = findNextEndl;
         findSpace = content.find(' ' , findNextEndl + 1);
@@ -139,8 +145,11 @@ Tree Tree::createTreeFromContent(std::string content, bool create){
             this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
         else std::cerr<<"What object is this? \n";
     }
+    std::cout << "create3" << std::endl;
     this->hashedContent = hashString(this->content);
-    if(create) this->writeObject();
+    std::cout << "create4" << std::endl;
+    if(create) this->writeObject(repos.getWorkingFolder());
+    std::cout << "create5" << std::endl;
     return *this;
 }
 

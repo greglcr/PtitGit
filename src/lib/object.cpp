@@ -55,11 +55,13 @@ std::string get_path_to_object(std::string hashedContent) {
 
 }
 
-void Object::writeObject(){
-    fs::path curPath = fs::current_path();
+void Object::writeObject(fs::path curPath){
+    if (curPath == "") {
+        curPath = fs::current_path();
 
-    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-        curPath = curPath.parent_path();
+        while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
+            curPath = curPath.parent_path();
+        }
     }
 
     fs::path path = curPath / ".ptitgit" / "objects" / get_path_to_object(this->getHashedContent());

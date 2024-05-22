@@ -18,7 +18,7 @@ class Object  {
         std::string getHashedContent();
         fs::path get_folder_to_write();
         fs::path getPathToWrite();
-        void writeObject();
+        void writeObject(fs::path = "");
 
     protected:
 

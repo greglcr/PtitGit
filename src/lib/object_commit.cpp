@@ -14,16 +14,12 @@
 
 Commit::Commit(Tree parentTree, std::vector<std::string> parentCommitsHash, std::string commitAuthor, std::string committer, std::string message, std::string gpgsig){
 
-    std::cout << 1234567 << std::endl;
-
     this->commitAuthor = commitAuthor;
     this->committer = committer;
     this->parentCommitsHash = parentCommitsHash;
     this->parentTree = parentTree;
     this->gpgsig = gpgsig;
     this->message = message;
-
-    std::cout << 12345 << std::endl;
 
     std::string abcabc = "tree " + this->parentTree.getHashedContent() + "\n";
     for(long long ii = 0; ii < (long long) this->parentCommitsHash.size(); ii++) abcabc += ("parent " + this->parentCommitsHash[ii] + "\n" );
@@ -32,7 +28,13 @@ Commit::Commit(Tree parentTree, std::vector<std::string> parentCommitsHash, std:
     long long uu = abcabc.size();
     this->content = "commit " + std::to_string(uu) + "\n" + abcabc;
     this->hashedContent = hashString(this->content);
-    std::cout << 1234 << std::endl;
+}
+Commit::Commit()    {
+    this->commitAuthor = "";
+    this->committer = "";
+    this->message = "";
+    this->gpgsig = "";
+    this->parentTree = Tree();;
 }
 
 void Commit::calculateContent(){
@@ -45,9 +47,8 @@ void Commit::calculateContent(){
     this->hashedContent = hashString(this->content);
 }
 
-Commit Commit::fromfile(std::string hashedContent){
-    const std::ifstream input_stream(PtitGitRepos().getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent), std::ios_base::binary);
-
+Commit Commit::fromfile(std::string hashedContent, PtitGitRepos repos){
+    const std::ifstream input_stream(repos.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent), std::ios_base::binary);
     if (input_stream.fail()) {
         throw std::runtime_error("Failed to open file");
     }
@@ -61,10 +62,10 @@ Commit Commit::fromfile(std::string hashedContent){
     if(buffer.str().substr(0,abcd) != "commit") std::cerr<<"Not a commit!";
     if((long long) stoi(buffer.str().substr(abcd+1,dcba-abcd-1)) != (long long) (buffer.str().size()-dcba-1)) std::cerr<<"Bad size!"<<std::endl<<stoi(buffer.str().substr(abcd+1,dcba-abcd-1))<<" "<<(long long) (buffer.str().size()-dcba-1)<<std::endl;
 
-    return Commit::fromstring(buffer.str().substr(dcba+1));
+    return Commit::fromstring(buffer.str().substr(dcba+1), repos);
 }
 
-Commit Commit::fromstring(std::string commitContent){
+Commit Commit::fromstring(std::string commitContent, PtitGitRepos repos){
     //Commit X = Commit();
     this->parentCommitsHash.clear();
     long long abc = commitContent.find(' ');
@@ -72,7 +73,7 @@ Commit Commit::fromstring(std::string commitContent){
     long long mm = cba + 1;
     //if(commitContent.substr(mm,abc-mm) != "tree") std::cerr<<"Not a tree :(\n"<<commitContent.substr(mm,abc-mm)<<"\n";
 
-    this->parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false);
+    this->parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false,repos);
     mm = cba+1;
     abc = commitContent.find(' ',mm);cba = commitContent.find('\n',mm);
     while(commitContent.substr(mm,abc-mm)=="parent"){

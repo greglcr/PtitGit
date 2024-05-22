@@ -31,22 +31,20 @@ void bfs(PtitGitRepos repos, std::string start, std::map<std::string, int> & anc
     std::deque<std::pair<std::string, int> > queue;
     queue.push_back({start, 0});
     while (!queue.empty())  {
-        std::cout << "C" << std::endl;
         std::string hash = queue.front().first;
         int dist = queue.front().second;
         queue.pop_front();
 
-        std::cout << "D" << std::endl;
         if (ancestors.find(hash) != ancestors.end())
             continue;
         ancestors[hash] = dist;
         dist++;
         
         
-        std::cout << "E" << std::endl;
-        Commit commit;
-        std::cout << "B" << hash << std::endl;
-        commit.fromfile(objectFind(repos, hash, true, "commit"));
+        Commit commit = Commit ();
+        //commit.fromfile(objectFind(repos, hash, true, "commit"), repos);
+        commit.fromfile(hash, repos);
+
 
         for (std::string parent : commit.get_parents_hash())    {
             if (parent == "0") continue;
@@ -59,11 +57,8 @@ std::string last_common_ancestor(PtitGitRepos repos, std::string a, std::string 
     if (a == b) return a;
     std::map<std::string, int> ancestorsA, ancestorsB;
 
-    std::cout << "A" << std::endl;
     bfs(repos, a, ancestorsA);
-    std::cout << "A" << std::endl;
     bfs(repos, b, ancestorsB);
-    std::cout << "A" << std::endl;
 
     if (ancestorsA.find(b) != ancestorsA.end())
         return b;

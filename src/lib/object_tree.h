@@ -3,6 +3,7 @@
 
 #include "object.h"
 #include "object_file.h"
+#include "repos.h"
 
 #include <map>
 #include <vector>
@@ -11,8 +12,9 @@ class Tree : public Object {
 
     public:
 
-        Tree(fs::path folderPath = ".", bool create = false, bool empty=false);
-        Tree createTreeFromContent(std::string, bool);
+        Tree(fs::path folderPath, bool create = false, bool empty=false);
+        Tree();
+        Tree createTreeFromContent(std::string, bool, PtitGitRepos repos = PtitGitRepos());
         fs::path get_folder_path();
         std::vector<File> get_blobs_inside();
         std::vector<Tree> get_trees_inside();
@@ -25,7 +27,7 @@ class Tree : public Object {
 
 };
 
-Tree findTree(std::string,bool create = false);
+Tree findTree(std::string,bool create = false, PtitGitRepos repos = PtitGitRepos());
 std::string get_next_line(std::string &s);
 std::map<std::string, std::string> cut_line(std::string contentLine);
 std::string get_object_type(std::string contentLine);
