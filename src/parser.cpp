@@ -167,7 +167,8 @@ int main(int argc,char *argv[])  {
 
     else if (argc >= 2)   {
         std::cerr << "'" << argv[1] << "' is not a command." << std::endl;
-        std::vector<std::string> lst_commands { "add", "init", "hash-object", "cat-file", "server", "help", "show-ref", "push", "config", "tag", "branch", "status", "checkout", "init-remote", "pull"};
+        std::vector<std::string> lst_commands { "help","init", "hash-object", "cat-file", "server", "show-ref", "tag", "branch", "checkout", "commit", "merge", "push", "pull", "config", "status", "add","init-remote"};
+
 
         int dist_min = 100000000;
         std::string command_min = "???????";
