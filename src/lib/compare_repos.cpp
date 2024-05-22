@@ -1,10 +1,14 @@
 #include "compare_repos.h"
+#include "repos.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 #include <deque>
 #include <filesystem>
 #include "object_commit.h"
+#include "reftag.h"
+#include <unistd.h>
 
 namespace fs = std::filesystem;
 
@@ -75,6 +79,39 @@ std::string last_common_ancestor(Commit a, Commit b) {
     return commit_result;
 }
 
+
+result_compare compare_branch(PtitGitRepos reposA, PtitGitRepos reposB)    {
+    // use the branch store in A and look for this one in B
+
+    std::ifstream HEAD_file(reposA.getWorkingFolder() / ".ptitgit" / "HEAD");
+    std::stringstream buffer_HEAD;
+    buffer_HEAD << HEAD_file.rdbuf();
+    std::string HEAD = buffer_HEAD.str();
+
+    if (HEAD.find("ref: ") == 0)   {
+        std::string branchName = HEAD.substr(HEAD.rfind("/")+1);
+        std::cout << "You are working on the branch '" << branchName << "'" << std::endl;
+        std::string commit_local = ref_resolve(reposA, "HEAD");
+        std::cout << commit_local << std::endl;
     
+        //std::cout << tmp_dir + "/" + HEAD.substr(HEAD.find(".ptitgit")) << std::endl;
+        if ( access( (reposB.getWorkingFolder() / HEAD.substr(HEAD.find(".ptitgit"))).c_str(), F_OK ) == -1 )   {
+            std::cout << "Warning, your branch does not exist in the remote repository. Therefore 'pull' did nothing" << std::endl;
+            return {branchName, commit_local, "", ""};
+        } else  {
+            std::string commit_remote = ref_resolve(reposB, "HEAD");
+            std::cout << commit_remote << std::endl;
+            
+            Commit c_local, c_remote;
+            c_local.fromfile(commit_local);
+            c_remote.fromfile(commit_remote);
+            std::string lca_hash = last_common_ancestor(c_local, c_remote);
+
+            return {branchName, commit_local, commit_remote, lca_hash};
+        }
+    } else  {
+        return {"", "", "", "" };
+    }
+}
 
 
