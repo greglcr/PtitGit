@@ -30,7 +30,7 @@ File::File(fs::path filePath, bool create) {
     this->content += oss.str();
     this->actualFile = oss.str();
     //std::cout<<this->actualFile<<"$$$"<<std::endl;
-    this->filePath = relativeToRepo(filePath);
+    this->filePath = filePath;
 
     std::string abc = this->content;
     this->content = "file " + std::to_string(abc.size()) + '\n' + abc;
