@@ -16,8 +16,6 @@ namespace fs = std::filesystem;
 
 Tree::Tree(fs::path folderPath, bool create, bool empty) {
 
-    //std::cout << folderPath << std::endl;
-
     if (!fs::exists(folderPath)) {
         std::cerr << "Error in Tree construction : The given path doesn't exists (" << folderPath << ")" << std::endl;
     }
@@ -64,7 +62,6 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
     this->content = "tree " + std::to_string(abc.size()) + '\n' + abc;
 
     this->hashedContent = hashString(this->content);
-    //std::cout<<content<<std::endl<<create<<std::endl;
     if(create) {
         PtitGitRepos curRepos = PtitGitRepos(folderPath);
         curRepos.writeObject(*this);
@@ -104,7 +101,7 @@ Tree findTree(std::string hashedContent, bool create, PtitGitRepos repos){
     std::ifstream fileToShow(path);
 
     if(!fileToShow.is_open()) {
-        std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << path << ")" << std::endl;
+        std::cerr << "ERREUR : impossible d'ouvrir le fichier voulu dans get_object_content (" << path << ")" << std::endl;
         exit(0);
     }
 
@@ -133,9 +130,9 @@ Tree Tree::createTreeFromContent(std::string content, bool create, PtitGitRepos 
         findNextSpace = content.find(' ' , findSpace + 1);
         findNextEndl = content.find('\n', findNextSpace + 1);
         if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "file")
-            this->filesInside.push_back(findFile(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
+            this->filesInside.push_back(findFile(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create, repos));
         else if(content.substr(findEndl + 1, findSpace - findEndl - 1) == "tree")
-            this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create));
+            this->treesInside.push_back(findTree(content.substr(findSpace + 1, findNextSpace - findSpace - 1), create, repos));
         else std::cerr<<"What object is this? \n";
     }
     this->hashedContent = hashString(this->content);
