@@ -11,7 +11,7 @@ class Tree : public Object {
 
     public:
 
-        Tree(fs::path folderPath = ".", bool create = false);
+        Tree(fs::path folderPath = ".", bool create = false, bool empty=false);
         Tree createTreeFromContent(std::string, bool);
         fs::path get_folder_path();
         std::vector<File> get_blobs_inside();

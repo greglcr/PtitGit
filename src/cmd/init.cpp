@@ -32,7 +32,7 @@ void init(fs::path folderToInit) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
-    Tree T = Tree(folderToInit , true);
+    Tree T = Tree(folderToInit, true, true);
     Commit C = Commit(T, {}, "PtiteGit team", "PtiteGit team", "First commit");
     C.writeObject();
 

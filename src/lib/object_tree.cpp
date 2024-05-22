@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-Tree::Tree(fs::path folderPath, bool create) {
+Tree::Tree(fs::path folderPath, bool create, bool empty) {
 
     if (!fs::exists(folderPath)) {
         std::cerr << "Error in Tree construction : The given path doesn't exists (" << folderPath << ")" << std::endl;
@@ -30,22 +30,24 @@ Tree::Tree(fs::path folderPath, bool create) {
     this->content += relativeToRepo(folderPath);
     this->content += '\n';
     this->folderPath = relativeToRepo(folderPath);
+
    
     //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
     //that
 
 
-
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            File curFile = File(folderPath / entry.path().filename(),create);
-            this->filesInside.push_back(curFile);
-            //this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
-        }
-        else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
-            Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
-            this->treesInside.push_back(curFolder);
-            //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
+    if (!empty) {
+        for (const auto& entry : fs::directory_iterator(folderPath)) {
+            if (entry.is_regular_file()) {
+                File curFile = File(folderPath / entry.path().filename(),create);
+                this->filesInside.push_back(curFile);
+                //this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
+            }
+            else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
+                Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
+                this->treesInside.push_back(curFolder);
+                //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
+            }
         }
     }
 
