@@ -64,6 +64,12 @@ void* handle_tcp_connection (void* arg)   {
             send_message(connection, "An error as occured, try again.");
             pthread_exit(EXIT_SUCCESS);
         }
+
+        std::cout << "id : " << repos_id << std::endl;
+        std::cout << "dir : " << directory << std::endl;
+        result_compare branches = compare_branch(PtitGitRepos(directory), PtitGitRepos(repos_id));
+        std::cout << "ok, " << branches.branch_name << " " << branches.commit_A << " " << branches.commit_B << std::endl;
+
             
         send_message(connection,"Well received\nPlease note that this version of 'push' does not contain any guards.");
     } else if (cmd == "pull")   {

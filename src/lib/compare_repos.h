@@ -5,7 +5,7 @@
 #include "object_commit.h"
 
 bool copy_all_objects(std::string src, std::string target);
-std::string last_common_ancestor(Commit a, Commit b);
+std::string last_common_ancestor(PtitGitRepos repos, std::string a, std::string b);
 
 
 struct result_compare   {

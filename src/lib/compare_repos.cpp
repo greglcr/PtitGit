@@ -26,23 +26,27 @@ bool copy_all_objects(std::string src, std::string target) {
 }
 
 
-void bfs(std::string start, std::map<std::string, int> & ancestors)  {
+void bfs(PtitGitRepos repos, std::string start, std::map<std::string, int> & ancestors)  {
     
     std::deque<std::pair<std::string, int> > queue;
     queue.push_back({start, 0});
     while (!queue.empty())  {
+        std::cout << "C" << std::endl;
         std::string hash = queue.front().first;
         int dist = queue.front().second;
         queue.pop_front();
 
+        std::cout << "D" << std::endl;
         if (ancestors.find(hash) != ancestors.end())
             continue;
         ancestors[hash] = dist;
         dist++;
         
         
+        std::cout << "E" << std::endl;
         Commit commit;
-        commit.fromfile(hash);
+        std::cout << "B" << hash << std::endl;
+        commit.fromfile(objectFind(repos, hash, true, "commit"));
 
         for (std::string parent : commit.get_parents_hash())    {
             if (parent == "0") continue;
@@ -51,19 +55,21 @@ void bfs(std::string start, std::map<std::string, int> & ancestors)  {
     }
 }
 
-std::string last_common_ancestor(Commit a, Commit b) {
-    if (a.getHashedContent() == b.getHashedContent()) return a.getHashedContent();
+std::string last_common_ancestor(PtitGitRepos repos, std::string a, std::string b) {
+    if (a == b) return a;
     std::map<std::string, int> ancestorsA, ancestorsB;
 
+    std::cout << "A" << std::endl;
+    bfs(repos, a, ancestorsA);
+    std::cout << "A" << std::endl;
+    bfs(repos, b, ancestorsB);
+    std::cout << "A" << std::endl;
 
-    bfs(a.getHashedContent(), ancestorsA);
-    bfs(b.getHashedContent(), ancestorsB);
+    if (ancestorsA.find(b) != ancestorsA.end())
+        return b;
 
-    if (ancestorsA.find(b.getHashedContent()) != ancestorsA.end())
-        return b.getHashedContent();
-
-    if (ancestorsB.find(a.getHashedContent()) != ancestorsB.end())
-        return a.getHashedContent();
+    if (ancestorsB.find(a) != ancestorsB.end())
+        return a;
 
     int mini = 1000000000;
     std::string commit_result = "??????????????????";
@@ -102,10 +108,7 @@ result_compare compare_branch(PtitGitRepos reposA, PtitGitRepos reposB)    {
             std::string commit_remote = ref_resolve(reposB, "HEAD");
             std::cout << commit_remote << std::endl;
             
-            Commit c_local, c_remote;
-            c_local.fromfile(commit_local);
-            c_remote.fromfile(commit_remote);
-            std::string lca_hash = last_common_ancestor(c_local, c_remote);
+            std::string lca_hash = last_common_ancestor(reposA, commit_local, commit_remote);
 
             return {branchName, commit_local, commit_remote, lca_hash};
         }
