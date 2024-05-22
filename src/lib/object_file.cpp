@@ -29,7 +29,6 @@ File::File(fs::path filePath, bool create) {
     this->content += '\n';
     this->content += oss.str();
     this->actualFile = oss.str();
-    //std::cout<<this->actualFile<<"$$$"<<std::endl;
     this->filePath = filePath;
 
     std::string abc = this->content;
@@ -37,10 +36,8 @@ File::File(fs::path filePath, bool create) {
 
     this->hashedContent = hashString(this->content);
     if(create) {
-        //std::cout << filePath << " " << 33333 << std::endl;
         PtitGitRepos curRepos = PtitGitRepos(filePath);
         curRepos.writeObject(*this);
-        //std::cout << 222 << std::endl;
     }
 }
 
@@ -60,7 +57,6 @@ void File::updateContent() {
     this->content += '\n';
     this->content += oss.str();
     this->actualFile = oss.str();
-    //std::cout<<this->actualFile<<std::endl;
     std::string abc = this->content;
     this->content = "file " + std::to_string(abc.size()) + '\n' + abc;
     this->hashedContent = hashString(this->content);
@@ -76,16 +72,18 @@ std::string File::getActualFile(){
     return this->actualFile;
 }
 
-File findFile(std::string hashedContent, bool create){
-    fs::path path;
-    fs::path curPath = fs::current_path();
-    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-        curPath = curPath.parent_path();
-    }
-    path = curPath / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
-    if(!fs::exists(path)) path = curPath / ".ptitgit" / "index" / get_path_to_object(hashedContent);
+File findFile(std::string hashedContent, bool create, PtitGitRepos repos){
+    //fs::path path;
+    //fs::path curPath = fs::current_path();
+    //while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
+    //   curPath = curPath.parent_path();
+    //}
+
+    fs::path path = repos.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
+    if(!fs::exists(path)) path = repos.getWorkingFolder() / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 
     std::ifstream fileToShow(path);
+
 
     if(!fileToShow.is_open()) {
         std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << path << ")" << std::endl;
@@ -96,10 +94,10 @@ File findFile(std::string hashedContent, bool create){
     buffer << fileToShow.rdbuf();
     std::string content = buffer.str();
     fileToShow.close();
-    return File().createFileFromContent(content,create);
+    return File(repos.getWorkingFolder()).createFileFromContent(content,create,repos);
 }
 
-File File::createFileFromContent(std::string content, bool create){
+File File::createFileFromContent(std::string content, bool create, PtitGitRepos repos){
     this->content = content;
     long long findSpace = content.find(' ');
     long long findEndl = content.find('\n');
@@ -112,7 +110,7 @@ File File::createFileFromContent(std::string content, bool create){
 
     this->hashedContent = hashString(this->content);
 
-    if(create) this->writeObject();
+    if(create) this->writeObject(repos.getWorkingFolder());
     return *this;
 }
 
