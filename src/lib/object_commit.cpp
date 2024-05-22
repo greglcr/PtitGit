@@ -187,9 +187,9 @@ void add_files(std::string curHash, PtitGitRepos &curRepos) {
 
 }
 
-void INDEXreset(Commit C){
+void INDEXreset(Commit C, fs::path curPath){
 
-    fs::path folderToInit = PtitGitRepos().getWorkingFolder();
+    fs::path folderToInit = PtitGitRepos(curPath).getWorkingFolder();
     fs::remove_all(folderToInit / ".ptitgit/index");
     fs::create_directory(folderToInit / ".ptitgit/index");
 

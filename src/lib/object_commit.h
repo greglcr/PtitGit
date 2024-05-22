@@ -33,5 +33,5 @@ class Commit : public Object {
 
 void checkout(std::string,fs::path,bool force = false);
 void tree_checkout(Tree,fs::path,bool force = false);
-void INDEXreset(Commit);
+void INDEXreset(Commit, fs::path curPath = "");
 #endif
