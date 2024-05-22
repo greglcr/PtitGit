@@ -17,6 +17,8 @@ def test1():
     os.system('echo "43" > b/c/d')
     os.system('echo "44" > b/c/e')
 
+    os.system("../../petitGit add b")
+    os.system("../../petitGit add b/c")
     os.system("../../petitGit add b/c/d")
     os.system("../../petitGit commit -m'3rd commit'")
 
