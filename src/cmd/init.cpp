@@ -60,7 +60,7 @@ void init(fs::path folderToInit) {
     config << "# this is the configuration file\n# it contains global associations key=value\n";
     config.close();
 
-    INDEXreset(C);
+    INDEXreset(C, folderToInit);
     /*
     The INDEXreset function, defined in object_commit.cpp file, will replace the part below
     std::ofstream INDEX(".ptitgit/index/INDEX");
