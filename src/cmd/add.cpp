@@ -16,6 +16,10 @@ void add(fs::path pathToAdd) {
     }
     pathToAdd = fs::path(stringPath);
 
+    if (pathToAdd.is_relative()) {
+        pathToAdd = fs::current_path() / pathToAdd;
+    }
+
     PtitGitRepos curRepos = PtitGitRepos();
     StaggingArea curStagginArea = StaggingArea(curRepos);
     curStagginArea.add(pathToAdd);
