@@ -125,7 +125,16 @@ std::string receive_repos(int sockfd)    {
 
     // read the tar
     char tarContent [size_tar];
-    read(sockfd, tarContent, size_tar);
+
+    int index = 0;
+    while (size_tar - index > 0) {
+        int status = read(sockfd, tarContent+index, size_tar-index);
+        if (status <= 0)    {
+            std::cerr << "Unable to read the archive" << std::endl;
+            exit(0);
+        }
+        index += status;
+    }
 
     // write it
     char name_tgz [L_tmpnam];
@@ -142,7 +151,6 @@ std::string receive_repos(int sockfd)    {
     char templatebuf[80];
     char *name_directory = mkdtemp(strcpy(templatebuf, "/tmp/ptitgitXXXXXX"));
     std::string name_directory_str (name_directory);
-    //std::cout << "repos received in directory : " << name_directory << std::endl;
     
     // extract into the directory
     system(("tar -xf " + name_tgz_str + " -C " + name_directory_str).c_str());

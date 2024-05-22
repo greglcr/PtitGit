@@ -13,7 +13,7 @@ def clean():
     
     if not os.path.exists("../server"):
         os.makedirs("../server")
-    os.system("rm -r ../server/*")
+    os.system("rm -rf ../server/*")
 
 
 

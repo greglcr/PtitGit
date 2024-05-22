@@ -66,10 +66,7 @@ void* handle_tcp_connection (void* arg)   {
             pthread_exit(EXIT_SUCCESS);
         }
 
-        std::cout << "id : " << repos_id << std::endl;
-        std::cout << "dir : " << directory << std::endl;
         result_compare branches = compare_branch(PtitGitRepos(directory), PtitGitRepos(repos_id));
-        std::cout << "ok, " << branches.branch_name << " " << branches.commit_A << " " << branches.commit_B << std::endl;
         if (branches.branch_name == "") {
             send_message(connection, "You are not on a branch, you can not push");
         } else if (branches.commit_B == "") {
@@ -85,6 +82,7 @@ void* handle_tcp_connection (void* arg)   {
         } else  {
             send_message(connection, "'push' impossible. Your branches diverge.");
         }
+        std::filesystem::remove_all(directory);
     } else if (cmd == "pull")   {
         std::string repos_id = read_message(connection, 200);
         send_repos(connection, repos_id);

@@ -91,18 +91,12 @@ result_compare compare_branch(PtitGitRepos reposA, PtitGitRepos reposB)    {
 
     if (HEAD.find("ref: ") == 0)   {
         std::string branchName = HEAD.substr(HEAD.rfind("/")+1);
-        std::cout << "You are working on the branch '" << branchName << "'" << std::endl;
         std::string commit_local = ref_resolve(reposA, "HEAD");
-        std::cout << commit_local << std::endl;
     
-        //std::cout << tmp_dir + "/" + HEAD.substr(HEAD.find(".ptitgit")) << std::endl;
         if ( access( (reposB.getWorkingFolder() / HEAD.substr(HEAD.find(".ptitgit"))).c_str(), F_OK ) == -1 )   {
-            std::cout << "Warning, your branch does not exist in the remote repository. Therefore 'pull' did nothing" << std::endl;
             return {branchName, commit_local, "", ""};
         } else  {
             std::string commit_remote = ref_resolve(reposB, "HEAD");
-            std::cout << commit_remote << std::endl;
-            
             std::string lca_hash = last_common_ancestor(reposA, commit_local, commit_remote);
 
             return {branchName, commit_local, commit_remote, lca_hash};

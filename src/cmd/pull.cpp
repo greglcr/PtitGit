@@ -46,7 +46,6 @@ void pull() {
         close(sockfd);
         return;
     }
-    std::cout << "tmp dir : " << tmp_dir << std::endl; 
     close(sockfd);
 
 
@@ -55,7 +54,28 @@ void pull() {
         return;
     }
 
+    // copy all branches that are not in the local repos
+    std::map< fs::path, std::string > tags_remote = ref_list_basic(PtitGitRepos(tmp_dir));
+    for (auto it = tags_remote.begin(); it != tags_remote.end(); it++)  {
+        std::string path = it->first;
+        if (path.length() < 7) continue;
+        if (path.back() == '/') path.pop_back();
+
+        int posLast = path.rfind('/');
+        if (posLast == (int)std::string::npos) continue;
+        if ((int)path.rfind("heads", posLast-1) == posLast-5)    {
+            std::string branchName = path.substr(posLast+1);
+            if ( access((PtitGitRepos().getWorkingFolder() / ".ptitgit" / "refs" / "heads" / branchName).c_str(), F_OK) == -1)    {
+                std::cout << "a new branch '" << branchName << "' was created" << std::endl;
+                writeBranch(branchName, it->second);
+            }
+        }
+
+
+    }
     
+
+    // compare commits and ask for a merge if needed
     result_compare branches = compare_branch(PtitGitRepos(), PtitGitRepos(tmp_dir));
 
     if (branches.branch_name == "") {
@@ -73,4 +93,6 @@ void pull() {
         std::cout << "MERGE CONFLICT on your branch '" << branches.branch_name << "'!\nlocal last commit :  " << branches.commit_A << "\nremote last commit : " << branches.commit_B << "\nlca commit :         " << branches.commit_lca << std::endl;
         std::cout << "please, merge them" << std::endl;
     }
+
+    std::filesystem::remove_all(tmp_dir);
 }
