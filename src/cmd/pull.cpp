@@ -89,6 +89,8 @@ void pull() {
     } else if (branches.commit_A == branches.commit_lca)    {
         std::cout << "Download and update (the remote repository was a few commits ahead) on branch '" << branches.branch_name << "'" << std::endl;
         writeBranch(branches.branch_name, branches.commit_B);
+        //checkout(branches.commit_B, PtitGitRepos().getWorkingFolder(), true);
+        checkout(branches.branch_name, PtitGitRepos().getWorkingFolder(), true);
     } else {
         std::cout << "MERGE CONFLICT on your branch '" << branches.branch_name << "'!\nlocal last commit :  " << branches.commit_A << "\nremote last commit : " << branches.commit_B << "\nlca commit :         " << branches.commit_lca << std::endl;
         std::cout << "please, merge them" << std::endl;
