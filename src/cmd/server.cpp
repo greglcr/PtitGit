@@ -60,6 +60,7 @@ void* handle_tcp_connection (void* arg)   {
 
     if (cmd == "push")  {
         std::string repos_id = read_message(connection, 20);
+        //std::cout << repos_id << std::endl;
         std::string directory = receive_repos(connection);
         if (!copy_all_objects(directory, repos_id)) {
             send_message(connection, "An error as occured, try again.");
