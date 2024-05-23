@@ -61,10 +61,16 @@ Tree mergeTree(Tree T1, Tree T2){
 
     count1 = 0; count2 = 0;
     while(count1 < (long long) F1.size() || count2 < (long long) F2.size()){
-        if(count2 == (long long) F2.size() || F1[count1].get_file_path().filename().string() < F2[count2].get_file_path().filename().string()){
+        if(count2 == (long long) F2.size()){
             F.push_back(F1[count1]);count1++;
         }
-        else if(count1 == (long long)  F1.size() || F2[count2].get_file_path().filename().string() < F1[count1].get_file_path().filename().string()){
+        else if(count1 == (long long) F1.size()){
+            F.push_back(F2[count2]);count2++;
+        }
+        else if(F1[count1].get_file_path().filename().string() < F2[count2].get_file_path().filename().string()){
+            F.push_back(F1[count1]);count1++;
+        }
+        else if(F2[count2].get_file_path().filename().string() < F1[count1].get_file_path().filename().string()){
             F.push_back(F2[count2]);count2++;
         }
         else{
