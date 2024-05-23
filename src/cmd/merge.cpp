@@ -46,10 +46,16 @@ Tree mergeTree(Tree T1, Tree T2){
     V.clear();F.clear();
     long long count1 = 0, count2 = 0;
     while(count1 < (long long) V1.size() || count2 < (long long) V2.size()){
-        if(count2 == (long long) V2.size() || V1[count1].get_folder_path().filename().string() < V2[count2].get_folder_path().filename().string()){
+        if(count2 == (long long) V2.size()){
             V.push_back(V1[count1]);count1++;
         }
-        else if(count1 == (long long) V1.size() || V2[count2].get_folder_path().filename().string() < V1[count1].get_folder_path().filename().string()){
+        else if(count1 == (long long) V1.size()){
+            V.push_back(V2[count2]);count2++;
+        }
+        else if(V1[count1].get_folder_path().filename().string() < V2[count2].get_folder_path().filename().string()){
+            V.push_back(V1[count1]);count1++;
+        }
+        else if(V2[count2].get_folder_path().filename().string() < V1[count1].get_folder_path().filename().string()){
             V.push_back(V2[count2]);count2++;
         }
         else{
@@ -65,12 +71,20 @@ Tree mergeTree(Tree T1, Tree T2){
             F.push_back(F1[count1]);count1++;
         }
         else if(count1 == (long long) F1.size()){
+            fs::path path = PtitGitRepos().getWorkingFolder() / F2[count2].get_file_path();
+            long long findEndl2 = F2[count2].getContent().find('\n'); findEndl2 = F2[count2].getContent().find('\n', findEndl2+1);
+            std::ofstream out(path);
+            out << F2[count2].getContent().substr(findEndl2+1);
             F.push_back(F2[count2]);count2++;
         }
         else if(F1[count1].get_file_path().filename().string() < F2[count2].get_file_path().filename().string()){
             F.push_back(F1[count1]);count1++;
         }
         else if(F2[count2].get_file_path().filename().string() < F1[count1].get_file_path().filename().string()){
+            fs::path path = PtitGitRepos().getWorkingFolder() / F2[count2].get_file_path();
+            long long findEndl2 = F2[count2].getContent().find('\n'); findEndl2 = F2[count2].getContent().find('\n', findEndl2+1);
+            std::ofstream out(path);
+            out << F2[count2].getContent().substr(findEndl2+1);
             F.push_back(F2[count2]);count2++;
         }
         else{
