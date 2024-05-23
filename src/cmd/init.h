@@ -6,9 +6,6 @@
 
 const std::vector<std::string> FOLDERS_TO_CREATE = {
             ".ptitgit",
-            ".ptitgit/branches",
-            ".ptitgit/hooks",
-            ".ptitgit/info",
             ".ptitgit/index",
             ".ptitgit/objects",
             ".ptitgit/objects/info",
