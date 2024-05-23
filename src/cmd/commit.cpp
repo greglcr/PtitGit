@@ -20,7 +20,12 @@ void cmdCommit(std::string message){
     Tree T = findTree(oldsha, true);
     //std::cerr<<"NO";
     std::string sha = ref_resolve(X,"HEAD");
-    Commit New = Commit(T,{sha},"","",message,"");
+    std::string author = X.get_config("author");
+    if(author == ""){
+        std::cerr<<"Please add an author using the following method:\n petitgit config author [my-name]\n";
+        return;
+    }
+    Commit New = Commit(T,{sha},author,"PtiteGit Team",message,"");
     New.writeObject();
 
     std::string content = X.get_repos_content("HEAD");
