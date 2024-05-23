@@ -82,6 +82,7 @@ Tree mergeTree(Tree T1, Tree T2){
             File FF = File().createFileFromContent(SS,true);
             F.push_back(FF);
             count1++;count2++;
+            std::cout<<"There is a conflict in file "<<F1[count1].get_file_path()<<"\n";
         }
     }
     sort(F.begin(),F.end(),compareFile);
@@ -94,6 +95,6 @@ Tree mergeTree(Tree T1, Tree T2){
     content = "tree " + std::to_string(abc.size()) + '\n' + abc;
 
     Tree TT = Tree().createTreeFromContent(content,false);
-    TT.writeObject();std::cout<<TT.getHashedContent()<<std::endl;
+    TT.writeObject();
     return TT;
 }
