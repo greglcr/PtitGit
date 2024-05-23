@@ -10,6 +10,7 @@ def test1():
 
     os.system('echo "42" > a') # create a file a
     os.system("../../petitGit add a")
+    os.system("../../petitGit config author name")
     os.system("../../petitGit commit -m'2nd commit'")
 
     os.system('mkdir b')

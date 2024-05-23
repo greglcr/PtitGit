@@ -18,6 +18,7 @@ def test2():
     os.system("../../petitGit config url localhost")
     os.system("../../petitGit config port 9999")
     os.system("../../petitGit config repos-id 1")
+    os.system("../../petitGit config author name1")
 
     r = os.popen("../../petitGit push").read()
     if r == "nothing to push. This branch is already synchronized with the server.\n": nbOk += 1
@@ -40,8 +41,9 @@ def test2():
     os.system("../../petitGit config url localhost")
     os.system("../../petitGit config port 9999")
     os.system("../../petitGit config repos-id 1")
+    os.system("../../petitGit config author name2")
     r = os.popen("../../petitGit pull").read()
-    if r == "Download and update (the remote repository was a few commits ahead) on branch 'main'\n": nbOk += 1
+    if r == "Download and update (the remote repository was a few commits ahead) on branch 'main'\nHEAD is attached to branch main\n": nbOk += 1
     else: print(r)
 
 
@@ -54,17 +56,48 @@ def test2():
     os.system("../../../petitGit config url localhost")
     os.system("../../../petitGit config port 9999")
     os.system("../../../petitGit config repos-id 1")
-    #os.system("../../../petitGit pull")
-    #os.system('echo "v2" > a')
-    #os.system("../../../petitGit add a")
-    #os.system("../../../petitGit commit -m'3rd commit'")
-    #os.chdir("../B")
+    os.system("../../../petitGit config author name3")
+    os.system("../../../petitGit pull")
+    os.system('echo "v2" > a')
+    os.system("../../../petitGit add a")
+    os.system("../../../petitGit commit -m'3rd commit'")
+    os.chdir("../B")
+    os.system("../../../petitGit config url localhost")
+    os.system("../../../petitGit config port 9999")
+    os.system("../../../petitGit config repos-id 1")
+    os.system("../../../petitGit pull")
+    os.system('echo "v3" > a')
+    os.system('echo "bb" > b')
+    os.system("../../../petitGit add a")
+    os.system("../../../petitGit add b")
+    os.system("../../../petitGit config author name4")
+    os.system("../../../petitGit commit -m '4th commit'")
+    r = os.popen("../../../petitGit push").read()
+    if r == "Well received !\n": nbOk += 1
+    else: print(r)
+
+    os.chdir("../A")
+    r = os.popen("../../../petitGit pull").read()
+    if r == "MERGE CONFLICT on your branch 'main'!\nlocal last commit :  1d6c6bc195a8e64eaac26bb9d70d26fec3c63916bd81531a21d8f4d10be6037f\nremote last commit : 7cd11ba8ef6d60e3a134a19d286e32d894524ef4cf146691aae9061be2892b17\nlca commit :         5d87ecb636537104a249a85980dd6f848f8e0372ecc791db48f6262ea39e5ab7\nplease, merge them\n": nbOk += 1
+    else: print("ERROR -->", r)
+    
+    os.system("../../../petitGit merge 7cd11ba8ef6d60e3a134a19d286e32d894524ef4cf146691aae9061be2892b17")
+
+    #r = os.popen("../../../petitGit merge 7cd11ba8ef6d60e3a134a19d286e32d894524ef4cf146691aae9061be2892b17").read()
+    #if r == "The hash of the commit for branch \"main\" is now 24596e98580b42e9bfcf8156c3477bdfa77c225ba069f9adce41d3ff3f040c14\n": nbOk += 1
+    #else: print("ERROR -->", r)
+    #print(r)
+
+
+    #r = os.popen("../../../petitGit push").read()
+    #print(r)
+
     os.chdir("..")
 
 
 
     p.terminate();
-    return (nbOk,6-nbOk)
+    return (nbOk,9-nbOk)
 
 
 
