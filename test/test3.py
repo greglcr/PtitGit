@@ -21,14 +21,11 @@ def test3():
     os.system("../../petitGit checkout -f happy")
     os.system("../../petitGit merge main")
     result = os.popen('cat a').read()
-    if result == "42\n":
+    if result == "There is a conflict in this file. Please merge manually!\n\nHere is the old file:\n42\n\n\nHere is the new file:\n100\n":
         nbOk += 1
     else:
         print(result)
     
-
-    # TODO
-
     return (nbOk,2-nbOk)
 
 
