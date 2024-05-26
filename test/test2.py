@@ -82,7 +82,7 @@ def test2():
     else: print("ERROR -->", r)
     
     r = os.popen("../../../ptitGit merge 7cd11ba8ef6d60e3a134a19d286e32d894524ef4cf146691aae9061be2892b17").read()
-    if r == "There is a conflict in file \"a\"\nThe hash of the commit for branch \"main\" is now a4c5fbee8aedb226287574b203e8dea24a92788c9c157374050c080645194e88\n": nbOk += 1
+    if r == "There is a conflict in file \"a\"\nThe hash of the commit for branch \"main\" is now a4c5fbee8aedb226287574b203e8dea24a92788c9c157374050c080645194e88\nMerge sucessfully\n": nbOk += 1
     else: print("ERROR -->", r)
 
     r = os.popen("cat a").read()
