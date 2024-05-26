@@ -209,6 +209,7 @@ std::vector <std::string> objectResolve(PtitGitRepos X,std::string name, bool sh
         V.push_back(ref_resolve(X, X.getWorkingFolder() / ".ptitgit" / "HEAD"));
         return V;
     }
+    if(name.size()>2){
     std::string prefix = name.substr(0,2);
     std::string rest = name.substr(2);
     fs::path path = X.getWorkingFolder() / ".ptitgit" / "objects" / prefix;
@@ -220,7 +221,7 @@ std::vector <std::string> objectResolve(PtitGitRepos X,std::string name, bool sh
             long long abc = contender.find(".ptitgit/objects/");
             V.push_back(contender.substr(abc+17,2) + contender.substr(abc+20));
         }
-    }
+    }}
     if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / name)) V.push_back(ref_resolve(X,X.getWorkingFolder() / ".ptitgit" / "refs" / "heads" / name));
     if(fs::exists(X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / name)) V.push_back(ref_resolve(X,X.getWorkingFolder() / ".ptitgit" / "refs" / "tags" / name));
     return V;

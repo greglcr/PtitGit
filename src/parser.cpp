@@ -124,6 +124,7 @@ int main(int argc,char *argv[])  {
         if(argc == 2) std::cerr<<"Where is the other commit?\n";
         else if(argc == 3) merge(argv[2]);
         else merge(argv[2],argv[3]);
+        std::cout<<"Merge sucessfully\n";
     }
     else if (argc >= 2 && strcmp(argv[1] , "push") == 0){
         push();
