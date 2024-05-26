@@ -14,11 +14,8 @@ fs::path find_working_directory(fs::path curPath) {
     }
 
     while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-        //std::cout << curPath << std::endl;
         curPath = curPath.parent_path();
     }    
-
-    //std::cout << curPath << std::endl;
 
     if(!fs::exists(curPath / ".ptitgit")) {
         std::cerr << "Erreur : Le dossier indiqué n'est pas un repos git" << std::endl;

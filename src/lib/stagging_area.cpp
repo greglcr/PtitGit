@@ -38,11 +38,11 @@ void StaggingArea::construct_tree(std::string curFileHash) {
             }
         }
         catch (const std::runtime_error &e) {
-            //Rien à faire ici
+            //Nothing to do
         }
     }
     else if (fileType == "file") {
-        //En fait rien à faire ici
+        //Nothing to do
     }
     else {
         std::cerr << "Error in StaggingArea::construct_tree : invalid file type (" << fileType << ")\n";
@@ -74,9 +74,6 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
     }
     curPathStaggingArea = fs::path(stringPath);
 
-    //std::string curPathStaggingAreaToPrint = relativeToRepo(curPathStaggingArea);
-    //std::string curPathInWorkingAreaToPrint = relativeToRepo(curPathInWorkingArea);
-
     std::vector<File> blobsInCurWorkingFolder = curTreeInWorkingArea.get_blobs_inside();
     std::vector<std::pair<fs::path, std::string> > pathToBlobsInCurWorkingFolder;
     for (size_t i = 0; i < blobsInCurWorkingFolder.size(); i++) {
@@ -87,7 +84,6 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
     std::vector<std::pair<fs::path, std::string> > pathToTreesInCurWorkingFolder;
     for (size_t i = 0; i < treesInCurWorkingFolder.size(); i++) {
         pathToTreesInCurWorkingFolder.push_back(std::pair(treesInCurWorkingFolder[i].get_folder_path(), treesInCurWorkingFolder[i].getHashedContent()));
-        //std::cout << treesInCurWorkingFolder[i].get_folder_path() << " " << 555 << std::endl;
     }
 
     std::vector<std::pair<fs::path, std::string> > pathToBlobsInCurStaggingArea;
@@ -101,8 +97,6 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
             pathToTreesInCurStaggingArea.push_back(std::pair(curPathStaggingArea / get_object_path(curLine), get_object_hash(curLine)));
         }
     }
-
-    //std::cout << curPathInWorkingArea << std::endl;
 
     std::sort(pathToBlobsInCurWorkingFolder.begin(), pathToBlobsInCurWorkingFolder.end());
     std::sort(pathToBlobsInCurStaggingArea.begin(), pathToBlobsInCurStaggingArea.end());
@@ -146,43 +140,35 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
 
     }
 
-    //std::cout << curPathInWorkingArea << std::endl;
     std::sort(pathToTreesInCurWorkingFolder.begin(), pathToTreesInCurWorkingFolder.end());
     std::sort(pathToTreesInCurStaggingArea.begin(), pathToTreesInCurStaggingArea.end());
     posWorkingFolder = 0;
     posStaggingArea = 0;
     while (posWorkingFolder < (int)pathToTreesInCurWorkingFolder.size() || posStaggingArea < (int)pathToTreesInCurStaggingArea.size()) {
 
-        //std::cout << posWorkingFolder << " " << posStaggingArea << std::endl;
-
         if (posWorkingFolder == (int)pathToTreesInCurWorkingFolder.size()) {
-            //std::cout << 1 << std::endl;
             if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()) {
-            //std::cout << 2 << std::endl;
             if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurWorkingFolder[posWorkingFolder].first > pathToTreesInCurStaggingArea[posStaggingArea].first) {
-            //std::cout << 3 << std::endl;
             if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].first > pathToTreesInCurWorkingFolder[posWorkingFolder].first) {
-            //std::cout << 4 << std::endl;
             if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].second != pathToTreesInCurWorkingFolder[posWorkingFolder].second) {
-            //std::cout << 5 << std::endl;
             if(verbose){std::cout << "Dossier modifié : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
             calc_differences(pathToTreesInCurWorkingFolder[posWorkingFolder].first, pathToTreesInCurStaggingArea[posStaggingArea].second, verbose);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "modified";
@@ -191,7 +177,6 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
             posStaggingArea++;
         }
         else {
-            //std::cout << 6 << std::endl;
             calc_differences(pathToTreesInCurWorkingFolder[posWorkingFolder].first, pathToTreesInCurStaggingArea[posStaggingArea].second, verbose);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "unchanged";
             posWorkingFolder++;
@@ -219,7 +204,6 @@ std::string StaggingArea::get_root_tree() {
 
 void StaggingArea::add(fs::path pathToAdd) {
 
-    //std::cout << pathToAdd << std::endl;
 
     if (this->status[pathToAdd].first == "unchanged") {
         std::cout << "Dernière version de cet objet déjà ajoutée" << std::endl;
@@ -248,8 +232,6 @@ void StaggingArea::add(fs::path pathToAdd) {
 
             std::string pastHashedContent = this->status[pathToAdd].second;
             std::string curContent = this->repos.get_working_folder_content(pathToAdd);
-            //curContent = std::string(pathToAdd) + '\n' + curContent;
-            //curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
             curContent = "file " + std::to_string(curContent.size() + std::string(relativeToRepo(pathToAdd)).size() + 1) + '\n' + std::string(relativeToRepo(pathToAdd)) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
             this->write_content(curContent, curHashedContent);
@@ -261,18 +243,12 @@ void StaggingArea::add(fs::path pathToAdd) {
         else if (this->status[pathToAdd].first == "added") {
 
             std::string curContent = this->repos.get_working_folder_content(pathToAdd);
-            //curContent = std::string(pathToAdd) + '\n' + curContent;
-            //curContent = "file " + std::to_string(curContent.length()) + '\n' + curContent;
             curContent = "file " + std::to_string(curContent.size() + std::string(relativeToRepo(pathToAdd)).size() + 1) + '\n' + std::string(relativeToRepo(pathToAdd)) + '\n' + curContent;
             std::string curHashedContent = hashString(curContent);
-            //std::cout << curContent << " " << curHashedContent << std::endl;
             this->write_content(curContent, curHashedContent);
             fs::path fatherPath = pathToAdd.parent_path();
-            //std::cout << fatherPath << std::endl;
             std::string pastFatherHash = this->status[fatherPath].second;
-            //std::cout << pastFatherHash << std::endl;
             std::string pastFatherContent = this->repos.get_repos_content(fs::path("index") / get_path_to_object(pastFatherHash));
-            //std::cout << pastFatherContent << " " << pastFatherHash << std::endl;
             std::string newFatherContent = insert_new_object(pastFatherContent, "file", curHashedContent, pathToAdd.filename());
             std::string newFatherHash = hashString(newFatherContent);
             this->write_content(newFatherContent, newFatherHash);
@@ -376,8 +352,6 @@ void StaggingArea::write_content(std::string content, std::string hashedContent)
 void StaggingArea::update_node(std::string curHash, std::string hashToDelete, std::string hashToInsert) {
 
     if (this->treeStaggingArea[curHash].empty()) {
-        //Si on arrrive dans ce cas là, alors forcèment c'est qu'on a update un fichier qui est directement dans le working folder, donc on peut remplacer INDEX par
-        //hashToInsert
         std::ofstream INDEX(this->repos.getWorkingFolder() / ".ptitgit/index/INDEX");
         INDEX << hashToInsert;
         INDEX.close();

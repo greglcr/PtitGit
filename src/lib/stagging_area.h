@@ -32,8 +32,6 @@ class StaggingArea {
         void write_content(std::string content, std::string hashedContent);
         void update_node(std::string curFileHash, std::string hashToDelete, std::string hashToInsert);
         std::string get_root_tree();    
-        //Besoin de deux fonctions différentes. En effet, il va être possible d'ajouter deux types de fonctions différentes lorqu'on fait un add normalement.
-        //Difficulté : quand on ajoute un fichier, il faut reconstruire tout l'arbre. Est-ce qu'on a les outils pour faire ça?
 
     private:
 
@@ -42,9 +40,6 @@ class StaggingArea {
         std::map<std::string, std::vector<std::string> > treeStaggingArea;
         std::map<std::string, std::string> treeStaggingAreaReversed;
         std::map<fs::path, std::pair<std::string, std::string> > status;
-
-        //std::string delete_in_file(std::string curHash, std::string hashToDelete);
-        //void add_in_file(std::string curHash, std::string typeToAdd, std::string hashToAdd, std::string pathToAdd);
 
 };
 

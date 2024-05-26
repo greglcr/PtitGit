@@ -97,7 +97,6 @@ void Tag::calculateContent(){
 }
 
 void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_object, std::string tag_message, bool create){
-    //tagged_object = objectFind(X,tagged_object,true,"object",true);
     if(create){
         std::string str = X.get_object_content(tagged_object);
         long long abcd = str.find(' ');
@@ -122,7 +121,6 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             writeRef(this->tagName, this->hashedContent);
         }
         else if(str.substr(0,abcd) == "tree"){
-            //this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
             long long abba = str.find('\n', dcba+1);
             this->tagObject = Tree(str.substr(dcba+1, abba-dcba-1));
             this->tagName = tag_name;
@@ -133,7 +131,6 @@ void Tag::tag_create(PtitGitRepos X, std::string tag_name, std::string tagged_ob
             writeRef(this->tagName, this->hashedContent);
         }
         else if(str.substr(0,abcd) == "file"){
-            //this->tagObject = Tree(X.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(tagged_object));
             long long abba = str.find('\n', dcba+1);
             this->tagObject = File(str.substr(dcba+1, abba-dcba-1));
             this->tagName = tag_name;
