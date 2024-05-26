@@ -66,12 +66,10 @@ Commit Commit::fromfile(std::string hashedContent, PtitGitRepos repos){
 }
 
 Commit Commit::fromstring(std::string commitContent, PtitGitRepos repos){
-    //Commit X = Commit();
     this->parentCommitsHash.clear();
     long long abc = commitContent.find(' ');
     long long cba = commitContent.find('\n');
     long long mm = cba + 1;
-    //if(commitContent.substr(mm,abc-mm) != "tree") std::cerr<<"Not a tree :(\n"<<commitContent.substr(mm,abc-mm)<<"\n";
 
     this->parentTree = findTree(commitContent.substr(abc+1, cba-abc-1),false,repos);
     mm = cba+1;
@@ -100,18 +98,6 @@ Tree Commit::getTree(){
 std::vector<std::string> Commit::get_parents_hash() {
     return this->parentCommitsHash;
 }
-/*
-void Commit::writeCommit(){
-    fs::path curPath = fs::current_path();
-    while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-        curPath = curPath.parent_path();
-    }
-    fs::path path = curPath / ".ptitgit" / "objects" / this->getPathToWrite();
-    fs::create_directory(curPath / ".ptitgit" / "objects" / std::string(this->getPathToWrite()).substr(0,2));
-    std::ofstream out(path);
-    out << this->content;
-    return;
-}*/
 
 void checkout(std::string committ, fs::path placeToWrite, bool force){
     std::string commit = objectFind(PtitGitRepos(), committ, true, "commit");
@@ -152,8 +138,6 @@ void tree_checkout(Tree T, fs::path placeToWrite, bool force){
     for(kkk = 0; kkk < (long long) VV.size(); kkk++){
         tree_checkout(VV[kkk], placeToWrite / VV[kkk].get_folder_path().filename(), force);
     }
-    //for(std::vector<Tree>::iterator it = T.get_trees_inside().begin(); it!=T.get_trees_inside().nd(); ++it)
-    //    tree_checkout(*it,placeToWrite / it->get_folder_path().parent_path().filename(), force);e
 }
 
 std::string Commit::get_hash_parent_tree() {
@@ -172,7 +156,6 @@ void add_files(std::string curHash, PtitGitRepos &curRepos) {
 
     fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(curHash), folderToInit / ".ptitgit/index" / get_path_to_object(curHash));
 
-    //First we must get the file type
     std::string contentFile = curRepos.get_object_content(curHash);
     size_t pos = contentFile.find(' ');
     std::string fileType = contentFile.substr(0, pos);
@@ -195,9 +178,6 @@ void INDEXreset(Commit C, fs::path curPath){
 
     PtitGitRepos curRepos = PtitGitRepos(folderToInit);
     add_files(C.get_hash_parent_tree(), curRepos);
-
-    //fs::create_directory(folderToInit / ".ptitgit/index" / get_folder_to_object(C.get_hash_parent_tree()));
-    //fs::copy_file(folderToInit / ".ptitgit/objects" / get_path_to_object(C.get_hash_parent_tree()), folderToInit / ".ptitgit/index" / get_path_to_object(C.get_hash_parent_tree()));
     
     std::ofstream INDEX(".ptitgit/index/INDEX");
     INDEX << C.get_hash_parent_tree();

@@ -19,7 +19,7 @@ class Commit : public Object {
         Tree getTree();
         std::string get_hash_parent_tree();
         std::vector<std::string> get_parents_hash();
-        //void writeCommit();
+
     private:
 
         std::vector<std::string> parentCommitsHash;
@@ -28,7 +28,7 @@ class Commit : public Object {
         std::string message;
         std::string gpgsig;
         Tree parentTree;
-        //PtitGitRepos repos;
+
 };
 
 void checkout(std::string,fs::path,bool force = false);

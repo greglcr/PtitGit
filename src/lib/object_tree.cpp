@@ -27,27 +27,19 @@ Tree::Tree(fs::path folderPath, bool create, bool empty) {
         folderPath = fs::current_path() / folderPath;
     }
     
-    //this->content += "tree\n";
     this->content += relativeToRepo(folderPath);
     this->content += '\n';
     this->folderPath = folderPath;
-
-   
-    //TO DO : Ensure that files and folders are given in the alphabetic order so the tree keeps a consistent structure. For the moment, we assume that this is done like
-    //that
-
 
     if (!empty) {
         for (const auto& entry : fs::directory_iterator(folderPath)) {
             if (entry.is_regular_file()) {
                 File curFile = File(folderPath / entry.path().filename(),create);
                 this->filesInside.push_back(curFile);
-                //this->content += "file " + curFile.getHashedContent() + " " + entry.path().filename().string() + "\n";
             }
             else if (entry.is_directory() && entry.path().filename().string() != ".ptitgit") {
                 Tree curFolder = Tree(folderPath / entry.path().filename().string(),create);
                 this->treesInside.push_back(curFolder);
-                //this->content += "tree " + curFolder.getHashedContent() + " " + entry.path().filename().string() + "\n";
             }
         }
     }
@@ -90,11 +82,7 @@ std::vector<Tree> Tree::get_trees_inside() {
 }
 
 Tree findTree(std::string hashedContent, bool create, PtitGitRepos repos){
-    //fs::path path = repos.getWorkingFolder();
-    //fs::path curPath = fs::current_path();
-    //while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-    //    curPath = curPath.parent_path();
-    //}
+
     fs::path path = repos.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
     if(!fs::exists(path)) path = repos.getWorkingFolder() / ".ptitgit" / "index" / get_path_to_object(hashedContent);
 

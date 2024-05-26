@@ -73,11 +73,6 @@ std::string File::getActualFile(){
 }
 
 File findFile(std::string hashedContent, bool create, PtitGitRepos repos){
-    //fs::path path;
-    //fs::path curPath = fs::current_path();
-    //while (curPath != curPath.root_directory() && !fs::exists(curPath / ".ptitgit")) {
-    //   curPath = curPath.parent_path();
-    //}
 
     fs::path path = repos.getWorkingFolder() / ".ptitgit" / "objects" / get_path_to_object(hashedContent);
     if(!fs::exists(path)) path = repos.getWorkingFolder() / ".ptitgit" / "index" / get_path_to_object(hashedContent);

@@ -16,18 +16,4 @@ const std::vector<std::string> FOLDERS_TO_CREATE = {
 void init();
 void init(std::filesystem::path folderToInit);
 
-/*
-class PtiteGitInit {
-
-    public:
-        PtiteGitInit();
-        PtiteGitInit(std::filesystem::path folderToInit);
-
-    private:
-        std::filesystem::path myGitFolder;
-
-};
-
-*/
-
 #endif

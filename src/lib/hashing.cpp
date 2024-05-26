@@ -34,22 +34,6 @@ std::string convertToHexa(int valToConvert, int length) {
 }
 
 std::string hashString(std::string contentToHash) {
-    
-    //Méthode obsolète 
-
-    /*unsigned char hashedContent[SHA256_DIGEST_LENGTH];
-
-    SHA256_CTX context;
-    SHA256_Init(&context);
-    
-    SHA256_Update(&context, contentToHash.c_str(), contentToHash.length());
-    SHA256_Final(hashedContent, &context);
-
-    std::string readableHash = "";
-    for(size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        readableHash += convertToHexa(int(hashedContent[i]), 2);
-    }
-    return readableHash; */
 
     std::vector<unsigned char> hashedContent(EVP_MAX_MD_SIZE);
     unsigned int hash_len = 0;
