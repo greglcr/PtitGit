@@ -60,12 +60,30 @@ void* handle_tcp_connection (void* arg)   {
 
     if (cmd == "push")  {
         std::string repos_id = read_message(connection, 20);
-        //std::cout << repos_id << std::endl;
         std::string directory = receive_repos(connection);
         if (!copy_all_objects(directory, repos_id)) {
             send_message(connection, "An error as occured, try again.");
             pthread_exit(EXIT_SUCCESS);
         }
+
+        // copy all branches that are not in the remote repos
+        std::map< fs::path, std::string > tags_local = ref_list_basic(PtitGitRepos(directory));
+        for (auto it = tags_local.begin(); it != tags_local.end(); it++)  {
+            std::string path = it->first;
+            if (path.length() < 7) continue;
+            if (path.back() == '/') path.pop_back();
+
+            int posLast = path.rfind('/');
+            if (posLast == (int)std::string::npos) continue;
+            if ((int)path.rfind("heads", posLast-1) == posLast-5)    {
+                std::string branchName = path.substr(posLast+1);
+                if ( access((PtitGitRepos(repos_id).getWorkingFolder() / ".ptitgit" / "refs" / "heads" / branchName).c_str(), F_OK) == -1)    {
+                    writeBranch(branchName, it->second, PtitGitRepos(repos_id));
+                }
+            }
+        }
+    
+
 
         result_compare branches = compare_branch(PtitGitRepos(directory), PtitGitRepos(repos_id));
         if (branches.branch_name == "") {

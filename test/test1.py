@@ -5,27 +5,22 @@ def test1():
     nbOk = 0
 
     clean()
-    os.system("../../petitGit init")
+    os.system("../../ptitGit init")
     if os.path.isdir(".ptitgit"):  nbOk += 1   # check if the repos is well initialized
 
     os.system('echo "42" > a') # create a file a
-    os.system("../../petitGit add a")
-    os.system("../../petitGit commit -m'2nd commit'")
+    os.system("../../ptitGit add a")
+    os.system("../../ptitGit config author name")
+    os.system("../../ptitGit commit -m'2nd commit'")
 
     os.system('mkdir b')
     os.system('mkdir b/c')
     os.system('echo "43" > b/c/d')
     os.system('echo "44" > b/c/e')
 
-    os.system("../../petitGit add b")
-    os.system("../../petitGit commit -m'3rd commit'")
+    os.system("../../ptitGit add b")
+    os.system("../../ptitGit commit -m'3rd commit'")
     
-
-
-    
-
-    # TODO
-
     return (nbOk,1-nbOk)
 
 

@@ -17,19 +17,19 @@ void push() {
 
     std::string url = repos.get_config("url");
     if (url == "")  {
-        std::cerr << "url of the server not available. Please add it with :\n    petitGit config url your_url" << std::endl;
+        std::cerr << "url of the server not available. Please add it with :\n    ptitGit config url your_url" << std::endl;
         return;
     }
 
     std::string repos_id = repos.get_config("repos-id");
     if (repos_id == "")  {
-        std::cerr << "id of the repos not available. Please add it with :\n    petitGit config repos-id your_id" << std::endl;
+        std::cerr << "id of the repos not available. Please add it with :\n    ptitGit config repos-id your_id" << std::endl;
         return;
     }
     
     std::string port = repos.get_config("port");
     if (port == "")  {
-        std::cerr << "port of the repos not available. Please add it with :\n    petitGit config port your_port" << std::endl;
+        std::cerr << "port of the repos not available. Please add it with :\n    ptitGit config port your_port" << std::endl;
         return;
     }
 

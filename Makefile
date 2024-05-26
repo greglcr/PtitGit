@@ -14,7 +14,7 @@ OBJS = $(SRC:$(SRCDIR)/%.cpp=$(BINDIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
 # Executable name
-TARGET = petitGit
+TARGET = ptitGit
 
 # Default target
 all: $(TARGET)
@@ -37,16 +37,18 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 # Clean
 clean:
 	rm -rf $(BINDIR) $(TARGET)
+	rm -rf test/__pycache__
+	rm -rf test/server
 
 # Phony targets
 .PHONY: all clean
 
 
 
-tests: petitGit
+tests: ptitGit
 	@python3 test/run-tests.py
 run: all
 	@#@rm test/result-test/.ptitgit/ -rf
-	@cd test/result-test; ../../petitGit $(args)
+	@cd test/result-test; ../../ptitGit $(args)
 	@# use make run args=init
 
