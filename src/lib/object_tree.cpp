@@ -89,7 +89,7 @@ Tree findTree(std::string hashedContent, bool create, PtitGitRepos repos){
     std::ifstream fileToShow(path);
 
     if(!fileToShow.is_open()) {
-        std::cerr << "ERREUR : impossible d'ouvrir le fichier voulu dans get_object_content (" << path << ")" << std::endl;
+        std::cerr << "Error : impossible to open the file in get_object_content (" << path << ")" << std::endl;
         exit(0);
     }
 

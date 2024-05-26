@@ -228,11 +228,11 @@ void StaggingArea::add(fs::path pathToAdd) {
 
 
     if (this->status[pathToAdd].first == "unchanged") {
-        std::cout << "Dernière version de cet objet déjà ajoutée" << std::endl;
+        std::cout << "Last version of this object already added" << std::endl;
         return;
     }
     if (this->status[pathToAdd].first == "") {
-        std::cout << "Object invalide" << std::endl;
+        std::cout << "Invalid object" << std::endl;
         return;
     }
 
@@ -403,19 +403,19 @@ void StaggingArea::update_node(std::string curHash, std::string hashToDelete, st
 
 void StaggingArea::get_stagging_area() {
     
-    std::cout << "Ajouté : " << std::endl;
+    std::cout << "Added : " << std::endl;
     for (std::string a : added) {
         std::cout << "   " << a << std::endl;
     }
     std::cout << std::endl;
 
-    std::cout << "Supprimé : " << std::endl;
+    std::cout << "Deleted : " << std::endl;
     for (std::string d : deleted) {
         std::cout << "   " << d << std::endl;
     }
     std::cout << std::endl;
 
-    std::cout << "Modifié : " << std::endl;
+    std::cout << "Modified : " << std::endl;
     for (std::string m : modified) {
         std::cout << "   " << m << std::endl;
     }

@@ -81,7 +81,7 @@ File findFile(std::string hashedContent, bool create, PtitGitRepos repos){
 
 
     if(!fileToShow.is_open()) {
-        std::cerr << "Erreur : impossible d'ouvrir le fichier voulu dans get_object_content (" << path << ")" << std::endl;
+        std::cerr << "Error : impossibe to open the file in get_object_content (" << path << ")" << std::endl;
         exit(0);
     }
 
