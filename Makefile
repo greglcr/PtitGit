@@ -14,7 +14,7 @@ OBJS = $(SRC:$(SRCDIR)/%.cpp=$(BINDIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
 # Executable name
-TARGET = petitGit
+TARGET = ptitGit
 
 # Default target
 all: $(TARGET)
@@ -43,10 +43,10 @@ clean:
 
 
 
-tests: petitGit
+tests: ptitGit
 	@python3 test/run-tests.py
 run: all
 	@#@rm test/result-test/.ptitgit/ -rf
-	@cd test/result-test; ../../petitGit $(args)
+	@cd test/result-test; ../../ptitGit $(args)
 	@# use make run args=init
 

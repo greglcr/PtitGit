@@ -22,7 +22,7 @@ void cmdCommit(std::string message){
     std::string sha = ref_resolve(X,"HEAD");
     std::string author = X.get_config("author");
     if(author == ""){
-        std::cerr<<"Please add an author using the following method:\n petitgit config author [my-name]\n";
+        std::cerr<<"Please add an author using the following method:\n ptitGit config author [my-name]\n";
         return;
     }
     Commit New = Commit(T,{sha},author,"PtiteGit Team",message,"");
