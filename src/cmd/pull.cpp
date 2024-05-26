@@ -70,8 +70,6 @@ void pull() {
                 writeBranch(branchName, it->second);
             }
         }
-
-
     }
     
 

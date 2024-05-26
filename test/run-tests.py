@@ -1,6 +1,7 @@
 from test1 import test1
 from test2 import test2
 from test3 import test3
+from test4 import test4
 from test_config import test_config
 
 class Color:
@@ -29,6 +30,7 @@ exec_test("config", test_config)
 exec_test("test 1", test1)
 exec_test("test 2", test2)
 exec_test("test 3", test3)
+exec_test("test 4", test4)
 
 print(Color.blue + "end of tests" + Color.reset)
 print("ok :",nbOk)

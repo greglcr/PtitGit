@@ -37,6 +37,8 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 # Clean
 clean:
 	rm -rf $(BINDIR) $(TARGET)
+	rm -rf test/__pycache__
+	rm -rf test/server
 
 # Phony targets
 .PHONY: all clean
