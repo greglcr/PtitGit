@@ -55,7 +55,16 @@ void StaggingArea::construct_tree(std::string curFileHash) {
 void StaggingArea::calc_differences(bool verbose = false) {
 
     this->status[repos.getWorkingFolder()].second = repos.get_repos_content("index/INDEX");
+
+    this->added.clear();
+    this->deleted.clear();
+    this->modified.clear();
+
     calc_differences(repos.getWorkingFolder(), repos.get_repos_content("index/INDEX"), verbose);
+
+    if (verbose) {
+        this->get_stagging_area();
+    }
 
 }
 
@@ -98,35 +107,42 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
         }
     }
 
+    //std::vector<std::string> deleted, added, modified;
+
     std::sort(pathToBlobsInCurWorkingFolder.begin(), pathToBlobsInCurWorkingFolder.end());
     std::sort(pathToBlobsInCurStaggingArea.begin(), pathToBlobsInCurStaggingArea.end());
     int posWorkingFolder = 0, posStaggingArea = 0;
     while (posWorkingFolder < (int)pathToBlobsInCurWorkingFolder.size() || posStaggingArea < (int)pathToBlobsInCurStaggingArea.size()) {
         if (posWorkingFolder == (int)pathToBlobsInCurWorkingFolder.size()) {
-            if(verbose){std::cout << "Fichier supprimé : " << relativeToRepo(pathToBlobsInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            //if(verbose){std::cout << "Fichier supprimé : " << relativeToRepo(pathToBlobsInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            this->deleted.push_back(pathToBlobsInCurStaggingArea[posStaggingArea].first);
             this->status[pathToBlobsInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToBlobsInCurStaggingArea[posStaggingArea].first].second = pathToBlobsInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
             
         }
         else if (posStaggingArea == (int)pathToBlobsInCurStaggingArea.size()) {
-            if(verbose){std::cout << "Fichier ajouté : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Fichier ajouté : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->added.push_back(pathToBlobsInCurWorkingFolder[posWorkingFolder].first);
             this->status[pathToBlobsInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToBlobsInCurWorkingFolder[posWorkingFolder].first > pathToBlobsInCurStaggingArea[posStaggingArea].first) {
-            if(verbose){std::cout << "Fichier supprimé : " << relativeToRepo(pathToBlobsInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            //if(verbose){std::cout << "Fichier supprimé : " << relativeToRepo(pathToBlobsInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            this->deleted.push_back(pathToBlobsInCurStaggingArea[posStaggingArea].first);
             this->status[pathToBlobsInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToBlobsInCurStaggingArea[posStaggingArea].first].second = pathToBlobsInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (pathToBlobsInCurStaggingArea[posStaggingArea].first > pathToBlobsInCurWorkingFolder[posWorkingFolder].first) {
-            if(verbose){std::cout << "Fichier ajouté : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Fichier ajouté : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->added.push_back(pathToBlobsInCurWorkingFolder[posWorkingFolder].first);
             this->status[pathToBlobsInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }   
         else if (pathToBlobsInCurStaggingArea[posStaggingArea].second != pathToBlobsInCurWorkingFolder[posWorkingFolder].second) {
-            if(verbose){std::cout << "Fichier modifié : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Fichier modifié : " << relativeToRepo(pathToBlobsInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->modified.push_back(pathToBlobsInCurWorkingFolder[posWorkingFolder].first);
             this->status[pathToBlobsInCurWorkingFolder[posWorkingFolder].first].first = "modified";
             this->status[pathToBlobsInCurWorkingFolder[posWorkingFolder].first].second = pathToBlobsInCurStaggingArea[posStaggingArea].second;
             posWorkingFolder++;
@@ -147,29 +163,34 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
     while (posWorkingFolder < (int)pathToTreesInCurWorkingFolder.size() || posStaggingArea < (int)pathToTreesInCurStaggingArea.size()) {
 
         if (posWorkingFolder == (int)pathToTreesInCurWorkingFolder.size()) {
-            if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            //if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            this->deleted.push_back(pathToTreesInCurStaggingArea[posStaggingArea].first);
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (posStaggingArea == (int)pathToTreesInCurStaggingArea.size()) {
-            if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->added.push_back(pathToTreesInCurWorkingFolder[posWorkingFolder].first);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurWorkingFolder[posWorkingFolder].first > pathToTreesInCurStaggingArea[posStaggingArea].first) {
-            if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            //if(verbose){std::cout << "Dossier supprimé : " << relativeToRepo(pathToTreesInCurStaggingArea[posStaggingArea].first) << std::endl;}
+            this->deleted.push_back(pathToTreesInCurStaggingArea[posStaggingArea].first);
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].first = "deleted";
             this->status[pathToTreesInCurStaggingArea[posStaggingArea].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
             posStaggingArea++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].first > pathToTreesInCurWorkingFolder[posWorkingFolder].first) {
-            if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Dossier ajouté : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->added.push_back(pathToTreesInCurWorkingFolder[posWorkingFolder].first);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "added";
             posWorkingFolder++;
         }
         else if (pathToTreesInCurStaggingArea[posStaggingArea].second != pathToTreesInCurWorkingFolder[posWorkingFolder].second) {
-            if(verbose){std::cout << "Dossier modifié : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            //if(verbose){std::cout << "Dossier modifié : " << relativeToRepo(pathToTreesInCurWorkingFolder[posWorkingFolder].first) << std::endl;}
+            this->modified.push_back(pathToTreesInCurWorkingFolder[posWorkingFolder].first);
             calc_differences(pathToTreesInCurWorkingFolder[posWorkingFolder].first, pathToTreesInCurStaggingArea[posStaggingArea].second, verbose);
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].first = "modified";
             this->status[pathToTreesInCurWorkingFolder[posWorkingFolder].first].second = pathToTreesInCurStaggingArea[posStaggingArea].second;
@@ -184,6 +205,7 @@ void StaggingArea::calc_differences(fs::path curPathInWorkingArea, std::string c
         }
 
     }
+
 
 }
 
@@ -376,6 +398,28 @@ void StaggingArea::update_node(std::string curHash, std::string hashToDelete, st
     else {
         update_node(this->treeStaggingAreaReversed[curHash], curHash, hashString(updatedContent2));
     }
+
+}
+
+void StaggingArea::get_stagging_area() {
+    
+    std::cout << "Ajouté : " << std::endl;
+    for (std::string a : added) {
+        std::cout << "   " << a << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "Supprimé : " << std::endl;
+    for (std::string d : deleted) {
+        std::cout << "   " << d << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "Modifié : " << std::endl;
+    for (std::string m : modified) {
+        std::cout << "   " << m << std::endl;
+    }
+    std::cout << std::endl;
 
 }
 

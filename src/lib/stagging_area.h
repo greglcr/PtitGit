@@ -31,6 +31,7 @@ class StaggingArea {
         void write_content(Object curObject);
         void write_content(std::string content, std::string hashedContent);
         void update_node(std::string curFileHash, std::string hashToDelete, std::string hashToInsert);
+        void get_stagging_area();
         std::string get_root_tree();    
 
     private:
@@ -40,6 +41,7 @@ class StaggingArea {
         std::map<std::string, std::vector<std::string> > treeStaggingArea;
         std::map<std::string, std::string> treeStaggingAreaReversed;
         std::map<fs::path, std::pair<std::string, std::string> > status;
+        std::vector<std::string> deleted, added, modified;
 
 };
 
